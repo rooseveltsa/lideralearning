@@ -1,0 +1,948 @@
+
+> tmp-app@0.1.0 dev
+> next dev
+
+⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/juniormiranda/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/juniormiranda/LideraTreinamentos/package-lock.json
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.6:3000
+- Environments: .env.local
+
+✓ Starting...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 851ms
+Middleware checking route: /auth/login | User ID: undefined
+ POST /auth/login 200 in 701ms (compile: 445ms, proxy.ts: 114ms, render: 142ms)
+✓ Compiled in 1730ms
+✓ Compiled in 210ms
+Middleware checking route: /auth/login | User ID: undefined
+ POST /auth/login 200 in 291ms (compile: 171ms, proxy.ts: 30ms, render: 91ms)
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 244ms (compile: 99ms, proxy.ts: 65ms, render: 80ms)
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 309ms (compile: 76ms, proxy.ts: 108ms, render: 125ms)
+Middleware checking route: /auth/login | User ID: undefined
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 3.4s (compile: 1700ms, proxy.ts: 538ms, render: 1191ms)
+ POST /auth/login 303 in 5.4s (compile: 62ms, proxy.ts: 75ms, render: 5.3s)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 1521ms (compile: 702ms, proxy.ts: 291ms, render: 529ms)
+Middleware checking route: /dashboard/perfil | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/perfil 404 in 661ms (compile: 80ms, proxy.ts: 554ms, render: 27ms)
+Middleware checking route: /dashboard/perfil | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/perfil 404 in 240ms (compile: 5ms, proxy.ts: 205ms, render: 30ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1747ms (compile: 7ms, proxy.ts: 199ms, render: 1541ms)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 624ms (compile: 6ms, proxy.ts: 207ms, render: 411ms)
+✓ Compiled in 367ms
+✓ Compiled in 297ms
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 2.2s (compile: 289ms, proxy.ts: 1543ms, render: 335ms)
+✓ Compiled in 115ms
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 690ms (compile: 72ms, proxy.ts: 529ms, render: 88ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 227ms (compile: 2ms, proxy.ts: 200ms, render: 25ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 262ms (compile: 4ms, proxy.ts: 198ms, render: 60ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 264ms (compile: 14ms, proxy.ts: 192ms, render: 58ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 272ms (compile: 6ms, proxy.ts: 208ms, render: 59ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 274ms (compile: 6ms, proxy.ts: 197ms, render: 71ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 237ms (compile: 4ms, proxy.ts: 205ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 213ms (compile: 1858µs, proxy.ts: 183ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 254ms (compile: 7ms, proxy.ts: 199ms, render: 49ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 224ms (compile: 6ms, proxy.ts: 194ms, render: 24ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 243ms (compile: 6ms, proxy.ts: 198ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 248ms (compile: 7ms, proxy.ts: 192ms, render: 49ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 252ms (compile: 9ms, proxy.ts: 205ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 1933µs, proxy.ts: 197ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 3ms, proxy.ts: 191ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 245ms (compile: 9ms, proxy.ts: 188ms, render: 48ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 5ms, proxy.ts: 192ms, render: 35ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 14ms, proxy.ts: 190ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 240ms (compile: 9ms, proxy.ts: 193ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 10ms, proxy.ts: 190ms, render: 35ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 5ms, proxy.ts: 190ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 6ms, proxy.ts: 190ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 252ms (compile: 10ms, proxy.ts: 194ms, render: 48ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 238ms (compile: 7ms, proxy.ts: 196ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 238ms (compile: 6ms, proxy.ts: 193ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 238ms (compile: 7ms, proxy.ts: 192ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 243ms (compile: 6ms, proxy.ts: 199ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 234ms (compile: 9ms, proxy.ts: 188ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 248ms (compile: 7ms, proxy.ts: 190ms, render: 51ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 8ms, proxy.ts: 187ms, render: 47ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 234ms (compile: 8ms, proxy.ts: 189ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 229ms (compile: 2ms, proxy.ts: 187ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 237ms (compile: 7ms, proxy.ts: 195ms, render: 34ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 240ms (compile: 7ms, proxy.ts: 193ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 5ms, proxy.ts: 206ms, render: 23ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 247ms (compile: 10ms, proxy.ts: 187ms, render: 50ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 240ms (compile: 7ms, proxy.ts: 187ms, render: 46ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 245ms (compile: 5ms, proxy.ts: 199ms, render: 41ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 5ms, proxy.ts: 192ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 222ms (compile: 2ms, proxy.ts: 191ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 232ms (compile: 5ms, proxy.ts: 189ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 3ms, proxy.ts: 186ms, render: 41ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 302ms (compile: 11ms, proxy.ts: 230ms, render: 62ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 3ms, proxy.ts: 199ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 220ms (compile: 4ms, proxy.ts: 186ms, render: 30ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 214ms (compile: 5ms, proxy.ts: 185ms, render: 24ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 218ms (compile: 4ms, proxy.ts: 189ms, render: 25ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 229ms (compile: 5ms, proxy.ts: 185ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 241ms (compile: 8ms, proxy.ts: 188ms, render: 45ms)
+✓ Compiled in 140ms
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 576ms (compile: 129ms, proxy.ts: 296ms, render: 151ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 3ms, proxy.ts: 196ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 221ms (compile: 4ms, proxy.ts: 188ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 4ms, proxy.ts: 199ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 248ms (compile: 3ms, proxy.ts: 213ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 3ms, proxy.ts: 201ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 241ms (compile: 2ms, proxy.ts: 188ms, render: 52ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 1992µs, proxy.ts: 198ms, render: 26ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 270ms (compile: 4ms, proxy.ts: 192ms, render: 75ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 1831µs, proxy.ts: 196ms, render: 32ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 5ms, proxy.ts: 188ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 3ms, proxy.ts: 190ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 215ms (compile: 2ms, proxy.ts: 188ms, render: 25ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 237ms (compile: 6ms, proxy.ts: 188ms, render: 43ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 245ms (compile: 14ms, proxy.ts: 196ms, render: 34ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 236ms (compile: 7ms, proxy.ts: 192ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 244ms (compile: 8ms, proxy.ts: 190ms, render: 46ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 241ms (compile: 7ms, proxy.ts: 200ms, render: 34ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 243ms (compile: 6ms, proxy.ts: 188ms, render: 48ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 245ms (compile: 6ms, proxy.ts: 190ms, render: 49ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 238ms (compile: 6ms, proxy.ts: 193ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 8ms, proxy.ts: 189ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 8ms, proxy.ts: 185ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 247ms (compile: 6ms, proxy.ts: 197ms, render: 44ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 8ms, proxy.ts: 190ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 7ms, proxy.ts: 189ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 240ms (compile: 5ms, proxy.ts: 185ms, render: 50ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 221ms (compile: 3ms, proxy.ts: 186ms, render: 32ms)
+✓ Compiled in 352ms
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 2.6s (compile: 816ms, proxy.ts: 671ms, render: 1150ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1215ms (compile: 59ms, proxy.ts: 788ms, render: 368ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 246ms (compile: 3ms, proxy.ts: 193ms, render: 49ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 255ms (compile: 7ms, proxy.ts: 191ms, render: 57ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 5ms, proxy.ts: 198ms, render: 27ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 222ms (compile: 4ms, proxy.ts: 186ms, render: 32ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 246ms (compile: 5ms, proxy.ts: 192ms, render: 49ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 255ms (compile: 8ms, proxy.ts: 194ms, render: 53ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 252ms (compile: 1816µs, proxy.ts: 199ms, render: 51ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 225ms (compile: 1834µs, proxy.ts: 187ms, render: 36ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 229ms (compile: 8ms, proxy.ts: 190ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 248ms (compile: 7ms, proxy.ts: 190ms, render: 50ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 224ms (compile: 2ms, proxy.ts: 193ms, render: 30ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 236ms (compile: 8ms, proxy.ts: 199ms, render: 29ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 290ms (compile: 5ms, proxy.ts: 188ms, render: 96ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 221ms (compile: 4ms, proxy.ts: 186ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 219ms (compile: 3ms, proxy.ts: 188ms, render: 28ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 4ms, proxy.ts: 185ms, render: 44ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 6ms, proxy.ts: 191ms, render: 45ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 252ms (compile: 9ms, proxy.ts: 190ms, render: 53ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 241ms (compile: 5ms, proxy.ts: 193ms, render: 43ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 278ms (compile: 7ms, proxy.ts: 191ms, render: 80ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 237ms (compile: 4ms, proxy.ts: 192ms, render: 42ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 7ms, proxy.ts: 193ms, render: 41ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 240ms (compile: 8ms, proxy.ts: 193ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 232ms (compile: 4ms, proxy.ts: 188ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 245ms (compile: 6ms, proxy.ts: 195ms, render: 45ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 5ms, proxy.ts: 190ms, render: 46ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 5ms, proxy.ts: 195ms, render: 34ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 5ms, proxy.ts: 191ms, render: 34ms)
+✓ Compiled in 82ms
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 922ms (compile: 137ms, proxy.ts: 629ms, render: 156ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 285ms (compile: 1978µs, proxy.ts: 205ms, render: 78ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 581ms (compile: 6ms, proxy.ts: 534ms, render: 41ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 261ms (compile: 4ms, proxy.ts: 193ms, render: 63ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 2ms, proxy.ts: 194ms, render: 30ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 250ms (compile: 5ms, proxy.ts: 190ms, render: 56ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 227ms (compile: 3ms, proxy.ts: 194ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 231ms (compile: 3ms, proxy.ts: 188ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 7ms, proxy.ts: 196ms, render: 22ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 226ms (compile: 5ms, proxy.ts: 190ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 306ms (compile: 8ms, proxy.ts: 196ms, render: 102ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 267ms (compile: 3ms, proxy.ts: 230ms, render: 35ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 5ms, proxy.ts: 199ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 229ms (compile: 6ms, proxy.ts: 194ms, render: 29ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 234ms (compile: 4ms, proxy.ts: 186ms, render: 45ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 228ms (compile: 5ms, proxy.ts: 185ms, render: 38ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 4ms, proxy.ts: 195ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 271ms (compile: 7ms, proxy.ts: 214ms, render: 50ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 247ms (compile: 5ms, proxy.ts: 199ms, render: 43ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 235ms (compile: 7ms, proxy.ts: 194ms, render: 35ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 254ms (compile: 4ms, proxy.ts: 192ms, render: 59ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 5ms, proxy.ts: 189ms, render: 39ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 247ms (compile: 2ms, proxy.ts: 211ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 259ms (compile: 8ms, proxy.ts: 210ms, render: 41ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 248ms (compile: 8ms, proxy.ts: 190ms, render: 50ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 214ms (compile: 4ms, proxy.ts: 186ms, render: 24ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 230ms (compile: 6ms, proxy.ts: 186ms, render: 37ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 242ms (compile: 11ms, proxy.ts: 200ms, render: 31ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 233ms (compile: 6ms, proxy.ts: 192ms, render: 35ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 231ms (compile: 4ms, proxy.ts: 187ms, render: 40ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 237ms (compile: 3ms, proxy.ts: 201ms, render: 33ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 261ms (compile: 7ms, proxy.ts: 204ms, render: 51ms)
+Middleware checking route: /auth/login | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware: User already logged in, redirecting away from auth pages to /dashboard
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 2.5s (compile: 88ms, proxy.ts: 213ms, render: 2.1s)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 234ms (compile: 194ms, proxy.ts: 2ms, render: 38ms)
+ POST /dashboard 303 in 1374ms (compile: 18ms, proxy.ts: 609ms, render: 747ms)
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 188ms (compile: 19ms, proxy.ts: 56ms, render: 113ms)
+Middleware checking route: /auth/login | User ID: undefined
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 827ms (compile: 7ms, proxy.ts: 283ms, render: 537ms)
+ POST /auth/login 303 in 1755ms (compile: 75ms, proxy.ts: 44ms, render: 1636ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 2.8s (compile: 1741ms, proxy.ts: 271ms, render: 747ms)
+Middleware checking route: /admin/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/cursos 200 in 1232ms (compile: 319ms, proxy.ts: 607ms, render: 306ms)
+Middleware checking route: /admin/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef 200 in 1939ms (compile: 1373ms, proxy.ts: 263ms, render: 303ms)
+Middleware checking route: /admin/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/cursos 200 in 612ms (compile: 19ms, proxy.ts: 306ms, render: 288ms)
+Middleware checking route: /admin/alunos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/alunos 200 in 979ms (compile: 424ms, proxy.ts: 217ms, render: 338ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 825ms (compile: 4ms, proxy.ts: 198ms, render: 622ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 805ms (compile: 4ms, proxy.ts: 258ms, render: 543ms)
+✓ Compiled in 297ms
+✓ Compiled in 298ms
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+✓ Compiled in 2ms
+ GET /admin 200 in 1463ms (compile: 381ms, proxy.ts: 802ms, render: 280ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 529ms (compile: 3ms, proxy.ts: 229ms, render: 298ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 1020ms (compile: 28ms, proxy.ts: 278ms, render: 714ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 234ms (compile: 6ms, proxy.ts: 195ms, render: 33ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 238ms (compile: 9ms, proxy.ts: 186ms, render: 44ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 249ms (compile: 2ms, proxy.ts: 186ms, render: 60ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 335ms (compile: 4ms, proxy.ts: 189ms, render: 143ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 535ms (compile: 9ms, proxy.ts: 188ms, render: 338ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 258ms (compile: 4ms, proxy.ts: 214ms, render: 40ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 243ms (compile: 3ms, proxy.ts: 192ms, render: 49ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 225ms (compile: 2ms, proxy.ts: 194ms, render: 29ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 272ms (compile: 11ms, proxy.ts: 204ms, render: 57ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 234ms (compile: 2ms, proxy.ts: 192ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 230ms (compile: 6ms, proxy.ts: 192ms, render: 32ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 232ms (compile: 3ms, proxy.ts: 190ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 226ms (compile: 5ms, proxy.ts: 188ms, render: 33ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 295ms (compile: 8ms, proxy.ts: 220ms, render: 67ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 249ms (compile: 2ms, proxy.ts: 196ms, render: 51ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 263ms (compile: 4ms, proxy.ts: 194ms, render: 65ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 245ms (compile: 5ms, proxy.ts: 195ms, render: 46ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 247ms (compile: 3ms, proxy.ts: 198ms, render: 46ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 264ms (compile: 17ms, proxy.ts: 206ms, render: 42ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 251ms (compile: 12ms, proxy.ts: 200ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 223ms (compile: 1910µs, proxy.ts: 187ms, render: 34ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 5ms, proxy.ts: 188ms, render: 55ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 230ms (compile: 3ms, proxy.ts: 188ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 244ms (compile: 3ms, proxy.ts: 192ms, render: 48ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 403ms (compile: 5ms, proxy.ts: 217ms, render: 182ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 261ms (compile: 5ms, proxy.ts: 202ms, render: 54ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 269ms (compile: 4ms, proxy.ts: 191ms, render: 74ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 249ms (compile: 4ms, proxy.ts: 189ms, render: 57ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 247ms (compile: 4ms, proxy.ts: 194ms, render: 48ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 256ms (compile: 6ms, proxy.ts: 190ms, render: 60ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 257ms (compile: 4ms, proxy.ts: 205ms, render: 49ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 720ms (compile: 102ms, proxy.ts: 326ms, render: 293ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 242ms (compile: 7ms, proxy.ts: 191ms, render: 44ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 241ms (compile: 2ms, proxy.ts: 191ms, render: 47ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 254ms (compile: 4ms, proxy.ts: 191ms, render: 59ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 243ms (compile: 3ms, proxy.ts: 189ms, render: 51ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 646ms (compile: 204ms, proxy.ts: 227ms, render: 215ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+✓ Compiled in 5ms
+ GET /admin 200 in 287ms (compile: 12ms, proxy.ts: 236ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 255ms (compile: 4ms, proxy.ts: 196ms, render: 55ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 233ms (compile: 2ms, proxy.ts: 193ms, render: 38ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 234ms (compile: 2ms, proxy.ts: 184ms, render: 47ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 255ms (compile: 3ms, proxy.ts: 204ms, render: 48ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 272ms (compile: 50ms, proxy.ts: 192ms, render: 30ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 230ms (compile: 3ms, proxy.ts: 187ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 232ms (compile: 2ms, proxy.ts: 188ms, render: 41ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 227ms (compile: 2ms, proxy.ts: 196ms, render: 29ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 239ms (compile: 4ms, proxy.ts: 189ms, render: 47ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 274ms (compile: 2ms, proxy.ts: 193ms, render: 78ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 238ms (compile: 4ms, proxy.ts: 198ms, render: 36ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 236ms (compile: 3ms, proxy.ts: 188ms, render: 44ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 260ms (compile: 6ms, proxy.ts: 196ms, render: 58ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 276ms (compile: 3ms, proxy.ts: 207ms, render: 65ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 228ms (compile: 3ms, proxy.ts: 189ms, render: 36ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 232ms (compile: 4ms, proxy.ts: 188ms, render: 40ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 4ms, proxy.ts: 195ms, render: 50ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 232ms (compile: 3ms, proxy.ts: 190ms, render: 38ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 271ms (compile: 4ms, proxy.ts: 188ms, render: 79ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 238ms (compile: 4ms, proxy.ts: 189ms, render: 44ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 235ms (compile: 3ms, proxy.ts: 193ms, render: 38ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 231ms (compile: 5ms, proxy.ts: 187ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 228ms (compile: 2ms, proxy.ts: 185ms, render: 41ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 984ms (compile: 81ms, proxy.ts: 262ms, render: 641ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 304ms (compile: 4ms, proxy.ts: 261ms, render: 38ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 303ms (compile: 6ms, proxy.ts: 189ms, render: 108ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 280ms (compile: 8ms, proxy.ts: 215ms, render: 56ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 3ms, proxy.ts: 195ms, render: 50ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 308ms (compile: 5ms, proxy.ts: 222ms, render: 80ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 231ms (compile: 3ms, proxy.ts: 193ms, render: 34ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 244ms (compile: 6ms, proxy.ts: 195ms, render: 43ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 258ms (compile: 5ms, proxy.ts: 208ms, render: 45ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 258ms (compile: 13ms, proxy.ts: 200ms, render: 45ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 252ms (compile: 3ms, proxy.ts: 189ms, render: 60ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 253ms (compile: 11ms, proxy.ts: 199ms, render: 43ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 226ms (compile: 2ms, proxy.ts: 186ms, render: 37ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 250ms (compile: 8ms, proxy.ts: 189ms, render: 53ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 229ms (compile: 5ms, proxy.ts: 191ms, render: 34ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 238ms (compile: 3ms, proxy.ts: 191ms, render: 45ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 6ms, proxy.ts: 197ms, render: 45ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 236ms (compile: 4ms, proxy.ts: 191ms, render: 41ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 238ms (compile: 7ms, proxy.ts: 195ms, render: 36ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 7ms, proxy.ts: 197ms, render: 45ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 3ms, proxy.ts: 190ms, render: 55ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 251ms (compile: 3ms, proxy.ts: 207ms, render: 40ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 231ms (compile: 4ms, proxy.ts: 186ms, render: 41ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 232ms (compile: 3ms, proxy.ts: 190ms, render: 39ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 248ms (compile: 8ms, proxy.ts: 190ms, render: 50ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 399ms (compile: 6ms, proxy.ts: 193ms, render: 200ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 262ms (compile: 7ms, proxy.ts: 199ms, render: 56ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 247ms (compile: 5ms, proxy.ts: 207ms, render: 36ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 243ms (compile: 3ms, proxy.ts: 194ms, render: 46ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 226ms (compile: 2ms, proxy.ts: 189ms, render: 35ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 257ms (compile: 4ms, proxy.ts: 192ms, render: 61ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 236ms (compile: 3ms, proxy.ts: 196ms, render: 37ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 242ms (compile: 4ms, proxy.ts: 186ms, render: 51ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 230ms (compile: 3ms, proxy.ts: 189ms, render: 38ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 244ms (compile: 7ms, proxy.ts: 189ms, render: 48ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 266ms (compile: 5ms, proxy.ts: 189ms, render: 72ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 226ms (compile: 3ms, proxy.ts: 186ms, render: 37ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 245ms (compile: 9ms, proxy.ts: 189ms, render: 47ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 258ms (compile: 8ms, proxy.ts: 190ms, render: 60ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 243ms (compile: 6ms, proxy.ts: 195ms, render: 42ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 252ms (compile: 5ms, proxy.ts: 192ms, render: 55ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 253ms (compile: 8ms, proxy.ts: 202ms, render: 43ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 228ms (compile: 5ms, proxy.ts: 193ms, render: 30ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 239ms (compile: 7ms, proxy.ts: 192ms, render: 41ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 3.6s (compile: 1732ms, proxy.ts: 454ms, render: 1368ms)
+ GET /grid.svg 404 in 283ms (compile: 197ms, render: 87ms)
+Middleware checking route: /sobre | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /sobre 200 in 1931ms (compile: 1117ms, proxy.ts: 588ms, render: 226ms)
+Middleware checking route: /empresas | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /empresas 200 in 1062ms (compile: 309ms, proxy.ts: 584ms, render: 169ms)
+Middleware checking route: /contato | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /contato 200 in 910ms (compile: 473ms, proxy.ts: 361ms, render: 76ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 1645ms (compile: 32ms, proxy.ts: 635ms, render: 978ms)
+ GET /grid.svg 404 in 134ms (compile: 10ms, render: 124ms)
+Middleware checking route: /empresas | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /empresas 200 in 357ms (compile: 17ms, proxy.ts: 263ms, render: 77ms)
+Middleware checking route: /empresas | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /empresas 200 in 363ms (compile: 11ms, proxy.ts: 258ms, render: 95ms)
+Middleware checking route: /empresas | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /empresas 200 in 325ms (compile: 3ms, proxy.ts: 256ms, render: 66ms)
+Middleware checking route: /sobre | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /sobre 200 in 233ms (compile: 5ms, proxy.ts: 197ms, render: 31ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 670ms (compile: 12ms, proxy.ts: 211ms, render: 446ms)
+Middleware checking route: /auth/login | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware: User already logged in, redirecting away from auth pages to /dashboard
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 5.3s (compile: 1073ms, proxy.ts: 212ms, render: 4.0s)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 2.3s (compile: 271ms, proxy.ts: 696ms, render: 1318ms)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 198ms (compile: 156ms, proxy.ts: 3ms, render: 39ms)
+ POST /dashboard/cursos 303 in 829ms (compile: 12ms, proxy.ts: 355ms, render: 462ms)
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 251ms (compile: 33ms, proxy.ts: 25ms, render: 193ms)
+Middleware checking route: /auth/login | User ID: undefined
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1642ms (compile: 25ms, proxy.ts: 218ms, render: 1399ms)
+ POST /auth/login 303 in 2.9s (compile: 40ms, proxy.ts: 64ms, render: 2.8s)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 1672ms (compile: 26ms, proxy.ts: 863ms, render: 783ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 1623ms (compile: 178ms, proxy.ts: 269ms, render: 1176ms)
+ GET /grid.svg 404 in 1444ms (compile: 413ms, render: 1031ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 1044ms (compile: 24ms, proxy.ts: 672ms, render: 347ms)
+Middleware checking route: /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef 200 in 1588ms (compile: 962ms, proxy.ts: 276ms, render: 350ms)
+Middleware checking route: /admin | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin 200 in 1212ms (compile: 181ms, proxy.ts: 295ms, render: 736ms)
+Middleware checking route: /admin/alunos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/alunos 200 in 647ms (compile: 80ms, proxy.ts: 281ms, render: 286ms)
+Middleware checking route: /admin/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/cursos 200 in 694ms (compile: 102ms, proxy.ts: 297ms, render: 294ms)
+Middleware checking route: /admin/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/cursos 200 in 531ms (compile: 9ms, proxy.ts: 275ms, render: 246ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+○ Compiling /dashboard/cursos/[course_id] ...
+ GET /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef 404 in 5.6s (compile: 4.1s, proxy.ts: 271ms, render: 1257ms)
+Middleware checking route: /curso/lideranca-exponencial | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /curso/lideranca-exponencial 404 in 992ms (compile: 29ms, proxy.ts: 610ms, render: 353ms)
+Middleware checking route: /admin/alunos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /admin/alunos 200 in 915ms (compile: 13ms, proxy.ts: 292ms, render: 609ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1210ms (compile: 16ms, proxy.ts: 637ms, render: 557ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 907ms (compile: 39ms, proxy.ts: 337ms, render: 530ms)
+ GET /grid.svg 404 in 186ms (compile: 33ms, render: 154ms)
+Middleware checking route: /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef 200 in 1690ms (compile: 159ms, proxy.ts: 872ms, render: 659ms)
+Middleware checking route: /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Stripe key missing or dummy. Bypassing Stripe and enrolling directly.
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos?success=true&bypassed=true 200 in 868ms (compile: 35ms, proxy.ts: 208ms, render: 625ms)
+ POST /curso/a1b2c3d4-e5f6-7890-1234-567890abcdef 303 in 3.3s (compile: 75ms, proxy.ts: 805ms, render: 2.5s)
+ GET /dashboard/cursos?success=true&bypassed=true 200 in 894ms (compile: 4ms, proxy.ts: 256ms, render: 634ms)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 950ms (compile: 6ms, proxy.ts: 279ms, render: 666ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef 200 in 2.1s (compile: 54ms, proxy.ts: 854ms, render: 1218ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 200 in 3.0s (compile: 2.5s, proxy.ts: 314ms, render: 157ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 200 in 1150ms (compile: 15ms, proxy.ts: 209ms, render: 926ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/c3d4e5f6-a7b8-9012-3456-7890abcdef12 200 in 1038ms (compile: 15ms, proxy.ts: 200ms, render: 823ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 200 in 448ms (compile: 32ms, proxy.ts: 347ms, render: 70ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 200 in 1067ms (compile: 9ms, proxy.ts: 209ms, render: 850ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 200 in 972ms (compile: 6ms, proxy.ts: 191ms, render: 775ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 200 in 560ms (compile: 18ms, proxy.ts: 284ms, render: 259ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ POST /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef/aula/d4e5f6a7-b8c9-0123-4567-890abcdef123 200 in 1062ms (compile: 8ms, proxy.ts: 225ms, render: 829ms)
+Middleware checking route: /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos/a1b2c3d4-e5f6-7890-1234-567890abcdef 200 in 2.6s (compile: 39ms, proxy.ts: 340ms, render: 2.3s)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 924ms (compile: 23ms, proxy.ts: 259ms, render: 642ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 3.2s (compile: 2.5s, proxy.ts: 331ms, render: 312ms)
+✓ Compiled in 976ms
+✓ Compiled in 272ms
+✓ Compiled in 1039ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 2.1s (compile: 49ms, proxy.ts: 1752ms, render: 295ms)
+✓ Compiled in 273ms
+✓ Compiled in 144ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 804ms (compile: 59ms, proxy.ts: 450ms, render: 294ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 301ms (compile: 9ms, proxy.ts: 242ms, render: 50ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 528ms (compile: 266ms, proxy.ts: 206ms, render: 55ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 286ms (compile: 13ms, proxy.ts: 195ms, render: 78ms)
+✓ Compiled in 275ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 785ms (compile: 20ms, proxy.ts: 642ms, render: 122ms)
+✓ Compiled in 246ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 810ms (compile: 49ms, proxy.ts: 578ms, render: 183ms)
+✓ Compiled in 211ms
+✓ Compiled in 338ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 684ms (compile: 63ms, proxy.ts: 422ms, render: 199ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 320ms (compile: 36ms, proxy.ts: 230ms, render: 55ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 249ms (compile: 36ms, proxy.ts: 186ms, render: 27ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+✓ Compiled in 5ms
+ GET /certificado/verificar/LIDERA-TEST123 200 in 2.0s (compile: 767ms, proxy.ts: 602ms, render: 669ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 262ms (compile: 17ms, proxy.ts: 206ms, render: 39ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 255ms (compile: 5ms, proxy.ts: 191ms, render: 59ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 264ms (compile: 7ms, proxy.ts: 183ms, render: 74ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 215ms (compile: 5ms, proxy.ts: 193ms, render: 17ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 245ms (compile: 5ms, proxy.ts: 187ms, render: 53ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 319ms (compile: 4ms, proxy.ts: 188ms, render: 128ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 204ms (compile: 4ms, proxy.ts: 183ms, render: 17ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 210ms (compile: 7ms, proxy.ts: 185ms, render: 18ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 224ms (compile: 9ms, proxy.ts: 189ms, render: 26ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 207ms (compile: 4ms, proxy.ts: 188ms, render: 16ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 208ms (compile: 6ms, proxy.ts: 187ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 222ms (compile: 7ms, proxy.ts: 187ms, render: 28ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 209ms (compile: 4ms, proxy.ts: 185ms, render: 20ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 203ms (compile: 5ms, proxy.ts: 183ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 211ms (compile: 3ms, proxy.ts: 186ms, render: 21ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 217ms (compile: 4ms, proxy.ts: 199ms, render: 14ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 205ms (compile: 5ms, proxy.ts: 185ms, render: 16ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 215ms (compile: 4ms, proxy.ts: 188ms, render: 24ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 199ms (compile: 3ms, proxy.ts: 181ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 212ms (compile: 4ms, proxy.ts: 193ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 1146ms (compile: 3ms, proxy.ts: 191ms, render: 952ms)
+ GET /certificado/verificar/LIDERA-TEST123 200 in 974ms (compile: 66ms, proxy.ts: 337ms, render: 570ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 828ms (compile: 77ms, proxy.ts: 284ms, render: 467ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 1136ms (compile: 101ms, proxy.ts: 312ms, render: 723ms)
+ GET /certificado/verificar/LIDERA-TEST123 200 in 350ms (compile: 16ms, proxy.ts: 257ms, render: 76ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 276ms (compile: 12ms, proxy.ts: 217ms, render: 47ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 504ms (compile: 9ms, proxy.ts: 470ms, render: 25ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 207ms (compile: 4ms, proxy.ts: 189ms, render: 14ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 228ms (compile: 12ms, proxy.ts: 192ms, render: 23ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 206ms (compile: 4ms, proxy.ts: 188ms, render: 14ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 216ms (compile: 4ms, proxy.ts: 189ms, render: 24ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 223ms (compile: 8ms, proxy.ts: 187ms, render: 28ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 207ms (compile: 4ms, proxy.ts: 186ms, render: 17ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 206ms (compile: 3ms, proxy.ts: 189ms, render: 13ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 212ms (compile: 4ms, proxy.ts: 187ms, render: 20ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 208ms (compile: 3ms, proxy.ts: 191ms, render: 14ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 247ms (compile: 4ms, proxy.ts: 181ms, render: 62ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 207ms (compile: 4ms, proxy.ts: 186ms, render: 17ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 212ms (compile: 3ms, proxy.ts: 196ms, render: 13ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 199ms (compile: 3ms, proxy.ts: 181ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 205ms (compile: 3ms, proxy.ts: 188ms, render: 14ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 230ms (compile: 3ms, proxy.ts: 212ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 204ms (compile: 4ms, proxy.ts: 183ms, render: 17ms)
+✓ Compiled in 206ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 787ms (compile: 59ms, proxy.ts: 656ms, render: 72ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 223ms (compile: 3ms, proxy.ts: 205ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 202ms (compile: 4ms, proxy.ts: 182ms, render: 15ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 200ms (compile: 4ms, proxy.ts: 186ms, render: 10ms)
+✓ Compiled in 391ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 625ms (compile: 66ms, proxy.ts: 451ms, render: 108ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 6.7s (compile: 650ms, proxy.ts: 1281ms, render: 4.8s)
+✓ Finished filesystem cache database compaction in 10.3s
+Middleware checking route: /auth/login | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware: User already logged in, redirecting away from auth pages to /dashboard
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 4.0s (compile: 2.3s, proxy.ts: 494ms, render: 1228ms)
+Middleware checking route: /auth/login | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware: User already logged in, redirecting away from auth pages to /dashboard
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 921ms (compile: 17ms, proxy.ts: 205ms, render: 699ms)
+Middleware checking route: /dashboard/cursos | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/cursos 200 in 2.0s (compile: 560ms, proxy.ts: 645ms, render: 799ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1570ms (compile: 98ms, proxy.ts: 696ms, render: 777ms)
+Middleware checking route: /dashboard/perfil | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/perfil 404 in 674ms (compile: 347ms, proxy.ts: 261ms, render: 65ms)
+Middleware checking route: /dashboard/perfil | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard/perfil 404 in 431ms (compile: 5ms, proxy.ts: 201ms, render: 225ms)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 1097ms (compile: 21ms, proxy.ts: 217ms, render: 859ms)
+Middleware checking route: /auth/login | User ID: undefined
+ GET /auth/login 200 in 1257ms (compile: 530ms, proxy.ts: 38ms, render: 689ms)
+Middleware checking route: /auth/login | User ID: undefined
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 789ms (compile: 17ms, proxy.ts: 207ms, render: 565ms)
+ POST /auth/login 303 in 1787ms (compile: 64ms, proxy.ts: 42ms, render: 1681ms)
+✓ Compiled in 1299ms
+✓ Compiled in 4.6s
+✓ Compiled in 1545ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 8.5s (compile: 884ms, proxy.ts: 2.6s, render: 5.0s)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 10.3s (compile: 1744ms, proxy.ts: 2.8s, render: 5.8s)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 9.7s (compile: 1811ms, proxy.ts: 673ms, render: 7.2s)
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /dashboard | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /dashboard 200 in 10.0s (compile: 1653ms, proxy.ts: 1489ms, render: 6.9s)
+✓ Finished filesystem cache database compaction in 14.3s
+✓ Finished writing to filesystem cache in 12.5s
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 5.7s (compile: 1604ms, proxy.ts: 477ms, render: 3.6s)
+✓ Compiled in 1253ms
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 2.5s (compile: 1890ms, proxy.ts: 565ms, render: 63ms)
+ GET / 200 in 2.8s (compile: 553ms, proxy.ts: 803ms, render: 1398ms)
+✓ Compiled in 209ms
+✓ Compiled in 261ms
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 2.4s (compile: 292ms, proxy.ts: 2.1s, render: 85ms)
+ GET / 200 in 2.5s (compile: 82ms, proxy.ts: 485ms, render: 1894ms)
+✓ Compiled in 281ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 588ms (compile: 167ms, proxy.ts: 284ms, render: 137ms)
+ GET / 200 in 642ms (compile: 19ms, proxy.ts: 331ms, render: 292ms)
+✓ Compiled in 717ms
+✓ Compiled in 274ms
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+✓ Compiled in 31ms
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 1546ms (compile: 163ms, proxy.ts: 1119ms, render: 264ms)
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 1885ms (compile: 22ms, proxy.ts: 1793ms, render: 71ms)
+ GET / 200 in 3.3s (compile: 1132ms, proxy.ts: 1442ms, render: 719ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+Middleware checking route: /certificado/verificar/LIDERA-TEST123 | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET /certificado/verificar/LIDERA-TEST123 200 in 305ms (compile: 21ms, proxy.ts: 266ms, render: 19ms)
+ GET / 200 in 446ms (compile: 11ms, proxy.ts: 215ms, render: 219ms)
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 298ms (compile: 14ms, proxy.ts: 240ms, render: 43ms)
+✓ Compiled in 319ms
+✓ Compiled in 259ms
+✓ Compiled in 145ms
+✓ Finished filesystem cache database compaction in 12.7s
+Middleware checking route: / | User ID: 807f75bf-1a14-4979-835b-6c73f71037f8
+ GET / 200 in 3.1s (compile: 365ms, proxy.ts: 1497ms, render: 1245ms)
+✓ Compiled in 2.6s
+✓ Compiled in 302ms
+✓ Compiled in 1194ms
+✓ Compiled in 330ms
+✓ Compiled in 721ms
+✓ Finished filesystem cache database compaction in 14.5s
+✓ Compiled in 2.3s
+✓ Compiled in 550ms
+⨯ ./LideraTreinamentos/src/app/admin/cursos/page.tsx:2:1
+Module not found: Can't resolve 'next-view-transitions'
+[0m [90m 1 |[39m [36mimport[39m { createClient } [36mfrom[39m [32m'@/lib/supabase/server'[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m { [33mLink[39m } [36mfrom[39m [32m'next-view-transitions'[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m { [33mPlus[39m[33m,[39m [33mEye[39m[33m,[39m [33mEyeOff[39m[33m,[39m [33mPencil[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m 4 |[39m
+ [90m 5 |[39m [36mexport[39m [36mdefault[39m [36masync[39m [36mfunction[39m [33mAdminCursosPage[39m() {[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./LideraTreinamentos/src/app/admin/cursos/page.tsx:2:1
+Module not found: Can't resolve 'next-view-transitions'
+[0m [90m 1 |[39m [36mimport[39m { createClient } [36mfrom[39m [32m'@/lib/supabase/server'[39m
+[31m[1m>[22m[39m[90m 2 |[39m [36mimport[39m { [33mLink[39m } [36mfrom[39m [32m'next-view-transitions'[39m
+ [90m   |[39m [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 3 |[39m [36mimport[39m { [33mPlus[39m[33m,[39m [33mEye[39m[33m,[39m [33mEyeOff[39m[33m,[39m [33mPencil[39m } [36mfrom[39m [32m'lucide-react'[39m
+ [90m 4 |[39m
+ [90m 5 |[39m [36mexport[39m [36mdefault[39m [36masync[39m [36mfunction[39m [33mAdminCursosPage[39m() {[0m
+
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 3.3s
+✓ Compiled in 1680ms
