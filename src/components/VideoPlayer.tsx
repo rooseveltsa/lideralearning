@@ -23,11 +23,11 @@ export default function VideoPlayer({ url, thumbnail }: VideoPlayerProps) {
         return (
             <div className="w-full aspect-video rounded-xl overflow-hidden bg-black shadow-2xl">
                 <iframe
-                    src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`}
+                    src={`https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&color=white&iv_load_policy=3&playsinline=1`}
                     title="Aula em vídeo"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="w-full h-full"
+                    className="w-full h-full border-0"
                 />
             </div>
         )

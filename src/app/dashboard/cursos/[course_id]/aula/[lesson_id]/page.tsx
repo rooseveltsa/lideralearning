@@ -97,8 +97,8 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
                         </div>
                         <Button
                             className={`sm:w-auto w-full h-12 px-6 flex items-center gap-2 font-bold text-sm rounded-xl transition-all duration-300 ${isCompleted
-                                    ? "bg-[#4CAF35]/10 text-[#4CAF35] hover:bg-[#4CAF35]/20 border-none shadow-none"
-                                    : "bg-[#1E88E5] hover:bg-[#1565C0] text-white shadow-lg shadow-[#1E88E5]/20"
+                                ? "bg-[#4CAF35]/10 text-[#4CAF35] hover:bg-[#4CAF35]/20 border-none shadow-none"
+                                : "bg-[#1E88E5] hover:bg-[#1565C0] text-white shadow-lg shadow-[#1E88E5]/20"
                                 }`}
                             onClick={handleMarkComplete}
                             disabled={marking}
@@ -171,9 +171,9 @@ function VideoPlayerInline({ url, thumbnail }: { url: string; thumbnail?: string
     const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
 
     if (ytMatch) {
-        return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`}
+        return <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1&color=white&iv_load_policy=3&playsinline=1`}
             title="Aula" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen className="w-full h-full absolute inset-0" />
+            allowFullScreen className="w-full h-full absolute inset-0 border-0" />
     }
     if (vimeoMatch) {
         return <iframe src={`https://player.vimeo.com/video/${vimeoMatch[1]}?color=1E88E5&portrait=0`}
