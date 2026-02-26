@@ -17,8 +17,8 @@ export default function SiteHeader() {
     const [isMobileOpen, setIsMobileOpen] = useState(false)
     const pathname = usePathname()
 
-    // Determinando se a página atual tem o hero escuro no topo (Home, Empresas)
-    const hasDarkHero = pathname === '/' || pathname === '/empresas'
+    // Determinando se a página atual tem o hero escuro no topo (Apenas Empresas)
+    const hasDarkHero = pathname === '/empresas'
 
     useEffect(() => {
         const onScroll = () => setIsScrolled(window.scrollY > 20)
@@ -26,8 +26,10 @@ export default function SiteHeader() {
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
+    const isSolid = isScrolled || isMobileOpen
+
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isSolid
             ? 'bg-white/90 backdrop-blur-xl border-b border-[#E5E7EB]'
             : 'bg-transparent'
             }`}>
@@ -35,7 +37,7 @@ export default function SiteHeader() {
 
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-1.5 group select-none">
-                    <span className={`font-heading font-extrabold text-2xl tracking-tight transition-colors ${(isScrolled || !hasDarkHero) ? 'text-[#111827]' : 'text-white'
+                    <span className={`font-heading font-extrabold text-2xl tracking-tight transition-colors ${(isSolid || !hasDarkHero) ? 'text-[#111827]' : 'text-white'
                         }`}>
                         Lidera
                     </span>
@@ -48,9 +50,9 @@ export default function SiteHeader() {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${(isScrolled || !hasDarkHero)
-                                    ? 'text-[#64748B] hover:text-[#111827] hover:bg-[#F8FAFC]'
-                                    : 'text-[#94A3B8] hover:text-white hover:bg-white/10'
+                            className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${(isSolid || !hasDarkHero)
+                                ? 'text-[#64748B] hover:text-[#111827] hover:bg-[#F8FAFC]'
+                                : 'text-[#94A3B8] hover:text-white hover:bg-white/10'
                                 }`}
                         >
                             {link.label}
@@ -62,16 +64,16 @@ export default function SiteHeader() {
                 <div className="hidden md:flex items-center gap-4">
                     <Link
                         href="/auth/login"
-                        className={`text-sm font-semibold px-4 py-2 transition-colors ${(isScrolled || !hasDarkHero) ? 'text-[#64748B] hover:text-[#111827]' : 'text-[#94A3B8] hover:text-white'
+                        className={`text-sm font-semibold px-4 py-2 transition-colors ${(isSolid || !hasDarkHero) ? 'text-[#64748B] hover:text-[#111827]' : 'text-[#94A3B8] hover:text-white'
                             }`}
                     >
                         Login
                     </Link>
                     <Link
                         href="/auth/register"
-                        className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${(isScrolled || !hasDarkHero)
-                                ? 'bg-[#111827] text-white hover:bg-[#1565C0] shadow-md shadow-[#111827]/10'
-                                : 'bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-md shadow-[#1E88E5]/20'
+                        className={`px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 ${(isSolid || !hasDarkHero)
+                            ? 'bg-[#111827] text-white hover:bg-[#1565C0] shadow-md shadow-[#111827]/10'
+                            : 'bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-md shadow-[#1E88E5]/20'
                             }`}
                     >
                         Criar Conta
@@ -80,7 +82,7 @@ export default function SiteHeader() {
 
                 {/* Botão Mobile */}
                 <button
-                    className={`md:hidden p-2 rounded-lg transition-colors ${(isScrolled || !hasDarkHero) ? 'text-[#111827]' : 'text-white'
+                    className={`md:hidden p-2 rounded-lg transition-colors ${(isSolid || !hasDarkHero) ? 'text-[#111827]' : 'text-white'
                         }`}
                     onClick={() => setIsMobileOpen(!isMobileOpen)}
                     aria-label="Menu"

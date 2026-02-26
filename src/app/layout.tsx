@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -15,6 +15,21 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Lidera Treinamentos",
   description: "Plataforma de Alta Performance B2B",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Lidera",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -24,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth">
-      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-[#FFFFFF] text-[#111827]`}>
+      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-[#FFFFFF] text-[#111827] w-full overflow-x-hidden`}>
         {children}
       </body>
     </html>

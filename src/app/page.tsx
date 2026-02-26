@@ -43,9 +43,9 @@ export default async function HomePage() {
           HERO SECTION - STRIPE/APPLE STYLE
       ══════════════════════════════ */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden bg-white">
-        {/* Elementos de fundo sutil para não parecer vazio */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1565C0]/[0.02] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#4CAF35]/[0.02] rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+        {/* Elementos de fundo sutil para não parecer vazio (Escondidos no mobile para evitar bug WebKit canvas blur) */}
+        <div className="hidden md:block absolute top-0 right-0 w-[800px] h-[800px] bg-[#1565C0]/[0.02] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="hidden md:block absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#4CAF35]/[0.02] rounded-full blur-3xl translate-y-1/3 -translate-x-1/3 pointer-events-none" />
 
         <div className="max-w-[1200px] mx-auto relative z-10 flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1565C0]/5 text-[#1565C0] text-sm font-semibold mb-8 animate-fade-up border border-[#1565C0]/10">
@@ -145,8 +145,8 @@ export default async function HomePage() {
       ══════════════════════════════ */}
       <section className="py-24 md:py-32 bg-[#F8FAFC]">
         <div className="max-w-[1200px] mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            <div className="sticky top-24">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+            <div className="lg:sticky lg:top-24">
               <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-[#111827] leading-tight mb-6">
                 A média gestão brasileira assumiu um cargo para o qual <span className="text-[#EF4444]">nunca</span> foi treinada.
               </h2>
