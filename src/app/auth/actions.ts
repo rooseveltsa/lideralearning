@@ -49,6 +49,9 @@ export async function signup(formData: FormData) {
     const { error } = await supabase.auth.signUp(data)
 
     if (error) {
+        if (error.message.toLowerCase().includes('rate limit')) {
+            return { error: 'Limite de cadastros excedido temporariamente pelo servidor. Por favor, aguarde alguns minutos e tente novamente.' }
+        }
         return { error: error.message }
     }
 
