@@ -2,15 +2,15 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 
-// We need an admin supabase client to bypass RLS when fulfilling purchases via webhook
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
 export async function POST(req: Request) {
     const body = await req.text()
     const signature = req.headers.get('stripe-signature') as string
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+
+    // Define securely inside the runtime boundary 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     let event
 
