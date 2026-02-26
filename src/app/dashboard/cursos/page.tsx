@@ -1,12 +1,25 @@
 import { getUserCourses } from "@/lib/actions/lms"
-import { BookOpen, Target, ArrowRight } from "lucide-react"
+import { BookOpen, Target, ArrowRight, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 
-export default async function CursosPage() {
+export default async function CursosPage({ searchParams }: { searchParams: Promise<{ success?: string }> }) {
     const coursesData = await getUserCourses()
+    const { success } = await searchParams
 
     return (
         <div className="flex flex-col gap-8 max-w-7xl mx-auto p-4 lg:p-8">
+            {success === 'true' && (
+                <div className="bg-[#4CAF35]/10 border border-[#4CAF35]/30 text-[#111827] px-6 py-4 rounded-2xl flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 bg-[#4CAF35] rounded-full flex items-center justify-center flex-shrink-0 text-white shadow-lg shadow-[#4CAF35]/20">
+                        <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h4 className="font-heading font-extrabold text-[#111827] text-lg">Pagamento Aprovado!</h4>
+                        <p className="text-[#64748B] font-medium text-sm">Seu acesso à formação foi liberado imediatamente. Bons estudos!</p>
+                    </div>
+                </div>
+            )}
+
             <div>
                 <h1 className="text-3xl lg:text-4xl font-heading font-extrabold text-[#111827] tracking-tight mb-3">
                     Meus Programas
