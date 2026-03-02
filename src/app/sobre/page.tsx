@@ -69,10 +69,10 @@ export default function SobrePage() {
                             </blockquote>
                             <div className="relative z-10 flex items-center gap-5 pt-8 border-t border-[#E5E7EB]">
                                 <div className="w-16 h-16 rounded-full bg-[#0B0F19] flex items-center justify-center text-white text-xl font-bold font-heading">
-                                    RM
+                                    CD
                                 </div>
                                 <div>
-                                    <p className="font-extrabold text-lg text-[#111827]">Roosevelt Miranda</p>
+                                    <p className="font-extrabold text-lg text-[#111827]">Claudemir Domingo</p>
                                     <p className="text-[#64748B] font-medium">Fundador e CEO Lidera</p>
                                 </div>
                             </div>
