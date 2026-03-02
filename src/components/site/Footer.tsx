@@ -72,7 +72,7 @@ export default function SiteFooter() {
                 {/* Bottom Bar */}
                 <div className="pt-8 border-t border-[#1E293B] flex flex-col md:flex-row items-center justify-between gap-6">
                     <p className="text-sm text-[#64748B]">
-                        © {new Date().getFullYear()} Lidera Treinamentos B2B. CNPJ: 00.000.000/0001-00. Contrato SaaS Premium.
+                        © {new Date().getFullYear()} Lidera Treinamentos B2B. Todos os direitos reservados.
                     </p>
                     <div className="flex items-center gap-6">
                         <p className="text-sm font-bold text-[#94A3B8]">
