@@ -17,7 +17,7 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
+                    cookiesToSet.forEach(({ name, value }) =>
                         request.cookies.set(name, value)
                     )
                     supabaseResponse = NextResponse.next({
@@ -36,11 +36,8 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    console.log("Middleware checking route:", request.nextUrl.pathname, "| User ID:", user?.id)
-
     // Protect routes here
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-        console.log("Middleware: Blocked unauthenticated access to /dashboard. Redirecting to login.")
         const url = request.nextUrl.clone()
         url.pathname = '/auth/login'
         return NextResponse.redirect(url)
@@ -48,7 +45,6 @@ export async function updateSession(request: NextRequest) {
 
     // If user is logged in, restrict access to login/register pages
     if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/register')) {
-        console.log("Middleware: User already logged in, redirecting away from auth pages to /dashboard")
         const url = request.nextUrl.clone()
         url.pathname = '/dashboard'
         return NextResponse.redirect(url)

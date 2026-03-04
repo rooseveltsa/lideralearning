@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition, useState } from 'react'
+import Image from 'next/image'
 import {
     updateCourse, publishCourse, deleteCourse,
     createModule, deleteModule,
@@ -26,7 +27,7 @@ type Module = {
     lessons: Lesson[]
 }
 
-type Course = {
+export type CourseEditorCourse = {
     id: string
     title: string
     description: string | null
@@ -36,7 +37,7 @@ type Course = {
     modules: Module[]
 }
 
-export default function CourseEditorClient({ course }: { course: Course }) {
+export default function CourseEditorClient({ course }: { course: CourseEditorCourse }) {
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
@@ -99,42 +100,48 @@ export default function CourseEditorClient({ course }: { course: Course }) {
     }
 
     return (
-        <div className="space-y-8 max-w-5xl">
-            {/* Header com ações principais */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-[#111827] tracking-tight">Editar Formação</h1>
-                    <p className="text-[#64748B] mt-2 font-medium text-lg truncate max-w-xl">{course.title}</p>
+        <div className="space-y-8 max-w-6xl">
+            <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
+                <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
+                <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Editor de conteúdo</p>
+                        <h1 className="mt-3 text-3xl md:text-4xl font-heading font-extrabold tracking-tight">Editar formação</h1>
+                        <p className="mt-3 text-sm text-[#A9BDD8] truncate max-w-2xl">{course.title}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        {course.is_published && (
+                            <a
+                                href={`/curso/${course.id}`}
+                                target="_blank"
+                                className="flex items-center gap-2 h-11 px-4 text-sm text-[#C4D8EF] hover:text-white hover:bg-[#10203A] border border-[#274364] rounded-xl font-bold transition-all bg-[#0A1528]"
+                            >
+                                <ExternalLink className="h-4 w-4" />
+                                Ver vitrine
+                            </a>
+                        )}
+                        <button
+                            onClick={handlePublish}
+                            disabled={isPending}
+                            className={`flex items-center justify-center gap-2 h-11 px-6 rounded-xl text-sm font-bold transition-all disabled:opacity-50 ${course.is_published
+                                ? 'bg-[#FFFBEB] text-[#D97706] hover:bg-[#FEF3C7] border border-[#FDE68A]'
+                                : 'bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] border border-[#A7F3D0]'
+                                }`}
+                        >
+                            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : course.is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {course.is_published ? 'Despublicar' : 'Publicar'}
+                        </button>
+                        <button
+                            onClick={handleDeleteCourse}
+                            disabled={isPending}
+                            className="flex items-center justify-center h-11 w-11 bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2] border border-[#FECACA] rounded-xl transition-colors disabled:opacity-50"
+                            title="Excluir formação"
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </button>
+                    </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
-                    {course.is_published && (
-                        <a href={`/curso/${course.id}`} target="_blank"
-                            className="flex items-center gap-2 h-11 px-4 text-sm text-[#64748B] hover:text-[#111827] hover:bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl font-bold transition-all shadow-sm bg-white">
-                            <ExternalLink className="h-4 w-4" />
-                            Ver Vitrine
-                        </a>
-                    )}
-                    <button
-                        onClick={handlePublish}
-                        disabled={isPending}
-                        className={`flex items-center justify-center gap-2 h-11 px-6 rounded-xl text-sm font-bold shadow-sm transition-all disabled:opacity-50 ${course.is_published
-                            ? 'bg-[#FFFBEB] text-[#D97706] hover:bg-[#FEF3C7] border border-[#FDE68A]'
-                            : 'bg-[#ECFDF5] text-[#059669] hover:bg-[#D1FAE5] border border-[#A7F3D0]'
-                            }`}
-                    >
-                        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : course.is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        {course.is_published ? 'Despublicar' : 'Publicar'}
-                    </button>
-                    <button
-                        onClick={handleDeleteCourse}
-                        disabled={isPending}
-                        className="flex items-center justify-center h-11 w-11 bg-[#FEF2F2] text-[#DC2626] hover:bg-[#FEE2E2] border border-[#FECACA] rounded-xl transition-colors shadow-sm disabled:opacity-50"
-                        title="Excluir formação"
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </button>
-                </div>
-            </div>
+            </section>
 
             {/* Alerts */}
             {error && <div className="bg-[#FEE2E2] border border-[#FCA5A5] text-[#B91C1C] text-sm p-4 rounded-xl font-medium">{error}</div>}
@@ -171,7 +178,13 @@ export default function CourseEditorClient({ course }: { course: Course }) {
                 </div>
 
                 {course.thumbnail_url && (
-                    <img src={course.thumbnail_url} alt="Thumbnail preview" className="w-56 h-32 object-cover rounded-xl border border-[#E5E7EB] shadow-sm mt-2" />
+                    <Image
+                        src={course.thumbnail_url}
+                        alt="Thumbnail preview"
+                        width={224}
+                        height={128}
+                        unoptimized
+                        className="w-56 h-32 object-cover rounded-xl border border-[#E5E7EB] shadow-sm mt-2" />
                 )}
 
                 <div className="pt-4 border-t border-[#F8FAFC]">

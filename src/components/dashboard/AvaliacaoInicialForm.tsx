@@ -2,10 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
-import { saveInitialAssessment, AssessmentResponses } from '@/lib/actions/assessment'
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react'
 
-// ─── Contextos da formação para Supervisores ────────────────────────────────
+import { AssessmentResponses, saveInitialAssessment } from '@/lib/actions/assessment'
 
 const contextos = [
   {
@@ -81,7 +80,6 @@ const niveis = [
   { valor: 5, label: 'Ponto forte claro' },
 ]
 
-// Cor por nível para o indicador visual
 const corNivel: Record<number, string> = {
   1: '#EF4444',
   2: '#F97316',
@@ -93,12 +91,10 @@ const corNivel: Record<number, string> = {
 const labelNivel: Record<number, string> = {
   1: 'Desenvolver',
   2: 'Iniciando',
-  3: 'Em prog.',
+  3: 'Em progresso',
   4: 'Desenvolvido',
   5: 'Ponto forte',
 }
-
-// ─── Component ───────────────────────────────────────────────────────────────
 
 type Props = {
   enrollmentId: string
@@ -107,120 +103,165 @@ type Props = {
 
 export default function AvaliacaoInicialForm({ enrollmentId, courseId }: Props) {
   const router = useRouter()
-  const [step, setStep] = useState(0) // 0–6: contextos, 7: resumo
+
+  const [step, setStep] = useState(0)
   const [responses, setResponses] = useState<Partial<AssessmentResponses>>({})
   const [salvando, setSalvando] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  if (contextos.length === 0) {
+    return (
+      <div className="rounded-2xl border border-[#E3EBF6] bg-[#F8FAFD] p-6 text-sm text-[#64748B]">
+        Nenhuma competência foi configurada para esta autoavaliação.
+      </div>
+    )
+  }
 
   const totalSteps = contextos.length
   const isSummary = step === totalSteps
   const contextoAtual = !isSummary ? contextos[step] : null
   const respostaSelecionada = contextoAtual ? responses[contextoAtual.id] : undefined
-  const progresso = isSummary ? 100 : Math.round((step / totalSteps) * 100)
-  const todasRespondidas = contextos.every(c => responses[c.id] !== undefined)
+  const progressoVisual = isSummary ? 100 : Math.round(((step + 1) / totalSteps) * 100)
+  const todasRespondidas = contextos.every((contexto) => responses[contexto.id] !== undefined)
+  const respostasPendentes = contextos.filter((contexto) => responses[contexto.id] === undefined).length
 
   function selecionar(valor: number) {
     if (!contextoAtual) return
-    setResponses(prev => ({ ...prev, [contextoAtual.id]: valor }))
+    setResponses((prev) => ({ ...prev, [contextoAtual.id]: valor }))
   }
 
   function avancar() {
-    if (step < totalSteps) setStep(s => s + 1)
+    setSubmitError(null)
+    if (step < totalSteps) setStep((current) => current + 1)
   }
 
   function voltar() {
-    if (step > 0) setStep(s => s - 1)
+    setSubmitError(null)
+    if (step > 0) setStep((current) => current - 1)
   }
 
   async function handleSubmit() {
-    if (!todasRespondidas) return
+    if (!todasRespondidas || salvando) return
+
+    setSubmitError(null)
     setSalvando(true)
-    const result = await saveInitialAssessment(
-      enrollmentId,
-      courseId,
-      responses as AssessmentResponses
-    )
+
+    const result = await saveInitialAssessment(enrollmentId, courseId, responses as AssessmentResponses)
     if (result.success) {
       router.push(`/dashboard/cursos/${courseId}`)
       router.refresh()
-    } else {
-      setSalvando(false)
-      alert('Erro ao salvar. Tente novamente.')
+      return
     }
+
+    setSalvando(false)
+    setSubmitError(result.error || 'Não foi possível salvar sua autoavaliação. Tente novamente.')
   }
 
-  // ── Resumo final ──────────────────────────────────────────────────────────
   if (isSummary) {
+    const resumo = contextos.map((contexto) => {
+      const nota = responses[contexto.id] ?? 0
+      return { ...contexto, nota }
+    })
+
+    const media = Number((resumo.reduce((acc, item) => acc + item.nota, 0) / totalSteps).toFixed(1))
+    const strengths = resumo.slice().sort((a, b) => b.nota - a.nota).slice(0, 2)
+    const pontosAtencao = resumo.slice().sort((a, b) => a.nota - b.nota).slice(0, 2)
+
     return (
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-10">
-          <p className="section-label mb-3">Autoavaliação concluída</p>
-          <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-[#111827] tracking-tight mb-3">
-            Seu ponto de partida.
-          </h1>
-          <p className="text-[#64748B] leading-relaxed">
-            Essas são as competências que o treinamento vai desenvolver com você.
-            Ao final do programa, você fará uma nova avaliação e verá sua evolução.
+      <div className="space-y-6">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Resumo da autoavaliação</p>
+          <h2 className="mt-2 text-2xl font-extrabold text-[#0F172A]">Seu ponto de partida na trilha</h2>
+          <p className="mt-2 text-sm text-[#64748B]">
+            Revise suas notas antes de finalizar. Essa base será usada para comparar sua evolução ao final da jornada.
           </p>
         </div>
 
-        {/* Resumo das respostas */}
-        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm mb-8">
-          {contextos.map((ctx, i) => {
-            const nota = responses[ctx.id] ?? 0
-            const cor = corNivel[nota]
-            const pct = (nota / 5) * 100
+        <div className="grid gap-4 md:grid-cols-3">
+          <article className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.13em] text-[#64748B]">Média geral</p>
+            <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{media}</p>
+          </article>
+          <article className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.13em] text-[#64748B]">Pontos fortes</p>
+            <p className="mt-1 text-sm font-bold text-[#0F172A]">
+              {strengths.map((item) => item.titulo).join(' • ')}
+            </p>
+          </article>
+          <article className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.13em] text-[#64748B]">Pontos de atenção</p>
+            <p className="mt-1 text-sm font-bold text-[#0F172A]">
+              {pontosAtencao.map((item) => item.titulo).join(' • ')}
+            </p>
+          </article>
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-[#E3EBF6] bg-white">
+          {resumo.map((item, index) => {
+            const pct = (item.nota / 5) * 100
+            const cor = corNivel[item.nota]
+
             return (
               <div
-                key={ctx.id}
-                className={`px-6 py-5 flex items-center gap-5 ${i < contextos.length - 1 ? 'border-b border-[#E5E7EB]' : ''}`}
+                key={item.id}
+                className={`px-5 py-4 ${index < resumo.length - 1 ? 'border-b border-[#E5E7EB]' : ''}`}
               >
-                <div className="w-8 h-8 rounded-lg bg-[#F8FAFC] border border-[#E5E7EB] flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-extrabold text-[#94A3B8]">{ctx.numero}</span>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-sm font-bold text-[#111827]">
+                    {item.numero} • {item.titulo}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setStep(index)}
+                    className="text-xs font-semibold text-[#64748B] transition-colors hover:text-[#0B4A8F]"
+                  >
+                    Editar
+                  </button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#111827] text-sm mb-1.5">{ctx.titulo}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 bg-[#F0F4F8] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: cor }}
-                      />
-                    </div>
-                    <span className="text-xs font-bold shrink-0" style={{ color: cor }}>
-                      {labelNivel[nota]}
-                    </span>
+
+                <div className="flex items-center gap-3">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF3F9]">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: cor }} />
                   </div>
+                  <span className="text-xs font-bold" style={{ color: cor }}>
+                    {labelNivel[item.nota]}
+                  </span>
                 </div>
-                <button
-                  onClick={() => setStep(i)}
-                  className="text-xs text-[#94A3B8] hover:text-[#1565C0] transition-colors shrink-0"
-                >
-                  Editar
-                </button>
               </div>
             )
           })}
         </div>
 
-        {/* Botões */}
-        <div className="flex items-center justify-between">
+        {submitError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{submitError}</div>
+        ) : null}
+
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <button
+            type="button"
             onClick={voltar}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] hover:text-[#111827] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
           >
             <ArrowLeft className="h-4 w-4" />
             Voltar
           </button>
+
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={!todasRespondidas || salvando}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#1565C0] text-white font-bold rounded-xl hover:bg-[#1043A0] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#1565C0]/20"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#1565C0] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1043A0] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {salvando ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Salvando...
+              </>
             ) : (
-              <><CheckCircle2 className="h-4 w-4" /> Iniciar o Treinamento</>
+              <>
+                <CheckCircle2 className="h-4 w-4" />
+                Iniciar treinamento
+              </>
             )}
           </button>
         </div>
@@ -228,109 +269,83 @@ export default function AvaliacaoInicialForm({ enrollmentId, courseId }: Props) 
     )
   }
 
-  // ── Passo individual ──────────────────────────────────────────────────────
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Barra de progresso */}
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-bold text-[#64748B]">
+    <div className="space-y-6">
+      <div>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm font-bold text-[#64748B]">
             Contexto {step + 1} de {totalSteps}
-          </span>
-          <span className="text-sm font-bold text-[#1565C0]">{progresso}%</span>
+          </p>
+          <p className="text-sm font-bold text-[#0B4A8F]">{progressoVisual}%</p>
         </div>
-        <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[#1565C0] rounded-full transition-all duration-500"
-            style={{ width: `${progresso + (1 / totalSteps) * 100}%` }}
-          />
+        <div className="h-1.5 overflow-hidden rounded-full bg-[#E5E7EB]">
+          <div className="h-full rounded-full bg-[#1565C0] transition-all duration-500" style={{ width: `${progressoVisual}%` }} />
         </div>
       </div>
 
-      {/* Contexto */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#1565C0]/10 text-[#1565C0] font-extrabold text-sm font-heading">
-            {contextoAtual!.numero}
-          </span>
-          <h2 className="text-2xl md:text-3xl font-heading font-extrabold text-[#111827] tracking-tight">
-            {contextoAtual!.titulo}
-          </h2>
+      <div className="rounded-2xl border border-[#E3EBF6] bg-[#F8FAFD] p-5">
+        <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#1565C0]/10 text-sm font-extrabold text-[#1565C0]">
+          {contextoAtual?.numero}
         </div>
-        <p className="text-[#64748B] text-base leading-relaxed mb-1">
-          {contextoAtual!.descricao}
+        <h2 className="text-2xl font-extrabold tracking-tight text-[#111827]">{contextoAtual?.titulo}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-[#64748B]">{contextoAtual?.descricao}</p>
+        <p className="mt-4 rounded-xl border border-[#E4EAF4] bg-white px-4 py-3 text-sm font-semibold leading-relaxed text-[#111827]">
+          {contextoAtual?.questao}
         </p>
       </div>
 
-      {/* Questão */}
-      <div className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl px-6 py-5 mb-8">
-        <p className="font-bold text-[#111827] leading-relaxed">
-          {contextoAtual!.questao}
-        </p>
-      </div>
-
-      {/* Opções Likert */}
-      <div className="space-y-3 mb-10">
+      <div className="space-y-2.5">
         {niveis.map(({ valor, label }) => {
           const selecionado = respostaSelecionada === valor
-          const cor = corNivel[valor]
+
           return (
             <button
               key={valor}
+              type="button"
               onClick={() => selecionar(valor)}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border-2 text-left transition-all duration-150 ${
-                selecionado
-                  ? 'border-[#1565C0] bg-[#1565C0]/5 shadow-sm shadow-[#1565C0]/10'
-                  : 'border-[#E5E7EB] bg-white hover:border-[#1565C0]/40 hover:bg-[#F8FAFC]'
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-all ${
+                selecionado ? 'border-[#1565C0] bg-[#EFF6FE]' : 'border-[#E5E7EB] bg-white hover:border-[#BCD0EA] hover:bg-[#F8FAFD]'
               }`}
             >
-              {/* Indicador de nível */}
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-extrabold text-sm text-white transition-all"
-                style={{
-                  backgroundColor: selecionado ? cor : '#E5E7EB',
-                  color: selecionado ? 'white' : '#94A3B8',
-                }}
-              >
-                {valor}
+              <div className="flex items-center gap-3">
+                <span
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-sm font-extrabold text-white"
+                  style={{ backgroundColor: selecionado ? corNivel[valor] : '#CBD5E1' }}
+                >
+                  {valor}
+                </span>
+                <span className={`text-sm font-semibold ${selecionado ? 'text-[#111827]' : 'text-[#334155]'}`}>{label}</span>
+                {selecionado ? <CheckCircle2 className="ml-auto h-4.5 w-4.5 text-[#1565C0]" /> : null}
               </div>
-
-              {/* Label */}
-              <span
-                className={`font-semibold text-sm flex-1 transition-colors ${
-                  selecionado ? 'text-[#111827]' : 'text-[#374151]'
-                }`}
-              >
-                {label}
-              </span>
-
-              {/* Âncoras contextuais para 1 e 5 */}
-              {valor === 1 && (
-                <span className="text-xs text-[#94A3B8] text-right leading-tight max-w-[160px] hidden md:block">
-                  {contextoAtual!.ancora_baixo}
-                </span>
-              )}
-              {valor === 5 && (
-                <span className="text-xs text-[#94A3B8] text-right leading-tight max-w-[160px] hidden md:block">
-                  {contextoAtual!.ancora_alto}
-                </span>
-              )}
-
-              {/* Checkmark se selecionado */}
-              {selecionado && (
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-[#1565C0]" />
-              )}
             </button>
           )
         })}
       </div>
 
-      {/* Navegação */}
-      <div className="flex items-center justify-between">
+      <div className="grid gap-3 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4 md:grid-cols-2">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#64748B]">Referência baixa (1)</p>
+          <p className="mt-1 text-xs leading-relaxed text-[#475569]">{contextoAtual?.ancora_baixo}</p>
+        </div>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#64748B]">Referência alta (5)</p>
+          <p className="mt-1 text-xs leading-relaxed text-[#475569]">{contextoAtual?.ancora_alto}</p>
+        </div>
+      </div>
+
+      {submitError ? (
+        <div className="inline-flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <AlertTriangle className="mt-0.5 h-4 w-4" />
+          {submitError}
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {step > 0 ? (
           <button
+            type="button"
             onClick={voltar}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] hover:text-[#111827] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
           >
             <ArrowLeft className="h-4 w-4" />
             Anterior
@@ -339,17 +354,20 @@ export default function AvaliacaoInicialForm({ enrollmentId, courseId }: Props) 
           <div />
         )}
 
-        <button
-          onClick={avancar}
-          disabled={respostaSelecionada === undefined}
-          className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#111827] text-white font-bold rounded-xl hover:bg-[#1565C0] transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm"
-        >
-          {step < totalSteps - 1 ? (
-            <>Próximo <ArrowRight className="h-4 w-4" /></>
-          ) : (
-            <>Ver Resumo <ArrowRight className="h-4 w-4" /></>
-          )}
-        </button>
+        <div className="flex items-center gap-3">
+          <p className="text-xs font-semibold text-[#64748B]">
+            {respostasPendentes > 0 ? `${respostasPendentes} contexto(s) pendente(s)` : 'Tudo pronto para finalizar'}
+          </p>
+          <button
+            type="button"
+            onClick={avancar}
+            disabled={respostaSelecionada === undefined}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {step < totalSteps - 1 ? 'Próximo' : 'Ver resumo'}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   )

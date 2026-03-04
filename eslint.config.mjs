@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // External tooling repo cloned inside workspace; not part of app source.
+    "aios-core/**",
   ]),
 ]);
 

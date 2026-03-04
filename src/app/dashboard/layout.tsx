@@ -1,84 +1,72 @@
-import { BookOpen, LogOut, Settings, User } from "lucide-react"
-import Link from "next/link"
-import { logout } from "@/app/auth/actions"
+import { BookMarked, LogOut } from 'lucide-react'
+import Link from 'next/link'
+
+import SidebarNav from '@/components/dashboard/SidebarNav'
+import { logout } from '@/app/auth/actions'
 
 export default function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    return (
-        <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr] bg-[#F8FAFC] font-sans selection:bg-[#1565C0]/20">
-            {/* Sidebar Desktop - Midnight Blue */}
-            <div className="hidden md:flex flex-col border-r border-[#1E293B] bg-[#0B0F19]">
-                <div className="flex flex-col h-full max-h-screen">
-                    <div className="flex h-[72px] items-center px-6 border-b border-[#1E293B]">
-                        <Link href="/dashboard" className="flex items-center gap-1.5 group select-none">
-                            <span className="font-heading font-extrabold text-2xl tracking-tight text-white transition-colors group-hover:text-slate-200">
-                                Lidera
-                            </span>
-                            <span className="font-extrabold text-3xl leading-none text-[#1E88E5]">.</span>
-                        </Link>
-                    </div>
-
-                    <div className="flex-1 py-8 overflow-y-auto">
-                        <nav className="grid items-start px-4 text-sm font-semibold gap-2">
-                            <Link
-                                href="/dashboard/cursos"
-                                className="flex items-center gap-3 rounded-xl bg-[#1E88E5]/10 text-[#1E88E5] px-4 py-3 transition-all border border-[#1E88E5]/20"
-                            >
-                                <BookOpen className="h-[18px] w-[18px]" />
-                                Meus Cursos
-                            </Link>
-                            <Link
-                                href="/dashboard/perfil"
-                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-[#94A3B8] transition-all hover:text-white hover:bg-white/5"
-                            >
-                                <User className="h-[18px] w-[18px]" />
-                                Meu Perfil
-                            </Link>
-                            <Link
-                                href="/dashboard/configuracoes"
-                                className="flex items-center gap-3 rounded-xl px-4 py-3 text-[#94A3B8] transition-all hover:text-white hover:bg-white/5"
-                            >
-                                <Settings className="h-[18px] w-[18px]" />
-                                Configurações
-                            </Link>
-                        </nav>
-                    </div>
-
-                    <div className="mt-auto p-4 border-t border-[#1E293B]">
-                        <form action={logout}>
-                            <button type="submit" className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#94A3B8] transition-all hover:text-red-400 hover:bg-red-500/10">
-                                <LogOut className="h-[18px] w-[18px]" />
-                                Sair da Conta
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            {/* Content Area */}
-            <div className="flex flex-col flex-1 overflow-hidden">
-                {/* Header Mobile */}
-                <header className="flex h-[72px] items-center justify-between border-b border-[#E5E7EB] bg-white px-4 lg:px-6 md:hidden shadow-sm">
-                    <Link href="/dashboard" className="flex items-center gap-1.5">
-                        <span className="font-heading font-extrabold text-2xl tracking-tight text-[#111827]">
-                            Lidera
-                        </span>
-                        <span className="font-extrabold text-3xl leading-none text-[#1E88E5]">.</span>
-                    </Link>
-                    <form action={logout}>
-                        <button type="submit" className="p-2.5 text-[#64748B] hover:text-red-500 transition-colors hover:bg-red-50 rounded-xl">
-                            <LogOut className="h-5 w-5" />
-                        </button>
-                    </form>
-                </header>
-
-                <main className="flex-1 overflow-y-auto w-full">
-                    {children}
-                </main>
-            </div>
+  return (
+    <div className="grid min-h-screen w-full bg-[#EAF1FA] md:grid-cols-[296px_1fr] lg:grid-cols-[316px_1fr]">
+      <aside className="hidden flex-col border-r border-[#1A263D] bg-[#060D1A] md:flex">
+        <div className="flex h-[84px] items-center border-b border-[#1A263D] px-6">
+          <Link href="/dashboard" className="inline-flex items-center gap-2">
+            <span className="font-heading text-3xl font-extrabold tracking-tight text-white">Lidera</span>
+            <span className="h-2.5 w-2.5 rounded-full bg-[#1E88E5]" />
+          </Link>
         </div>
-    )
+
+        <div className="border-b border-[#1A263D] px-6 py-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6E86A4]">Ambiente do aluno</p>
+          <p className="mt-2 text-sm leading-relaxed text-[#AFC1D8]">Stream de treinamentos com progresso por trilha e certificação.</p>
+          <Link
+            href="/cursos"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-[#2E4467] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#C7D8EB] transition-colors hover:border-[#4D6F9A] hover:text-white"
+          >
+            <BookMarked className="h-4 w-4" />
+            Explorar catálogo
+          </Link>
+        </div>
+
+        <div className="py-6">
+          <div className="mt-1">
+            <SidebarNav />
+          </div>
+        </div>
+
+        <div className="mt-auto border-t border-[#1A263D] p-4">
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#9FB2CB] transition-all hover:bg-red-500/10 hover:text-red-300"
+            >
+              <LogOut className="h-4.5 w-4.5" />
+              Sair da conta
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <div className="flex min-h-screen flex-col">
+        <header className="sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-[#D8E2EF] bg-white/95 px-4 shadow-sm backdrop-blur md:hidden">
+          <Link href="/dashboard" className="inline-flex items-center gap-2">
+            <span className="font-heading text-2xl font-extrabold tracking-tight text-[#0F172A]">Lidera</span>
+            <span className="h-2 w-2 rounded-full bg-[#1E88E5]" />
+          </Link>
+          <form action={logout}>
+            <button type="submit" className="rounded-lg p-2 text-[#475569] transition-colors hover:bg-red-50 hover:text-red-500">
+              <LogOut className="h-5 w-5" />
+            </button>
+          </form>
+        </header>
+
+        <main className="flex-1 overflow-y-auto">
+          <div className="min-h-full bg-[radial-gradient(circle_at_8%_0%,rgba(30,136,229,0.08),transparent_34%)]">{children}</div>
+        </main>
+      </div>
+    </div>
+  )
 }

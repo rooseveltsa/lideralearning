@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const sora = Sora({
   variable: "--font-heading",
   subsets: ["latin"],
 });
@@ -39,7 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth">
-      <body className={`${inter.variable} ${jakarta.variable} font-sans antialiased bg-[#FFFFFF] text-[#111827] w-full overflow-x-hidden`}>
+      <body className={`${manrope.variable} ${sora.variable} font-sans antialiased bg-[#F7FAFD] text-[#111827] w-full overflow-x-hidden`}>
         {children}
       </body>
     </html>

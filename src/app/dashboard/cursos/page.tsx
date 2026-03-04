@@ -1,101 +1,161 @@
-import { getUserCourses } from "@/lib/actions/lms"
-import { BookOpen, Target, ArrowRight, CheckCircle2 } from "lucide-react"
-import Link from "next/link"
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { ArrowRight, CheckCircle2, LibraryBig, PlayCircle, Sparkles } from 'lucide-react'
+
+import CourseShelfCard from '@/components/dashboard/CourseShelfCard'
+import { getUserLearningSnapshot } from '@/lib/actions/lms'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function CursosPage({ searchParams }: { searchParams: Promise<{ success?: string }> }) {
-    const coursesData = await getUserCourses()
-    const { success } = await searchParams
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    return (
-        <div className="flex flex-col gap-8 max-w-7xl mx-auto p-4 lg:p-8">
-            {success === 'true' && (
-                <div className="bg-[#4CAF35]/10 border border-[#4CAF35]/30 text-[#111827] px-6 py-4 rounded-2xl flex items-center gap-4 mb-4">
-                    <div className="w-10 h-10 bg-[#4CAF35] rounded-full flex items-center justify-center flex-shrink-0 text-white shadow-lg shadow-[#4CAF35]/20">
-                        <CheckCircle2 className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h4 className="font-heading font-extrabold text-[#111827] text-lg">Pagamento Aprovado!</h4>
-                        <p className="text-[#64748B] font-medium text-sm">Seu acesso à formação foi liberado imediatamente. Bons estudos!</p>
-                    </div>
-                </div>
-            )}
+  if (!user) redirect('/auth/login')
 
+  const snapshot = await getUserLearningSnapshot()
+  const { success } = await searchParams
+
+  const orderedCourses = snapshot.courses
+    .slice()
+    .sort((a, b) => {
+      if (a.lastAccessedAt && b.lastAccessedAt) return new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime()
+      if (a.lastAccessedAt) return -1
+      if (b.lastAccessedAt) return 1
+      return new Date(b.enrolledAt).getTime() - new Date(a.enrolledAt).getTime()
+    })
+
+  const continueWatching = orderedCourses.filter((course) => course.trackedLessons > 0 && course.progressPercent < 100)
+  const readyToStart = orderedCourses.filter((course) => course.trackedLessons === 0)
+  const completed = orderedCourses.filter((course) => course.progressPercent === 100)
+
+  return (
+    <div className="mx-auto w-full max-w-[1260px] space-y-8 p-4 lg:p-8">
+      {success === 'true' ? (
+        <div className="rounded-2xl border border-[#4CAF35]/30 bg-[#4CAF35]/10 px-5 py-4 text-[#0F172A]">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#4CAF35] text-white">
+              <CheckCircle2 className="h-4.5 w-4.5" />
+            </span>
             <div>
-                <h1 className="text-3xl lg:text-4xl font-heading font-extrabold text-[#111827] tracking-tight mb-3">
-                    Meus Programas
-                </h1>
-                <p className="text-[#64748B] text-lg font-medium">
-                    Continue seu desenvolvimento de onde parou.
-                </p>
+              <p className="text-sm font-bold">Pagamento confirmado e acesso liberado.</p>
+              <p className="text-xs text-[#334155]">Seu programa já está disponível na biblioteca.</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <section className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(30,136,229,0.2),transparent_38%)]" />
+        <div className="relative flex flex-wrap items-end justify-between gap-5">
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Biblioteca do aluno</p>
+            <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">Stream de treinamentos com progressão por trilha.</h1>
+            <p className="mt-4 text-sm leading-relaxed text-[#A9BDD8]">
+              {snapshot.totals.activeCourses} formações ativas, {snapshot.totals.completedLessons} aulas concluídas e {snapshot.totals.overallPercent}% de progresso global.
+            </p>
+          </div>
+          <Link
+            href="/cursos"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#2E4467] px-5 py-3 text-sm font-bold text-[#D3E1F2] transition-colors hover:border-[#496A97] hover:text-white"
+          >
+            Adquirir nova formação
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+
+      {orderedCourses.length === 0 ? (
+        <section className="rounded-3xl border border-[#D8E2EF] bg-white px-6 py-16 text-center shadow-sm">
+          <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D8E2EF] bg-[#F3F8FE] text-[#0B4A8F]">
+            <LibraryBig className="h-8 w-8" />
+          </div>
+          <h2 className="mt-6 text-2xl font-extrabold text-[#0F172A]">Sua biblioteca está vazia</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#64748B]">
+            Escolha um programa no catálogo para iniciar sua jornada e liberar progresso, certificação e recomendações.
+          </p>
+          <Link
+            href="/cursos"
+            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-[#1E88E5] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+          >
+            Ir para o catálogo
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+      ) : (
+        <>
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Continue assistindo</p>
+                <h2 className="mt-1 text-2xl font-extrabold text-[#0F172A]">Em andamento</h2>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]">
+                <PlayCircle className="h-3.5 w-3.5" />
+                {continueWatching.length} trilhas
+              </span>
             </div>
 
-            {coursesData.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 px-6 mt-4 border border-[#E5E7EB] bg-white rounded-3xl shadow-sm hover:shadow-md transition-shadow text-center">
-                    <div className="w-20 h-20 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl flex items-center justify-center mb-6">
-                        <BookOpen className="h-10 w-10 text-[#1E88E5]" />
-                    </div>
-                    <h3 className="text-2xl font-heading font-extrabold text-[#111827] mb-3">Nenhum programa ativo</h3>
-                    <p className="text-[#64748B] max-w-md mb-8 font-medium">
-                        Você ainda não está matriculado em nenhuma formação. Descubra como estruturar sua liderança e acelerar resultados.
-                    </p>
-                    <Link
-                        href="/cursos"
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-[#1E88E5] hover:bg-[#1565C0] text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-[#1E88E5]/20"
-                    >
-                        Ver Catálogo de Formações
-                        <ArrowRight className="h-5 w-5" />
-                    </Link>
-                </div>
+            {continueWatching.length === 0 ? (
+              <div className="rounded-2xl border border-[#D8E2EF] bg-white px-5 py-6 text-sm text-[#64748B]">
+                Nenhuma trilha iniciada ainda. Selecione um programa abaixo para começar.
+              </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {coursesData.map(({ course }) => (
-                        <Link
-                            key={course.id}
-                            href={`/dashboard/cursos/${course.id}`}
-                            className="group flex flex-col bg-white rounded-3xl overflow-hidden transition-all duration-300 border border-[#E5E7EB] hover:border-[#1E88E5]/30 hover:shadow-2xl hover:shadow-[#111827]/[0.05] hover:-translate-y-1 block"
-                        >
-                            {/* Thumbnail */}
-                            <div className="relative h-56 bg-gradient-to-br from-[#0B0F19] to-[#1E293B] overflow-hidden">
-                                {course.thumbnail_url ? (
-                                    <img
-                                        src={course.thumbnail_url}
-                                        alt={course.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-40">
-                                        <Target className="h-16 w-16 text-white" />
-                                    </div>
-                                )}
-                                {/* Overlay Grade */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19]/80 via-[#0B0F19]/20 to-transparent" />
-                                <div className="absolute bottom-4 left-4 inline-flex items-center px-3 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
-                                    Acesso Liberado
-                                </div>
-                            </div>
-
-                            {/* Content */}
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-heading font-extrabold text-[#111827] mb-3 leading-tight group-hover:text-[#1E88E5] transition-colors line-clamp-2">
-                                    {course.title}
-                                </h3>
-
-                                <p className="text-base text-[#64748B] leading-relaxed mb-8 line-clamp-2 flex-grow font-medium">
-                                    {course.description || "Nenhuma descrição disponível."}
-                                </p>
-
-                                <div className="mt-auto pt-6 border-t border-[#F8FAFC]">
-                                    <div className="w-full py-3.5 bg-[#F8FAFC] border border-[#E5E7EB] text-[#111827] font-bold text-sm rounded-xl text-center group-hover:bg-[#1E88E5] group-hover:border-[#1E88E5] group-hover:text-white transition-all duration-300 flex items-center justify-center gap-2">
-                                        Continuar Aprendizado
-                                        <ArrowRight className="h-4 w-4" />
-                                    </div>
-                                </div>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {continueWatching.map((course) => (
+                  <CourseShelfCard key={course.enrollmentId} course={course} tone="light" />
+                ))}
+              </div>
             )}
-        </div>
-    )
-}
+          </section>
 
+          <section className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Prontas para iniciar</p>
+                <h2 className="mt-1 text-2xl font-extrabold text-[#0F172A]">Sua fila de início</h2>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]">
+                <Sparkles className="h-3.5 w-3.5" />
+                {readyToStart.length} trilhas
+              </span>
+            </div>
+
+            {readyToStart.length === 0 ? (
+              <div className="rounded-2xl border border-[#D8E2EF] bg-white px-5 py-6 text-sm text-[#64748B]">
+                Todas as trilhas já foram iniciadas.
+              </div>
+            ) : (
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {readyToStart.map((course) => (
+                  <CourseShelfCard key={course.enrollmentId} course={course} tone="light" />
+                ))}
+              </div>
+            )}
+          </section>
+
+          {completed.length > 0 ? (
+            <section className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Concluídas</p>
+                  <h2 className="mt-1 text-2xl font-extrabold text-[#0F172A]">Trilhas finalizadas</h2>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#D8E2EF] bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {completed.length} trilhas
+                </span>
+              </div>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {completed.map((course) => (
+                  <CourseShelfCard key={course.enrollmentId} course={course} tone="light" />
+                ))}
+              </div>
+            </section>
+          ) : null}
+        </>
+      )}
+    </div>
+  )
+}

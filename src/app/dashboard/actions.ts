@@ -3,6 +3,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) return error.message
+    return 'Erro inesperado.'
+}
+
 export async function updateProfile(formData: FormData) {
     const fullName = formData.get('fullName') as string
 
@@ -27,9 +32,9 @@ export async function updateProfile(formData: FormData) {
 
         revalidatePath('/dashboard/perfil')
         return { success: 'Perfil atualizado com sucesso!' }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Update profile error:', error)
-        return { error: error.message || 'Erro ao atualizar o perfil. Tente novamente mais tarde.' }
+        return { error: getErrorMessage(error) || 'Erro ao atualizar o perfil. Tente novamente mais tarde.' }
     }
 }
 
@@ -53,8 +58,8 @@ export async function updatePassword(formData: FormData) {
         if (error) throw error
 
         return { success: 'Senha atualizada com sucesso! Use a nova senha no próximo login.' }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Update password error:', error)
-        return { error: error.message || 'Erro ao atualizar a senha. Tente novamente.' }
+        return { error: getErrorMessage(error) || 'Erro ao atualizar a senha. Tente novamente.' }
     }
 }

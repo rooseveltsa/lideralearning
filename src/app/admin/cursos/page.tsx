@@ -1,103 +1,134 @@
-import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Eye, EyeOff, Pencil } from 'lucide-react'
+import Image from 'next/image'
+import { Eye, EyeOff, Pencil, Plus } from 'lucide-react'
+
+import { createClient } from '@/lib/supabase/server'
+
+type CourseRow = {
+  id: string
+  title: string
+  price: number
+  is_published: boolean
+  created_at: string
+  thumbnail_url: string | null
+}
+
+const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
 export default async function AdminCursosPage() {
-    const supabase = await createClient()
+  const supabase = await createClient()
 
-    const { data: courses } = await supabase
-        .from('courses')
-        .select('id, title, price, is_published, created_at, thumbnail_url')
-        .order('created_at', { ascending: false })
+  const { data } = await supabase
+    .from('courses')
+    .select('id, title, price, is_published, created_at, thumbnail_url')
+    .order('created_at', { ascending: false })
 
-    return (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-[#111827] tracking-tight">Formações</h1>
-                    <p className="text-[#64748B] mt-2 font-medium text-lg">{courses?.length ?? 0} {courses?.length === 1 ? 'formação cadastrada' : 'formações cadastradas'}</p>
-                </div>
-                <Link href="/admin/cursos/novo">
-                    <button className="flex items-center gap-2 h-12 px-6 bg-[#1E88E5] hover:bg-[#1565C0] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#1E88E5]/20 transition-all">
-                        <Plus className="h-4 w-4" />
-                        Nova Formação
-                    </button>
-                </Link>
-            </div>
+  const courses = (Array.isArray(data) ? data : []) as CourseRow[]
+  const publishedCount = courses.filter((course) => course.is_published).length
 
-            {/* Lista de Cursos */}
-            {!courses || courses.length === 0 ? (
-                <div className="text-center py-24 bg-white border border-[#E5E7EB] rounded-2xl shadow-sm">
-                    <div className="w-20 h-20 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span className="text-4xl">📚</span>
-                    </div>
-                    <h3 className="text-xl font-heading font-extrabold text-[#111827] mb-2">Nenhuma formação criada ainda</h3>
-                    <p className="text-[#64748B] mb-8 font-medium">Cadastre a primeira formação e comece a estruturar sua academia.</p>
-                    <Link href="/admin/cursos/novo">
-                        <button className="h-12 px-6 inline-flex items-center justify-center bg-[#1E88E5] hover:bg-[#1565C0] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#1E88E5]/20 transition-all">
-                            Criar Primeira Formação
-                        </button>
-                    </Link>
-                </div>
-            ) : (
-                <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-[#E5E7EB] bg-[#F8FAFC]">
-                                    <th className="text-left px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Formação</th>
-                                    <th className="text-left px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Preço</th>
-                                    <th className="text-left px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Status</th>
-                                    <th className="text-right px-6 py-4 text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[#E5E7EB]">
-                                {courses.map((course) => (
-                                    <tr key={course.id} className="hover:bg-[#F8FAFC] transition-colors">
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-4">
-                                                {course.thumbnail_url ? (
-                                                    <img src={course.thumbnail_url} alt="" className="w-16 h-12 object-cover rounded-lg border border-[#E5E7EB] shadow-sm flex-shrink-0" />
-                                                ) : (
-                                                    <div className="w-16 h-12 bg-[#EEF2F6] border border-[#E5E7EB] rounded-lg flex-shrink-0 flex items-center justify-center text-[#94A3B8] text-xs font-bold">Sem img</div>
-                                                )}
-                                                <span className="text-base font-bold text-[#111827] line-clamp-1">{course.title}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm font-bold text-[#64748B]">
-                                            {course.price > 0
-                                                ? `R$ ${Number(course.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-                                                : <span className="text-[#4CAF35] bg-[#4CAF35]/10 px-2.5 py-1 rounded-md">Gratuito</span>}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            {course.is_published ? (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4CAF35]/10 text-[#4CAF35] text-xs font-bold">
-                                                    <Eye className="h-3.5 w-3.5" />
-                                                    Publicado
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F8FAFC] border border-[#E5E7EB] text-[#64748B] text-xs font-bold">
-                                                    <EyeOff className="h-3.5 w-3.5" />
-                                                    Rascunho
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-5 text-right">
-                                            <Link href={`/admin/cursos/${course.id}`}>
-                                                <button className="inline-flex items-center gap-2 ml-auto px-4 py-2 bg-white hover:bg-[#F8FAFC] hover:text-[#111827] text-[#64748B] border border-[#E5E7EB] shadow-sm rounded-xl text-xs font-bold transition-all">
-                                                    <Pencil className="h-3.5 w-3.5" />
-                                                    Editar
-                                                </button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
+  return (
+    <div className="space-y-8">
+      <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Gestão de catálogo</p>
+            <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">Formações da plataforma</h1>
+            <p className="mt-4 text-sm text-[#A9BDD8]">
+              Total: <strong className="text-white">{courses.length}</strong> • Publicadas: <strong className="text-white">{publishedCount}</strong>
+            </p>
+          </div>
+
+          <Link
+            href="/admin/cursos/novo"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+          >
+            <Plus className="h-4 w-4" />
+            Nova formação
+          </Link>
         </div>
-    )
+      </section>
+
+      {courses.length === 0 ? (
+        <section className="rounded-2xl border border-[#D8E2EF] bg-white px-6 py-16 text-center shadow-sm">
+          <h2 className="text-2xl font-extrabold text-[#0F172A]">Nenhuma formação cadastrada ainda</h2>
+          <p className="mt-3 text-sm text-[#64748B]">Crie a primeira formação para iniciar o catálogo da academia.</p>
+          <Link
+            href="/admin/cursos/novo"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#1E88E5] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+          >
+            Criar primeira formação
+            <Plus className="h-4 w-4" />
+          </Link>
+        </section>
+      ) : (
+        <section className="overflow-x-auto rounded-2xl border border-[#D8E2EF] bg-white shadow-sm">
+          <table className="min-w-full">
+            <thead className="border-b border-[#E5ECF6] bg-[#F7FAFE]">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Formação</th>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Preço</th>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Criado em</th>
+                <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Ações</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E5ECF6]">
+              {courses.map((course) => (
+                <tr key={course.id} className="transition-colors hover:bg-[#F9FBFE]">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      {course.thumbnail_url ? (
+                        <Image
+                          src={course.thumbnail_url}
+                          alt={`Thumbnail de ${course.title}`}
+                          width={72}
+                          height={48}
+                          unoptimized
+                          className="h-12 w-[72px] rounded-lg border border-[#DCE6F3] object-cover"
+                        />
+                      ) : (
+                        <div className="inline-flex h-12 w-[72px] items-center justify-center rounded-lg border border-[#DCE6F3] bg-[#F3F8FE] text-[11px] font-bold uppercase tracking-[0.12em] text-[#64748B]">
+                          Sem capa
+                        </div>
+                      )}
+                      <span className="line-clamp-1 text-sm font-bold text-[#0F172A]">{course.title}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm font-semibold text-[#334155]">
+                    {course.price > 0 ? currencyFormatter.format(course.price) : 'Gratuito'}
+                  </td>
+                  <td className="px-6 py-4">
+                    {course.is_published ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                        <Eye className="h-3.5 w-3.5" />
+                        Publicado
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+                        <EyeOff className="h-3.5 w-3.5" />
+                        Rascunho
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-semibold text-[#64748B]">
+                    {new Date(course.created_at).toLocaleDateString('pt-BR')}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <Link
+                      href={`/admin/cursos/${course.id}`}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#334155] transition-colors hover:bg-[#F4F8FD]"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Editar
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+    </div>
+  )
 }

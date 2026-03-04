@@ -1,73 +1,106 @@
-import { createClient } from '@/lib/supabase/server'
-import { BookOpen, Users, TrendingUp, Eye } from 'lucide-react'
 import Link from 'next/link'
+import { ArrowRight, BookOpen, BriefcaseBusiness, Eye, TrendingUp, Users } from 'lucide-react'
+
+import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminPage() {
-    const supabase = await createClient()
+  const supabase = await createClient()
 
-    const [
-        { count: totalCourses },
-        { count: publishedCourses },
-        { count: totalStudents },
-        { count: totalEnrollments },
-    ] = await Promise.all([
-        supabase.from('courses').select('*', { count: 'exact', head: true }),
-        supabase.from('courses').select('*', { count: 'exact', head: true }).eq('is_published', true),
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
-        supabase.from('enrollments').select('*', { count: 'exact', head: true }),
-    ])
+  const [
+    { count: totalCourses },
+    { count: publishedCourses },
+    { count: totalStudents },
+    { count: totalEnrollments },
+    { count: totalLeads },
+  ] = await Promise.all([
+    supabase.from('courses').select('*', { count: 'exact', head: true }),
+    supabase.from('courses').select('*', { count: 'exact', head: true }).eq('is_published', true),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
+    supabase.from('enrollments').select('*', { count: 'exact', head: true }),
+    supabase.from('b2b_leads').select('*', { count: 'exact', head: true }),
+  ])
 
-    const stats = [
-        { label: 'Total de Formações', value: totalCourses ?? 0, icon: BookOpen, color: 'text-[#1E88E5]', bg: 'bg-[#1E88E5]/10' },
-        { label: 'Cursos Ativos', value: publishedCourses ?? 0, icon: Eye, color: 'text-[#4CAF35]', bg: 'bg-[#4CAF35]/10' },
-        { label: 'Alunos Registrados', value: totalStudents ?? 0, icon: Users, color: 'text-[#8B5CF6]', bg: 'bg-[#8B5CF6]/10' },
-        { label: 'Matrículas', value: totalEnrollments ?? 0, icon: TrendingUp, color: 'text-[#F57C00]', bg: 'bg-[#F57C00]/10' },
-    ]
+  const stats = [
+    { label: 'Formações totais', value: totalCourses ?? 0, icon: BookOpen, color: '#0B4A8F' },
+    { label: 'Formações publicadas', value: publishedCourses ?? 0, icon: Eye, color: '#2E7D32' },
+    { label: 'Alunos cadastrados', value: totalStudents ?? 0, icon: Users, color: '#7C3AED' },
+    { label: 'Matrículas ativas', value: totalEnrollments ?? 0, icon: TrendingUp, color: '#D97706' },
+  ]
 
-    return (
-        <div className="space-y-10">
-            {/* Header */}
-            <div>
-                <h1 className="text-3xl md:text-4xl font-heading font-extrabold text-[#111827] tracking-tight">Visão Geral</h1>
-                <p className="text-[#64748B] mt-2 font-medium text-lg">Acompanhe as métricas de performance da Lidera Treinamentos.</p>
-            </div>
+  return (
+    <div className="space-y-8">
+      <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)] md:p-10">
+        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
+        <div className="pointer-events-none absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-[#4CAF35]/10 blur-[80px]" />
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white border border-[#E5E7EB] shadow-sm hover:shadow-lg transition-shadow rounded-2xl p-6 flex flex-col justify-between">
-                        <div className={`w-12 h-12 ${stat.bg} rounded-xl flex items-center justify-center mb-6`}>
-                            <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                        </div>
-                        <div>
-                            <p className="text-4xl font-heading font-extrabold text-[#111827] mb-1">{stat.value}</p>
-                            <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">{stat.label}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Centro de comando</p>
+            <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">Painel administrativo da Lidera.</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#A9BDD8]">
+              Gestão operacional de cursos, alunos e pipeline comercial em uma única visão.
+            </p>
+          </div>
 
-            {/* Ações Rápidas */}
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-8 shadow-sm">
-                <h2 className="text-xl font-heading font-extrabold text-[#111827] mb-6">Ações Rápidas</h2>
-                <div className="flex flex-wrap items-center gap-4">
-                    <Link href="/admin/cursos/novo">
-                        <button className="h-12 px-6 bg-[#1E88E5] hover:bg-[#1565C0] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#1E88E5]/20 transition-all">
-                            + Nova Formação
-                        </button>
-                    </Link>
-                    <Link href="/admin/cursos">
-                        <button className="h-12 px-6 bg-white text-[#64748B] border border-[#E5E7EB] rounded-xl text-sm font-bold hover:bg-[#F8FAFC] hover:text-[#111827] transition-all shadow-sm">
-                            Ver Biblioteca
-                        </button>
-                    </Link>
-                    <Link href="/admin/alunos">
-                        <button className="h-12 px-6 bg-white text-[#64748B] border border-[#E5E7EB] rounded-xl text-sm font-bold hover:bg-[#F8FAFC] hover:text-[#111827] transition-all shadow-sm">
-                            Gerenciar Alunos
-                        </button>
-                    </Link>
-                </div>
-            </div>
+          <div className="grid gap-2 text-xs text-[#A9BDD8]">
+            <p className="rounded-xl border border-[#274364] bg-[#0A1528] px-3 py-2">
+              Leads B2B registrados: <strong className="text-white">{totalLeads ?? 0}</strong>
+            </p>
+            <p className="rounded-xl border border-[#274364] bg-[#0A1528] px-3 py-2">
+              Taxa de publicação: <strong className="text-white">{(totalCourses ?? 0) > 0 ? Math.round(((publishedCourses ?? 0) / (totalCourses ?? 1)) * 100) : 0}%</strong>
+            </p>
+          </div>
         </div>
-    )
+      </section>
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
+          <article key={stat.label} className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
+            <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3F8FE]" style={{ color: stat.color }}>
+              <stat.icon className="h-5 w-5" />
+            </div>
+            <p className="mt-4 text-3xl font-extrabold text-[#0F172A]">{stat.value}</p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">{stat.label}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {[
+          {
+            title: 'Gerenciar formações',
+            desc: 'Criar, editar e publicar programas da academia.',
+            href: '/admin/cursos',
+            icon: BookOpen,
+          },
+          {
+            title: 'Gestão de alunos',
+            desc: 'Acompanhar base de alunos e evolução da operação educacional.',
+            href: '/admin/alunos',
+            icon: Users,
+          },
+          {
+            title: 'Pipeline B2B',
+            desc: 'Qualificar leads corporativos e gerar propostas comerciais.',
+            href: '/admin/leads',
+            icon: BriefcaseBusiness,
+          },
+        ].map(({ title, desc, href, icon: Icon }) => (
+          <Link
+            key={title}
+            href={href}
+            className="group rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm transition-all hover:border-[#C5D9F0] hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)]"
+          >
+            <Icon className="h-5 w-5 text-[#0B4A8F]" />
+            <h2 className="mt-3 text-xl font-extrabold text-[#0F172A]">{title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-[#64748B]">{desc}</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#0B4A8F]">
+              Acessar
+              <ArrowRight className="h-3.5 w-3.5" />
+            </span>
+          </Link>
+        ))}
+      </section>
+    </div>
+  )
 }

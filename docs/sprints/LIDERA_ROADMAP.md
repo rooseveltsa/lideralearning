@@ -1,85 +1,102 @@
-# Lidera - Roadmap & Sprint Execution Plan
+# Lidera Treinamentos - Roadmap de Execucao v2
 
-Este documento detalha como a plataforma educacional Lidera será construída através de um processo ágil (Scrum), fatiando o grande escopo do PRD em Sprints entregáveis, focando primeiro no faturamento (Fase 1) e depois na escala B2B (Fase 2) e comunidade (Fase 3).
+## 1. Principios de Execucao
+- Sprints de 2 semanas
+- Entrega incremental sempre deployavel
+- Prioridade por impacto em receita + risco tecnico
+- QA por estados (ideal/loading/empty/error/partial-max)
 
-## Metodologia de Execução
-- Sprints de 2 Semanas (14 dias).
-- Foco em **Valor Contínuo** (Toda Sprint termina com algo testável/usável).
-- O desenvolvimento do front-end e back-end acontecerá em paralelo.
+## 2. Fase 1 - Fundacao e Autoridade (Sprints 1-4)
+Objetivo: validar aquisicao, conversao e consumo digital inicial.
 
----
+### Sprint 1 - Reposicionamento e Base de Produto
+- Atualizar narrativa da marca para ecossistema hibrido
+- Estruturar IA de navegacao publica (Academy, Imersoes, B2B)
+- Definir contratos de dados para programas e trilhas
+- Revisar copy e CTAs B2C/B2B
 
-## Fase 1: Core Educacional & Comercial (Sprints 1 a 4)
-*Objetivo:* Ter a plataforma pronta para vender cursos e hospedar alunos de forma individual (B2C), garantindo o *Go-to-Market* rápido.
+### Sprint 2 - Academy Stream (MVP)
+- Experiencia de catalogo em rails horizontais (estilo streaming)
+- Hero de destaque e busca por programas
+- Inicio de tracking de "continuar assistindo"
+- Empty/loading/error estados dedicados
 
-### Sprint 1: Fundação & Identidade
-- Setup inicial da infraestrutura (Supabase, Next.js, Vercel/AWS).
-- Configuração de CI/CD (GitHub Actions).
-- Implementação da camada de Autenticação (Login, Cadastro, Redefinir Senha).
-- Criação dos componentes base do Design System (Botões, Inputs, Tipografia Lidera).
-- Modelagem do Banco de Dados: Tabelas Core (Usuários, Cursos, Módulos).
+### Sprint 3 - Ecommerce Unificado
+- Checkout para curso avulso e assinatura
+- Webhook resiliente para liberacao de acesso
+- Tratamento de recusa e retry de pagamento
+- Confirmacao de compra e onboarding de aluno
 
-### Sprint 2: Catálogo & Área do Aluno
-- Desenvolvimento do Player de Vídeo (integração HLS/Mux).
-- Criação da tela "Meus Cursos" (Hub do Aluno).
-- Estrutura de navegação de Módulos e Aulas.
-- Rastreamento de progresso básico (Marcar aula como concluída).
-- CRUD Administrativo para criação de cursos e upload de conteúdo.
+### Sprint 4 - Area do Aluno Basica
+- Dashboard com progresso e proximas aulas
+- Emissao/validacao de certificados
+- Configuracoes de perfil e seguranca
+- Endurecimento de permissao e auditoria
 
-### Sprint 3: O Motor de Vendas (Checkout)
-- Integração com Gateway de Pagamento (Stripe/Pagar.me) - Cartão de Crédito e Pix.
-- Criação do fluxo de Checkout de 1 página (High Conversion).
-- Lógica de Webhooks: Liberar acesso ao curso no sistema ao confirmar pagamento.
-- Painel financeiro básico para os administradores verem vendas em tempo real.
+Marco Fase 1:
+- receita digital ativa,
+- onboarding funcional,
+- experiencia de consumo estavel.
 
-### Sprint 4: Lotes & Refinamento (Lançamento MVP)
-- Funcionalidade de Lotes Dinâmicos (Para eventos presenciais ou lançamentos de cursos - ex: Lote 1 expira terça-feira).
-- Geração automática de Certificados em PDF.
-- Ajustes finos de UI/UX, testes de responsividade e QA Geral.
+## 3. Fase 2 - Expansao e Comunidade (Sprints 5-8)
+Objetivo: ampliar ticket medio e retencao com presencial + comunidade.
 
-**-> MARCO:** Plataforma pronta para faturar com alunos individuais.
+### Sprint 5 - Imersoes e Eventos
+- Cadastro de eventos presenciais
+- Lotes de ingressos e controle de capacidade
+- Jornada de check-in operacional
+- Entrega de material pos-evento
 
----
+### Sprint 6 - Funil B2B Integrado
+- Landing corporativa com formulario rico
+- Pipeline de leads e propostas
+- SLA comercial e historico de contatos
+- Exportacao para CRM externo (quando habilitado)
 
-## Fase 2: Módulo Corporativo & HRTech (Sprints 5 a 7)
-*Objetivo:* Habilitar a venda B2B (SaaS corporativo), permitindo que RHs de empresas comprem licenças em lote e gerenciem seus liderados.
+### Sprint 7 - Comunidade e Engajamento
+- Feed/fórum por tema e programa
+- Regras de moderacao
+- Metricas de participacao
 
-### Sprint 5: Multi-Tenancy & Administração de RH
-- Implementação rigorosa de Row-Level Security (RLS) para isolar dados entre empresas (Tenants).
-- Criação do "Tenant Admin" (Painel do RH).
-- Fluxo de compra de licenças B2B (ex: Comprar 100 acessos e convidar via e-mail).
+### Sprint 8 - Gamificacao da Jornada
+- Niveis, metas semanais e conquistas
+- Widgets de progresso para retorno recorrente
+- Cross-sell contextual (digital -> presencial)
 
-### Sprint 6: Gestão de Performance
-- Desenvolvimento da ferramenta de Matriz 9-Box no painel do RH gestor.
-- Criação do módulo de PDI Digital (Plano de Desenvolvimento Individual).
-- Relatórios gerenciais: Taxa de conclusão de cursos por departamento/empresa.
+Marco Fase 2:
+- operacao hibrida em producao,
+- aumento de retencao,
+- tracao B2B inicial.
 
-### Sprint 7: Camada Básica de IA (Assistente & Recomendações)
-- Integração com a API da OpenAI/Anthropic.
-- Motor de recomendação: Sugerir próximos cursos baseados nos resultados do 9-Box ou PDI.
-- Assistente chatbot de Liderança restrito ao contexto dos materiais da Lidera (RAG).
+## 4. Fase 3 - Escala e Dados (Sprints 9-12)
+Objetivo: escalar B2B e eficiencia operacional.
 
-**-> MARCO:** Produto SaaS B2B completo. Faturamento via licenças recorrentes estabelecido.
+### Sprint 9 - Analytics RH (B2B)
+- Dashboard por empresa, time e colaborador
+- Indicadores de adocao e conclusao
+- Relatorios exportaveis
 
----
+### Sprint 10 - App Mobile
+- Consumo de conteudo e progresso no mobile
+- Sincronizacao de retomada entre dispositivos
+- Base para modo offline
 
-## Fase 3: Engajamento & Comunidade (Sprints 8 a 10)
-*Objetivo:* Aumentar agressivamente a retenção, criar senso de pertencimento e reduzir churn através do efeito de rede.
+### Sprint 11 - Programa de Afiliados
+- Link de indicacao e comissionamento
+- Regras antifraude e conciliacao
 
-### Sprint 8: O Hub de Comunidade
-- Desenvolvimento do Feed Interno estilo rede social corporativa.
-- Criação de perfis públicos de alunos (com privacidade configurável).
-- Fóruns atrelados a aulas específicas para tirar dúvidas em contexto.
+### Sprint 12 - Hardening de Escala
+- Otimizacao de consultas de alto volume
+- Testes de carga e plano de contingencia
+- Revisao de custos de infra e margem por produto
 
-### Sprint 9: Níveis & Gamificação
-- Sistema de pontuação: Pontos por completar aulas, comentar em fóruns, etc.
-- Badges/Conquistas.
-- Ranking corporativo (Opcional por tenant) ou Global da plataforma.
+Marco Fase 3:
+- maturidade operacional,
+- previsibilidade de receita,
+- base pronta para expansao regional.
 
-### Sprint 10: IA Avançada & Escalabilidade Global
-- Análise de Sentimento nos comentários e fóruns (alertas para o administrador sobre alunos desengajados ou frustrados).
-- Correção inteligente de estudos de caso via IA (reduzindo custo operacional de professores).
-- Preparação i18n final (Multimoeda, Múltiplos idiomas nas interfaces).
-- Testes de carga extrema usando ferramentas como k6.
-
-**-> MARCO:** Ecossistema finalizado, pronto para expansão internacional pesada.
+## 5. Criterios de Pronto por Sprint
+- funcionalidades com telemetria minima
+- cobertura de estados principais e de falha
+- validacao de acessibilidade (teclado, contraste, labels)
+- sem regressao em login, compra e consumo de aula

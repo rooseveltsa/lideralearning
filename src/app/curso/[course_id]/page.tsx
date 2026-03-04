@@ -2,6 +2,29 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import CourseShowcaseClient from "./ShowcaseClient"
 
+type PublicLesson = {
+    id: string
+    title: string
+    duration_seconds: number
+    order_index: number
+}
+
+type PublicModule = {
+    id: string
+    title: string
+    order_index: number
+    lessons: PublicLesson[]
+}
+
+type PublicCourse = {
+    id: string
+    title: string
+    description: string | null
+    price: number
+    thumbnail_url: string | null
+    modules: PublicModule[]
+}
+
 export default async function PublicCoursePage({ params }: { params: Promise<{ course_id: string }> }) {
     const { course_id } = await params
     const supabase = await createClient()
@@ -15,7 +38,7 @@ export default async function PublicCoursePage({ params }: { params: Promise<{ c
         id,
         title,
         order_index,
-        lessons (id, title, duration_seconds)
+        lessons (id, title, duration_seconds, order_index)
       )
     `)
         .eq('id', course_id)
@@ -29,15 +52,19 @@ export default async function PublicCoursePage({ params }: { params: Promise<{ c
     // Pre-calculate stats
     let totalLessons = 0
     let totalDuration = 0
-    course.modules.forEach((mod: any) => {
+    const typedCourse = course as PublicCourse
+
+    typedCourse.modules.forEach((mod) => {
         totalLessons += mod.lessons.length
-        mod.lessons.forEach((l: any) => totalDuration += l.duration_seconds)
+        mod.lessons.forEach((lesson) => {
+            totalDuration += lesson.duration_seconds
+        })
     })
 
     // Offload rendering and animations to the Client Component
     return (
         <CourseShowcaseClient
-            course={course}
+            course={typedCourse}
             totalLessons={totalLessons}
             totalDuration={totalDuration}
         />

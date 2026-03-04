@@ -1,161 +1,346 @@
-import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
-import { Award, CheckCircle, QrCode, ArrowLeft } from 'lucide-react'
+import { randomUUID } from 'crypto'
+
 import Link from 'next/link'
+import { notFound, redirect } from 'next/navigation'
+import { ArrowLeft, ArrowRight, Award, CheckCircle2, Lock, QrCode, ShieldCheck } from 'lucide-react'
+
+import { createClient } from '@/lib/supabase/server'
+
 import { PrintButton } from './PrintButton'
 
+type CourseModule = {
+  id: string
+  lessons: { id: string }[]
+}
+
+type CourseData = {
+  id: string
+  title: string
+  description: string | null
+  modules: CourseModule[]
+}
+
+type CertificateRow = {
+  id: string
+  verification_code: string
+  issued_at: string
+  pdf_url: string | null
+}
+
+function buildVerificationCode() {
+  return `LIDERA-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`
+}
+
+function getErrorCode(error: unknown): string | null {
+  if (typeof error === 'object' && error !== null && 'code' in error) {
+    return String((error as { code?: string }).code)
+  }
+
+  return null
+}
+
+function getBaseUrl() {
+  const envUrl = process.env.NEXT_PUBLIC_APP_URL
+  return envUrl?.replace(/\/$/, '') || 'http://localhost:3000'
+}
+
+async function getOrCreateCertificate(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  payload: {
+    userId: string
+    courseId: string
+    enrollmentId: string
+    canIssue: boolean
+  }
+): Promise<{ certificate: CertificateRow | null; setupError: string | null }> {
+  const { userId, courseId, enrollmentId, canIssue } = payload
+
+  const existing = await supabase
+    .from('certificates')
+    .select('id, verification_code, issued_at, pdf_url')
+    .eq('enrollment_id', enrollmentId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (existing.error) {
+    const code = getErrorCode(existing.error)
+    if (code === '42P01') {
+      return {
+        certificate: null,
+        setupError: 'Tabela certificates não encontrada. Execute docs/database/05_certificates.sql.',
+      }
+    }
+
+    return {
+      certificate: null,
+      setupError: existing.error.message,
+    }
+  }
+
+  if (existing.data) {
+    return { certificate: existing.data as CertificateRow, setupError: null }
+  }
+
+  if (!canIssue) {
+    return { certificate: null, setupError: null }
+  }
+
+  const verificationCode = buildVerificationCode()
+
+  const inserted = await supabase
+    .from('certificates')
+    .insert({
+      enrollment_id: enrollmentId,
+      user_id: userId,
+      course_id: courseId,
+      verification_code: verificationCode,
+    })
+    .select('id, verification_code, issued_at, pdf_url')
+    .single()
+
+  if (!inserted.error && inserted.data) {
+    return { certificate: inserted.data as CertificateRow, setupError: null }
+  }
+
+  const code = getErrorCode(inserted.error)
+
+  if (code === '23505') {
+    const retry = await supabase
+      .from('certificates')
+      .select('id, verification_code, issued_at, pdf_url')
+      .eq('enrollment_id', enrollmentId)
+      .eq('user_id', userId)
+      .maybeSingle()
+
+    if (!retry.error && retry.data) {
+      return { certificate: retry.data as CertificateRow, setupError: null }
+    }
+  }
+
+  if (code === '42P01') {
+    return {
+      certificate: null,
+      setupError: 'Tabela certificates não encontrada. Execute docs/database/05_certificates.sql.',
+    }
+  }
+
+  return {
+    certificate: null,
+    setupError: inserted.error?.message || 'Falha ao emitir certificado.',
+  }
+}
+
 export default async function CertificadoPage({ params }: { params: Promise<{ course_id: string }> }) {
-    const { course_id } = await params
-    const supabase = await createClient()
+  const { course_id } = await params
+  const supabase = await createClient()
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/auth/login')
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-    // Buscar perfil do aluno
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .single()
+  if (!user) redirect('/auth/login')
 
-    // Buscar dados do curso
-    const { data: course } = await supabase
-        .from('courses')
-        .select(`id, title, description, modules(id, lessons(id))`)
-        .eq('id', course_id)
-        .single()
+  const [{ data: profile }, { data: course }, { data: enrollment }] = await Promise.all([
+    supabase.from('profiles').select('full_name').eq('id', user.id).single(),
+    supabase.from('courses').select('id, title, description, modules(id, lessons(id))').eq('id', course_id).single(),
+    supabase.from('enrollments').select('id, enrolled_at').eq('user_id', user.id).eq('course_id', course_id).single(),
+  ])
 
-    if (!course) notFound()
+  if (!course) notFound()
+  if (!enrollment) redirect('/dashboard/cursos')
 
-    // Buscar matrícula
-    const { data: enrollment } = await supabase
-        .from('enrollments')
-        .select('id, enrolled_at')
-        .eq('user_id', user.id)
-        .eq('course_id', course_id)
-        .single()
+  const typedCourse = course as CourseData
+  const allLessons = typedCourse.modules.flatMap((module) => module.lessons)
+  const totalLessons = allLessons.length
 
-    if (!enrollment) redirect(`/dashboard`)
+  const { data: progressData } = await supabase
+    .from('progress')
+    .select('lesson_id, is_completed')
+    .eq('enrollment_id', enrollment.id)
+    .eq('is_completed', true)
 
-    // Calcular progresso
-    const allLessons = course.modules.flatMap((m: any) => m.lessons)
-    const totalLessons = allLessons.length
+  const completedCount = progressData?.length ?? 0
+  const pendingCount = Math.max(0, totalLessons - completedCount)
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+  const isCertified = progressPercent === 100 && totalLessons > 0
 
-    const { data: progressData } = await supabase
-        .from('progress')
-        .select('lesson_id, is_completed')
-        .eq('enrollment_id', enrollment.id)
-        .eq('is_completed', true)
+  const { certificate, setupError } = await getOrCreateCertificate(supabase, {
+    userId: user.id,
+    courseId: course_id,
+    enrollmentId: enrollment.id,
+    canIssue: isCertified,
+  })
 
-    const completedCount = progressData?.length ?? 0
-    const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
-    const isCertified = progressPercent === 100
+  const completionDate = (certificate?.issued_at ? new Date(certificate.issued_at) : new Date()).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  })
 
-    const completionDate = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-    const certId = `LIDERA-${enrollment.id.slice(0, 8).toUpperCase()}`
-    const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/certificado/verificar/${certId}`
+  const certId = certificate?.verification_code || null
+  const verifyUrl = certId ? `${getBaseUrl()}/certificado/verificar/${certId}` : null
 
-    return (
-        <div className="max-w-4xl mx-auto space-y-8 p-4 lg:p-8">
-            <div>
-                <Link href={`/dashboard/cursos/${course_id}`}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-[#64748B] hover:text-[#1E88E5] transition-colors w-fit bg-white px-4 py-2 rounded-lg border border-[#E5E7EB] shadow-sm">
-                    <ArrowLeft className="h-4 w-4" />
-                    Voltar para o Curso
-                </Link>
+  return (
+    <div className="mx-auto w-full max-w-[1320px] space-y-7 p-4 lg:p-8">
+      <Link
+        href={`/dashboard/cursos/${course_id}`}
+        className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-sm font-semibold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Voltar para trilha
+      </Link>
+
+      <section className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)] md:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(30,136,229,0.22),transparent_40%)]" />
+        <div className="relative">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Certificação Lidera</p>
+          <h1 className="mt-3 max-w-4xl font-heading text-3xl font-extrabold leading-tight md:text-4xl">{typedCourse.title}</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[#A9BDD8]">
+            {isCertified
+              ? 'Parabéns, todos os requisitos da trilha foram concluídos. Seu certificado está pronto para validação pública.'
+              : 'Finalize 100% das aulas da trilha para liberar automaticamente seu certificado oficial.'}
+          </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {[
+              { label: 'Aulas concluídas', value: `${completedCount}/${totalLessons}` },
+              { label: 'Progresso', value: `${progressPercent}%` },
+              { label: 'Status', value: isCertified ? 'Certificado liberado' : 'Em progresso' },
+              { label: 'Validação', value: certId ? certId : 'Pendente' },
+            ].map((item) => (
+              <article key={item.label} className="rounded-xl border border-[#2C3E5B] bg-[#0E1A2E]/88 p-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#93AECF]">{item.label}</p>
+                <p className="mt-1 text-base font-extrabold text-white">{item.value}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {!isCertified ? (
+        <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+          <article className="rounded-3xl border border-[#D8E2EF] bg-white p-7 shadow-sm">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#E3EBF6] bg-[#F8FAFD]">
+                <Lock className="h-6 w-6 text-[#64748B]" />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Certificado bloqueado</p>
+                <h2 className="mt-1 text-2xl font-extrabold text-[#0F172A]">Continue sua execução</h2>
+              </div>
             </div>
 
-            {!isCertified ? (
-                /* Bloqueado */
-                <div className="bg-white border border-[#E5E7EB] rounded-3xl p-12 text-center shadow-sm">
-                    <div className="w-24 h-24 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Award className="h-12 w-12 text-[#94A3B8]" />
-                    </div>
-                    <h2 className="text-3xl font-heading font-extrabold text-[#111827] mb-3">Certificado Indisponível</h2>
-                    <p className="text-[#64748B] font-medium text-lg mb-8 max-w-lg mx-auto">
-                        Você completou <strong className="text-[#1E88E5]">{completedCount} de {totalLessons}</strong> aulas.
-                        Conclua toda a trilha de aprendizado para desbloquear seu certificado oficial.
-                    </p>
-                    <div className="w-full max-w-md mx-auto bg-[#EEF2F6] rounded-full h-4 mb-3 border border-[#E5E7EB]">
-                        <div className="bg-[#4CAF35] h-full rounded-full transition-all duration-1000" style={{ width: `${progressPercent}%` }} />
-                    </div>
-                    <p className="text-sm font-bold text-[#94A3B8] uppercase tracking-wider mb-8">{progressPercent}% do trajeto concluído</p>
-                    <Link href={`/dashboard/cursos/${course_id}`}
-                        className="inline-flex py-4 px-8 bg-[#1E88E5] text-white rounded-xl font-bold shadow-lg shadow-[#1E88E5]/20 hover:bg-[#1565C0] transition-colors">
-                        Continuar Aprendizado
-                    </Link>
+            <p className="text-sm leading-relaxed text-[#64748B]">
+              Faltam <strong className="text-[#0F172A]">{pendingCount}</strong> {pendingCount === 1 ? 'aula' : 'aulas'} para liberar o certificado.
+            </p>
+
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#E8EEF7]">
+              <div className="h-full rounded-full bg-[#1E88E5] transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+            </div>
+            <p className="mt-2 text-xs font-semibold text-[#64748B]">{progressPercent}% da trilha concluído</p>
+
+            <Link
+              href={`/dashboard/cursos/${course_id}`}
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-[#1E88E5] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+            >
+              Continuar aprendizado
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </article>
+
+          <article className="rounded-3xl border border-[#D8E2EF] bg-white p-7 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Requisitos de emissão</p>
+            <div className="mt-4 space-y-3">
+              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
+                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
+                Concluir 100% das aulas da trilha
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
+                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
+                Manter matrícula ativa no programa
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
+                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
+                Certificado com código único de validação
+              </div>
+            </div>
+          </article>
+        </section>
+      ) : (
+        <>
+          {setupError ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{setupError}</div>
+          ) : null}
+
+          <section className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
+            <article className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#070E1B] p-8 shadow-[0_24px_48px_rgba(2,6,23,0.55)] md:p-10">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_8%,rgba(30,136,229,0.22),transparent_35%),radial-gradient(circle_at_88%_90%,rgba(245,124,0,0.15),transparent_35%)]" />
+              <div className="relative text-center">
+                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-[#2C4566] bg-[#10213A] text-[#9EC6F1]">
+                  <Award className="h-8 w-8" />
                 </div>
-            ) : (
-                <>
-                    {/* Certificado visual */}
-                    <div id="certificado"
-                        className="relative bg-[#0B0F19] border border-[#1E293B] rounded-3xl p-10 md:p-16 overflow-hidden shadow-2xl">
-                        {/* Ornamentos de fundo */}
-                        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#1E88E5]/5 rounded-full blur-[100px]" />
-                        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-yellow-500/5 rounded-full blur-[100px]" />
-                        <div className="absolute top-4 right-4 bottom-4 left-4 border border-white/10 rounded-2xl pointer-events-none" />
-                        <div className="absolute top-5 right-5 bottom-5 left-5 border border-white/5 rounded-xl pointer-events-none" />
+                <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.22em] text-[#8EAED1]">Certificado de conclusão</p>
+                <h2 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                  {profile?.full_name ?? 'Aluno Lidera'}
+                </h2>
+                <p className="mt-3 text-sm text-[#A9BDD8]">concluiu com êxito o programa</p>
+                <p className="mt-2 text-xl font-bold text-[#9EC6F1]">{typedCourse.title}</p>
 
-                        <div className="relative z-10 text-center space-y-6">
-                            {/* Logo / Badge */}
-                            <div className="flex justify-center mb-8">
-                                <div className="p-5 bg-gradient-to-br from-[#1E88E5]/20 to-transparent border border-[#1E88E5]/30 rounded-2xl">
-                                    <Award className="h-14 w-14 text-[#1E88E5]" />
-                                </div>
-                            </div>
+                <div className="mx-auto mt-7 flex w-full max-w-lg items-center justify-center gap-2 rounded-xl border border-[#294567] bg-[#0E1A2E] px-4 py-3 text-xs font-semibold text-[#BFD3EA]">
+                  <ShieldCheck className="h-4 w-4 text-[#4CAF35]" />
+                  Certificado autenticável por código único
+                </div>
 
-                            <div className="space-y-4">
-                                <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-[0.3em]">
-                                    Lidera Treinamentos • Certificado de Conclusão
-                                </p>
-                                <p className="text-lg text-[#cbd5e1] font-medium pt-4">Certificamos que</p>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white font-heading tracking-tight mt-2 mb-2">
-                                    {profile?.full_name ?? 'Aluno'}
-                                </h1>
-                                <p className="text-[#94A3B8] text-lg font-medium pb-2">
-                                    concluiu com êxito todos os requisitos do programa
-                                </p>
-                                <h2 className="text-2xl md:text-3xl font-heading font-bold text-[#1E88E5] max-w-2xl mx-auto leading-tight">
-                                    {course.title}
-                                </h2>
-                            </div>
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl border border-[#2A4163] bg-[#0E1A2E] p-4 text-left">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8EAED1]">Data de emissão</p>
+                    <p className="mt-1 text-sm font-semibold text-white">{completionDate}</p>
+                  </div>
+                  <div className="rounded-xl border border-[#2A4163] bg-[#0E1A2E] p-4 text-left">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8EAED1]">Código de validação</p>
+                    <p className="mt-1 text-sm font-semibold text-white">{certId ?? 'Pendente'}</p>
+                  </div>
+                </div>
+              </div>
+            </article>
 
-                            <div className="flex items-center justify-center gap-2 text-[#4CAF35] text-sm font-bold pt-6">
-                                <CheckCircle className="h-5 w-5" />
-                                {completedCount} aulas concluídas • Carga Horária Completa
-                            </div>
+            <article className="space-y-4 rounded-3xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Ações do certificado</p>
 
-                            <div className="border-t border-white/10 mt-12 pt-8 flex items-center justify-between text-left">
-                                <div>
-                                    <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-1">Data de Emissão</p>
-                                    <p className="text-base text-white font-medium mb-4">{completionDate}</p>
-                                    <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-1">Licença / Autenticação</p>
-                                    <p className="text-sm text-[#94A3B8] font-mono">{certId}</p>
-                                </div>
+              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
+                <QrCode className="h-4 w-4 text-[#0B4A8F]" />
+                O link de validação é público e pode ser enviado para RH ou recrutadores.
+              </div>
 
-                                {/* QR Code de verificação */}
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="w-24 h-24 bg-white rounded-xl flex items-center justify-center p-2 shadow-inner">
-                                        {/* QR code SVG simples com link de verificação */}
-                                        <QrCode className="h-full w-full text-[#0B0F19]" />
-                                    </div>
-                                    <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Escaneie para validar</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              <div className="flex flex-wrap gap-3">
+                <PrintButton />
+                {verifyUrl ? (
+                  <a
+                    href={verifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-5 text-sm font-bold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+                  >
+                    Abrir validação
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                ) : null}
+              </div>
 
-                    {/* Ações */}
-                    <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-[#E5E7EB]">
-                        <PrintButton />
+              {verifyUrl ? (
+                <div className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]">URL de validação</p>
+                  <p className="mt-1 break-all text-xs text-[#334155]">{verifyUrl}</p>
+                </div>
+              ) : null}
 
-                        <a href={verifyUrl} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-6 py-3 bg-white text-[#64748B] border border-[#E5E7EB] rounded-xl font-bold text-sm hover:bg-[#F8FAFC] hover:text-[#111827] shadow-sm transition-all">
-                            Copiar Link de Validação
-                        </a>
-                    </div>
-                </>
-            )}
-        </div>
-    )
+              {setupError ? (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{setupError}</div>
+              ) : null}
+            </article>
+          </section>
+        </>
+      )}
+    </div>
+  )
 }

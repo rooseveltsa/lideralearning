@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import CourseEditorClient from './CourseEditorClient'
+import type { CourseEditorCourse } from './CourseEditorClient'
 
 export default async function EditarCursoPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -24,5 +25,5 @@ export default async function EditarCursoPage({ params }: { params: Promise<{ id
 
     if (error || !course) notFound()
 
-    return <CourseEditorClient course={course as any} />
+    return <CourseEditorClient course={course as CourseEditorCourse} />
 }
