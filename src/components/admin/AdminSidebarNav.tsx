@@ -2,20 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { type LucideIcon } from 'lucide-react'
+import { BookOpen, BriefcaseBusiness, LayoutDashboard, Target, Users } from 'lucide-react'
 
-export type AdminNavLink = {
-  href: string
-  label: string
-  icon: LucideIcon
-}
+const navLinks = [
+  { href: '/admin', label: 'Visão geral', icon: LayoutDashboard },
+  { href: '/admin/cursos', label: 'Formações', icon: BookOpen },
+  { href: '/admin/alunos', label: 'Alunos', icon: Users },
+  { href: '/admin/leads', label: 'Pipeline B2B', icon: BriefcaseBusiness },
+  { href: '/admin/crm', label: 'CRM Vendas', icon: Target },
+]
 
-export default function AdminSidebarNav({ links }: { links: AdminNavLink[] }) {
+export default function AdminSidebarNav() {
   const pathname = usePathname()
 
   return (
     <nav className="space-y-1 px-4">
-      {links.map(({ href, label, icon: Icon }) => {
+      {navLinks.map(({ href, label, icon: Icon }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`)
         return (
           <Link

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { type ReactNode } from 'react'
-import { BookOpen, Bot, BriefcaseBusiness, ExternalLink, GraduationCap, LayoutDashboard, LogOut, Palette, Users } from 'lucide-react'
+import { ExternalLink, GraduationCap, LogOut, Palette } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/auth/actions'
@@ -25,14 +25,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     redirect('/dashboard')
   }
 
-  const navLinks = [
-    { href: '/admin', label: 'Visão geral', icon: LayoutDashboard },
-    { href: '/admin/cursos', label: 'Formações', icon: BookOpen },
-    { href: '/admin/alunos', label: 'Alunos', icon: Users },
-    { href: '/admin/leads', label: 'Pipeline B2B', icon: BriefcaseBusiness },
-    { href: '/admin/aiox-dashboard', label: 'AIOX Office', icon: Bot },
-  ]
-
   return (
     <div className="grid min-h-screen w-full bg-[#EEF3F9] md:grid-cols-[292px_1fr]">
       <aside className="hidden border-r border-[#1A263D] bg-[#060D1A] md:flex md:flex-col">
@@ -51,7 +43,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <div className="py-6">
           <p className="px-8 text-[11px] font-bold uppercase tracking-[0.16em] text-[#6E86A4]">Módulos administrativos</p>
           <div className="mt-3">
-            <AdminSidebarNav links={navLinks} />
+            <AdminSidebarNav />
           </div>
         </div>
 
