@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { type ReactNode } from 'react'
-import { BookOpen, BriefcaseBusiness, ExternalLink, GraduationCap, LayoutDashboard, LogOut, Palette, Users } from 'lucide-react'
+import { BookOpen, Bot, BriefcaseBusiness, ExternalLink, GraduationCap, LayoutDashboard, LogOut, Palette, Users } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/auth/actions'
@@ -30,6 +30,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     { href: '/admin/cursos', label: 'Formações', icon: BookOpen },
     { href: '/admin/alunos', label: 'Alunos', icon: Users },
     { href: '/admin/leads', label: 'Pipeline B2B', icon: BriefcaseBusiness },
+    { href: '/admin/aiox-dashboard', label: 'AIOX Office', icon: Bot },
   ]
 
   return (
