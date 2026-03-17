@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, LayoutDashboard, Settings, User } from 'lucide-react'
+import { BookOpen, LayoutDashboard, Settings, User, Shield } from 'lucide-react'
 
 const navGroups = [
   {
@@ -21,12 +21,23 @@ const navGroups = [
   },
 ]
 
-export default function SidebarNav() {
+export default function SidebarNav({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
+
+  const allNavGroups = [...navGroups]
+  
+  if (isAdmin) {
+    allNavGroups.push({
+      label: 'Administração',
+      links: [
+        { href: '/admin', label: 'Painel Admin', icon: Shield },
+      ],
+    })
+  }
 
   return (
     <nav className="space-y-6 px-4">
-      {navGroups.map((group) => (
+      {allNavGroups.map((group) => (
         <div key={group.label}>
           <p className="px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-[#6D85A4]">{group.label}</p>
           <div className="mt-2 space-y-1.5">

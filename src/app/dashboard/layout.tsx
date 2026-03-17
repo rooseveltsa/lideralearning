@@ -3,12 +3,29 @@ import Link from 'next/link'
 
 import SidebarNav from '@/components/dashboard/SidebarNav'
 import { logout } from '@/app/auth/actions'
+import { createClient } from '@/lib/supabase/server'
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  let isAdmin = false
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    isAdmin = profile?.role === 'admin'
+  }
+
   return (
     <div className="grid min-h-screen w-full bg-[#EAF1FA] md:grid-cols-[296px_1fr] lg:grid-cols-[316px_1fr]">
       <aside className="hidden flex-col border-r border-[#1A263D] bg-[#060D1A] md:flex">
@@ -33,7 +50,7 @@ export default function DashboardLayout({
 
         <div className="py-6">
           <div className="mt-1">
-            <SidebarNav />
+            <SidebarNav isAdmin={isAdmin} />
           </div>
         </div>
 
