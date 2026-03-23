@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lidera Treinamentos
 
-## Getting Started
+Plataforma EdTech híbrida (digital + presencial + B2B) para desenvolvimento humano corporativo.
 
-First, run the development server:
+## Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Linguagem:** TypeScript
+- **UI:** React 19 + Tailwind CSS 4 + shadcn/ui
+- **Banco de dados:** PostgreSQL (Supabase) com Row Level Security
+- **Autenticação:** Supabase Auth (JWT + cookies)
+- **Pagamentos:** Stripe (Checkout Sessions + Webhooks)
+- **Formulários:** React Hook Form + Zod
+
+## Setup
 
 ```bash
+# 1. Instalar dependências
+npm install
+
+# 2. Configurar variáveis de ambiente
+cp .env.example .env.local
+# Preencher as variáveis (ver seção abaixo)
+
+# 3. Executar migrations no Supabase SQL Editor
+# Na ordem: 01_LMS_schema.sql → 02_profiles_admin_setup.sql → 03_commerce_orders.sql → 04_b2b_pipeline.sql → 05_certificates.sql
+
+# 4. Iniciar servidor de desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Variáveis de Ambiente
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variável | Obrigatória | Descrição |
+|----------|-------------|-----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Sim | URL do projeto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sim | Chave anon/public do Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Produção | Chave service role (bypass RLS) |
+| `STRIPE_SECRET_KEY` | Produção | Chave secreta do Stripe |
+| `STRIPE_WEBHOOK_SECRET` | Produção | Secret do webhook Stripe |
+| `NEXT_PUBLIC_APP_URL` | Produção | URL pública da aplicação |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+```bash
+npm run dev        # Servidor de desenvolvimento
+npm run build      # Build de produção
+npm run start      # Iniciar servidor de produção
+npm run lint       # Verificar lint
+npm run typecheck  # Verificar tipos TypeScript
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/           # Rotas e páginas (App Router)
+│   ├── admin/     # Painel administrativo
+│   ├── auth/      # Login e registro
+│   ├── dashboard/ # Portal do aluno
+│   ├── api/       # API routes (webhooks, leads)
+│   └── ...        # Páginas públicas
+├── components/    # Componentes reutilizáveis
+├── lib/           # Utilitários, clients, actions
+└── types/         # Tipos TypeScript
+docs/
+├── database/      # SQL migrations
+├── prd/           # Documentos de requisitos
+└── architecture/  # Documentação técnica
+scripts/           # Scripts utilitários de administração
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Migrations (Supabase)
 
-## Deploy on Vercel
+Executar na ordem no SQL Editor do Supabase:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. `docs/database/01_LMS_schema.sql` — Schema LMS core
+2. `docs/database/02_profiles_admin_setup.sql` — Perfis e RBAC
+3. `docs/database/03_commerce_orders.sql` — Orders e payments
+4. `docs/database/04_b2b_pipeline.sql` — Leads e proposals
+5. `docs/database/05_certificates.sql` — Certificados
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Documentação
+
+- [PRD completo](docs/prd/LIDERA_PRD.md)
+- [Análise de gaps](docs/prd/LIDERA_GAP_BACKLOG.md)
+- [Roadmap de sprints](docs/sprints/LIDERA_ROADMAP.md)
+- [Arquitetura técnica](docs/architecture/LIDERA_STACK.md)
+- [Schema do banco](docs/database/LIDERA_SCHEMA.md)
+- [Análise completa do projeto](docs/ANALISE_COMPLETA_PROJETO.md)

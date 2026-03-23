@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
 import "./globals.css";
+import { validateEnv } from "@/lib/env";
+
+validateEnv();
 
 const manrope = Manrope({
   variable: "--font-sans",
