@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { generatePartialPDI } from '@/lib/utils/pdi-generator'
+import { sendPDIEmail } from '@/lib/email/send-pdi'
 
 type Payload = {
   userId: string
+  userEmail?: string
+  userName?: string
   respostas: Record<string, number>
   textos: Record<string, string>
   pontuacaoTotal: number
@@ -56,6 +60,39 @@ export async function POST(request: Request) {
   if (error) {
     console.error('Error inserting leadership self-assessment:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Generate partial PDI and send email (non-blocking — errors are logged, not thrown)
+  if (json.userEmail) {
+    const perfil = getPerfilLabel(json.pontuacaoTotal)
+
+    const selfAssessment: Record<string, unknown> = {
+      q_percepcao: json.respostas.percepcao ?? null,
+      q_gestao: json.respostas.gestao ?? null,
+      q_comunicacao: json.respostas.comunicacao ?? null,
+      q_tecnologia: json.respostas.tecnologia ?? null,
+      q_etica: json.respostas.etica ?? null,
+      q_dor: json.respostas.dor ?? null,
+      pontuacao_total: json.pontuacaoTotal,
+      perfil,
+    }
+
+    try {
+      const report = generatePartialPDI(
+        json.userId,
+        json.userName || 'Participante',
+        null,
+        selfAssessment,
+      )
+
+      const emailResult = await sendPDIEmail(json.userEmail, report)
+
+      if (!emailResult.success) {
+        console.error('[autoavaliacao] Email send failed:', emailResult.error)
+      }
+    } catch (emailErr) {
+      console.error('[autoavaliacao] Email processing error:', emailErr)
+    }
   }
 
   return NextResponse.json({ success: true, diagnosticoId: data.id })

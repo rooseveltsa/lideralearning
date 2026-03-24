@@ -319,6 +319,8 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
+          userEmail: user.email,
+          userName: user.fullName,
           respostas,
           textos,
           pontuacaoTotal: pontos,

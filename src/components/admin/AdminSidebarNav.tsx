@@ -9,6 +9,7 @@ import {
   Calendar,
   ClipboardList,
   FileBarChart,
+  GraduationCap,
   LayoutDashboard,
   MessageSquare,
   Target,
@@ -41,6 +42,7 @@ const navGroups: NavGroup[] = [
     label: 'Conteúdo',
     items: [
       { href: '/admin/cursos', label: 'Formações', icon: BookOpen },
+      { href: '/admin/conteudo', label: 'Programa', icon: GraduationCap },
       { href: '/admin/formularios', label: 'Formulários', icon: ClipboardList },
     ],
   },
