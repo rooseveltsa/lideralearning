@@ -325,6 +325,45 @@ export async function qualifyLead(formData: FormData) {
   revalidatePath('/admin/crm')
 }
 
+// ── Lead CRUD ─────────────────────────────────────────
+
+export async function createLead(formData: FormData) {
+  const { supabase, userId } = await verifyAdmin()
+
+  const companyName = str(formData, 'company_name')
+  const fullName = str(formData, 'full_name')
+  const whatsapp = str(formData, 'whatsapp') || 'Nao informado'
+
+  if (!companyName || !fullName) return
+
+  const estimatedValue = str(formData, 'estimated_value')
+
+  const { error } = await supabase.from('b2b_leads').insert({
+    full_name: fullName,
+    company_name: companyName,
+    managers_range: str(formData, 'managers_range') || 'Nao informado',
+    whatsapp,
+    email: str(formData, 'email') || null,
+    source_page: 'crm_manual',
+    notes: str(formData, 'notes') || null,
+    status: 'new',
+    pipeline_stage: 'prospecting' as PipelineStage,
+    temperature: 'cold' as Temperature,
+    estimated_value: estimatedValue ? parseFloat(estimatedValue) : null,
+    owner_user_id: userId,
+  })
+
+  if (error) {
+    console.error('Error creating lead:', error)
+    return
+  }
+
+  revalidatePath('/admin/crm')
+  revalidatePath('/admin/crm/sdr')
+  revalidatePath('/admin/crm/closer')
+  revalidatePath('/admin/crm/funil')
+}
+
 // ── Pipeline: Stage management ────────────────────────
 
 export async function updateLeadPipeline(formData: FormData) {

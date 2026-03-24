@@ -5,226 +5,148 @@ import {
   Building2,
   ClipboardCheck,
   ClipboardList,
-  Copy,
   ExternalLink,
   Eye,
-  FileText,
-  Users,
 } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 import CopyLinkButton from './CopyLinkButton'
 
-/* ─────────────────────────────────────────────
-   Formulários disponíveis
-───────────────────────────────────────────── */
-
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
-
-type Formulario = {
-  id: string
-  titulo: string
-  descricao: string
-  tipo: 'multipla_escolha' | 'dissertativo' | 'misto' | 'relatorio'
-  duracao: string
-  rota: string
-  requerLogin: boolean
-  icon: typeof ClipboardCheck
-  cor: string
-  bgCor: string
-}
-
-const formularios: Formulario[] = [
-  {
-    id: 'autoavaliacao',
-    titulo: '1.4.1 — Autoavaliação do Líder/Supervisor',
-    descricao:
-      'Formulário de múltipla escolha preenchido pelo SUPERVISOR. 6 questões sobre percepção da função, gestão de equipes, comunicação, tecnologia, ética e expectativas. Ao final, gera o Diagnóstico de Liderança Estratégica com perfil (Reativo / Em Transição / Líder de Valor).',
-    tipo: 'multipla_escolha',
-    duracao: '~5 min',
-    rota: '/treinamento/autoavaliacao',
-    requerLogin: true,
-    icon: ClipboardCheck,
-    cor: '#1565C0',
-    bgCor: '#EFF6FE',
-  },
-  {
-    id: 'avaliacao-executiva',
-    titulo: '1.3.1 — Avaliação Executiva (Gestor/RH)',
-    descricao:
-      'Formulário preenchido pelo GESTOR ou RH sobre o supervisor. 8 seções: perfil do elo estratégico, gestão de equipe, conflitos geracionais, dados e IA, ética, autonomia, prioridade estratégica e critérios de sucesso.',
-    tipo: 'misto',
-    duracao: '~10 min',
-    rota: '/treinamento/avaliacao-executiva',
-    requerLogin: true,
-    icon: Building2,
-    cor: '#00695C',
-    bgCor: '#E0F2F1',
-  },
-  {
-    id: 'pdi',
-    titulo: 'PDI — Plano de Desenvolvimento Individual',
-    descricao:
-      'Relatório GERADO AUTOMATICAMENTE do cruzamento da Autoavaliação (1.4.1) com a Avaliação Executiva (1.3.1). Identifica gaps, pontos cegos, forças ocultas e gera plano de 12 semanas com foco de mentoria.',
-    tipo: 'relatorio',
-    duracao: 'Auto',
-    rota: '/treinamento/pdi',
-    requerLogin: true,
-    icon: BookOpen,
-    cor: '#7B1FA2',
-    bgCor: '#F3E5F5',
-  },
-]
-
-/* ─────────────────────────────────────────────
-   Page
-───────────────────────────────────────────── */
 
 export default async function AdminFormulariosPage() {
   const supabase = await createClient()
 
-  // Buscar contagem de respostas da autoavaliação
-  const { count: totalAutoavaliacao } = await supabase
-    .from('leadership_self_assessments')
-    .select('*', { count: 'exact', head: true })
-
-  // Buscar contagem de PDI
+  // ── Real counts from DB ──
+  let totalAutoavaliacao = 0
   let totalPdi = 0
+  let totalExecutiva = 0
+
+  try {
+    const { count } = await supabase
+      .from('leadership_self_assessments')
+      .select('*', { count: 'exact', head: true })
+    totalAutoavaliacao = count ?? 0
+  } catch { /* table may not exist */ }
+
   try {
     const { count } = await supabase
       .from('leadership_pdi')
       .select('*', { count: 'exact', head: true })
     totalPdi = count ?? 0
-  } catch {
-    // Table may not exist yet
-  }
+  } catch { /* table may not exist */ }
 
-  // Buscar contagem de avaliacao executiva
-  let totalExecutiva = 0
   try {
     const { count } = await supabase
       .from('leadership_executive_assessments')
       .select('*', { count: 'exact', head: true })
     totalExecutiva = count ?? 0
-  } catch {
-    // Table may not exist yet
-  }
+  } catch { /* table may not exist */ }
 
-  // Buscar contagem por perfil
-  const { data: perfilData } = await supabase
-    .from('leadership_self_assessments')
-    .select('perfil')
-
-  const perfilCounts = {
-    reativo: 0,
-    transicao: 0,
-    lider_valor: 0,
-  }
-
-  if (perfilData) {
-    for (const row of perfilData as { perfil: string }[]) {
-      if (row.perfil in perfilCounts) {
-        perfilCounts[row.perfil as keyof typeof perfilCounts]++
+  // ── Perfil breakdown ──
+  const perfilCounts = { reativo: 0, transicao: 0, lider_valor: 0 }
+  try {
+    const { data: perfilData } = await supabase
+      .from('leadership_self_assessments')
+      .select('perfil')
+    if (perfilData) {
+      for (const row of perfilData as { perfil: string }[]) {
+        if (row.perfil in perfilCounts) {
+          perfilCounts[row.perfil as keyof typeof perfilCounts]++
+        }
       }
     }
-  }
+  } catch { /* table may not exist */ }
+
+  // ── Form definitions with real counts ──
+  const formularios = [
+    {
+      id: 'autoavaliacao',
+      titulo: '1.4.1 — Autoavaliacao do Lider/Supervisor',
+      descricao: 'Multipla escolha (6 questoes). Gera Diagnostico de Lideranca com perfil Reativo / Transicao / Lider de Valor.',
+      tipo: 'Multipla escolha',
+      duracao: '~5 min',
+      rota: '/treinamento/autoavaliacao',
+      icon: ClipboardCheck,
+      cor: '#1565C0',
+      bgCor: '#EFF6FE',
+      respostas: totalAutoavaliacao,
+    },
+    {
+      id: 'avaliacao-executiva',
+      titulo: '1.3.1 — Avaliacao Executiva (Gestor/RH)',
+      descricao: '8 secoes: perfil, gestao de equipe, conflitos, dados/IA, etica, autonomia, prioridade e criterios de sucesso.',
+      tipo: 'Misto',
+      duracao: '~10 min',
+      rota: '/treinamento/avaliacao-executiva',
+      icon: Building2,
+      cor: '#00695C',
+      bgCor: '#E0F2F1',
+      respostas: totalExecutiva,
+    },
+    {
+      id: 'pdi',
+      titulo: 'PDI — Plano de Desenvolvimento Individual',
+      descricao: 'Gerado automaticamente do cruzamento Autoavaliacao + Executiva. Plano de 12 semanas com foco de mentoria.',
+      tipo: 'Auto-gerado',
+      duracao: 'Auto',
+      rota: '/treinamento/pdi',
+      icon: BookOpen,
+      cor: '#7B1FA2',
+      bgCor: '#F3E5F5',
+      respostas: totalPdi,
+    },
+  ]
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
-        <div className="relative">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">
-            Central de documentos
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">
-            Formulários e PDI
-          </h1>
-          <p className="mt-4 max-w-lg text-sm text-[#A9BDD8]">
-            Fluxo: Supervisor preenche a Autoavaliação (1.4.1) → Gestor preenche a Avaliação Executiva (1.3.1) → Sistema gera o PDI automaticamente.
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Header — compact */}
+      <section className="rounded-2xl border border-[#1A2B46] bg-[#060D1A] px-6 py-5 text-white shadow-lg">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">
+          Central de documentos
+        </p>
+        <h1 className="mt-1 font-heading text-2xl font-extrabold">Formularios e PDI</h1>
+        <p className="mt-1 max-w-lg text-xs text-[#A9BDD8]">
+          Supervisor preenche Autoavaliacao → Gestor preenche Executiva → Sistema gera PDI.
+        </p>
       </section>
 
-      {/* KPIs do Fluxo */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1565C0]/10">
-            <ClipboardCheck className="h-4.5 w-4.5 text-[#1565C0]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
-            Autoavaliações (1.4.1)
-          </p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalAutoavaliacao ?? 0}</p>
+      {/* KPIs — compact row */}
+      <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <article className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Autoavaliacoes</p>
+          <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalAutoavaliacao}</p>
         </article>
-
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#00695C]/10">
-            <Building2 className="h-4.5 w-4.5 text-[#00695C]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
-            Avaliações Executivas (1.3.1)
-          </p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
+        <article className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Executivas</p>
+          <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
         </article>
-
-        <article className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-red-700">
-            Reativo
-          </p>
-          <p className="mt-2 text-3xl font-extrabold text-red-900">{perfilCounts.reativo}</p>
-          <p className="mt-1 text-xs text-red-600">7-10 pts</p>
+        <article className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">PDIs</p>
+          <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalPdi}</p>
         </article>
-
-        <article className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-700">
-            Em Transição
-          </p>
-          <p className="mt-2 text-3xl font-extrabold text-amber-900">{perfilCounts.transicao}</p>
-          <p className="mt-1 text-xs text-amber-600">11-15 pts</p>
+        <article className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-red-700">Reativo</p>
+          <p className="mt-1 text-2xl font-extrabold text-red-900">{perfilCounts.reativo}</p>
         </article>
-
-        <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">
-            Líder de Valor
-          </p>
-          <p className="mt-2 text-3xl font-extrabold text-emerald-900">{perfilCounts.lider_valor}</p>
-          <p className="mt-1 text-xs text-emerald-600">16-21 pts</p>
+        <article className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Transicao</p>
+          <p className="mt-1 text-2xl font-extrabold text-amber-900">{perfilCounts.transicao}</p>
+        </article>
+        <article className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Lider Valor</p>
+          <p className="mt-1 text-2xl font-extrabold text-emerald-900">{perfilCounts.lider_valor}</p>
         </article>
       </section>
 
-      {/* KPIs extras — PDI e Executiva */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-2">
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#7B1FA2]/10">
-            <BookOpen className="h-4.5 w-4.5 text-[#7B1FA2]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
-            Respostas PDI
-          </p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalPdi}</p>
-        </article>
-
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#00695C]/10">
-            <Building2 className="h-4.5 w-4.5 text-[#00695C]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
-            Avaliacoes Executivas
-          </p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
-        </article>
-      </section>
-
-      {/* Lista de Formulários */}
-      <section className="space-y-4">
-        <h2 className="flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">
-          <ClipboardList className="h-5 w-5 text-[#1565C0]" />
-          Formulários Disponíveis
+      {/* Form cards — compact */}
+      <section className="space-y-3">
+        <h2 className="flex items-center gap-2 text-sm font-extrabold text-[#0F172A]">
+          <ClipboardList className="h-4 w-4 text-[#1565C0]" />
+          Formularios Disponiveis
         </h2>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="space-y-3">
           {formularios.map((form) => {
             const Icon = form.icon
             const fullUrl = `${BASE_URL}${form.rota}`
@@ -232,78 +154,69 @@ export default async function AdminFormulariosPage() {
             return (
               <article
                 key={form.id}
-                className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="rounded-xl border border-[#D8E2EF] bg-white p-4 shadow-sm"
               >
-                {/* Header */}
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3">
                   <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
                     style={{ backgroundColor: form.bgCor }}
                   >
-                    <Icon className="h-6 w-6" style={{ color: form.cor }} />
+                    <Icon className="h-5 w-5" style={{ color: form.cor }} />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-base font-extrabold text-[#0F172A]">{form.titulo}</h3>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-sm font-bold text-[#0F172A]">{form.titulo}</h3>
                       <span
-                        className="rounded-md px-2 py-0.5 text-[11px] font-bold uppercase"
+                        className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold"
                         style={{ backgroundColor: form.bgCor, color: form.cor }}
                       >
-                        {form.tipo === 'multipla_escolha' ? 'Múltipla escolha' : form.tipo === 'dissertativo' ? 'Dissertativo' : form.tipo === 'relatorio' ? 'Relatório auto-gerado' : 'Misto'}
+                        {form.respostas} resposta{form.respostas !== 1 ? 's' : ''}
                       </span>
-                      <span className="text-xs text-[#64748B]">{form.duracao}</span>
-                      {form.requerLogin && (
-                        <span className="rounded-md bg-[#F1F5F9] px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
-                          Requer cadastro
-                        </span>
-                      )}
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[#64748B]">
+                      <span>{form.tipo}</span>
+                      <span>|</span>
+                      <span>{form.duracao}</span>
+                    </div>
+                    <p className="mt-1.5 text-xs text-[#64748B]">{form.descricao}</p>
+
+                    {/* Link area */}
+                    <div className="mt-3 flex items-center gap-2">
+                      <code className="flex-1 truncate rounded-lg border border-[#E3EBF6] bg-[#F8FAFD] px-2.5 py-1.5 text-[11px] text-[#334155]">
+                        {fullUrl}
+                      </code>
+                      <CopyLinkButton url={fullUrl} />
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mt-2.5 flex flex-wrap gap-2">
+                      <a
+                        href={fullUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#D8E2EF] bg-white px-2.5 py-1.5 text-[11px] font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
+                      >
+                        <Eye className="h-3 w-3" />
+                        Visualizar
+                      </a>
+                      <a
+                        href={fullUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg bg-[#1E88E5] px-2.5 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-[#1565C0]"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Abrir
+                      </a>
+                      <Link
+                        href={`/admin/formularios/respostas/${form.id}`}
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#D8E2EF] bg-white px-2.5 py-1.5 text-[11px] font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
+                      >
+                        <BarChart3 className="h-3 w-3" />
+                        Ver respostas ({form.respostas})
+                      </Link>
                     </div>
                   </div>
-                </div>
-
-                {/* Descrição */}
-                <p className="mt-3 text-sm leading-relaxed text-[#64748B]">{form.descricao}</p>
-
-                {/* Link + Ações */}
-                <div className="mt-4 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-3">
-                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.12em] text-[#64748B]">
-                    Link para compartilhar
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 truncate rounded-lg bg-white px-3 py-2 text-xs text-[#334155] border border-[#E3EBF6]">
-                      {fullUrl}
-                    </code>
-                    <CopyLinkButton url={fullUrl} />
-                  </div>
-                </div>
-
-                {/* Botões */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <a
-                    href={fullUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#D8E2EF] bg-white px-3 py-2 text-xs font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    Visualizar
-                  </a>
-                  <a
-                    href={fullUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#1E88E5] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#1565C0]"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Abrir em nova aba
-                  </a>
-                  <Link
-                    href={`/admin/formularios/respostas/${form.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#D8E2EF] bg-white px-3 py-2 text-xs font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
-                  >
-                    <BarChart3 className="h-3.5 w-3.5" />
-                    Ver respostas
-                  </Link>
                 </div>
               </article>
             )

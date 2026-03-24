@@ -1,42 +1,42 @@
+import Link from 'next/link'
 import {
-  AlertTriangle,
-  ArrowUpRight,
-  BadgeCheck,
-  Building2,
+  ArrowLeft,
   CheckCircle2,
-  Flame,
-  Phone,
+  Clock,
+  DollarSign,
+  MessageSquare,
   Target,
+  XCircle,
 } from 'lucide-react'
 
-import { addActivity, getLeadsForCloser, qualifyLead, updateLeadPipeline } from '@/lib/actions/crm'
+import { addActivity, getLeadsForCloser, updateLeadPipeline } from '@/lib/actions/crm'
 
-const PIPELINE_STAGES = [
-  { value: 'prospecting', label: 'Prospecção' },
-  { value: 'first_contact', label: '1º Contato' },
-  { value: 'qualification', label: 'Qualificação' },
-  { value: 'meeting', label: 'Reunião' },
-  { value: 'proposal', label: 'Proposta' },
-  { value: 'negotiation', label: 'Negociação' },
-  { value: 'won', label: 'Ganho' },
-  { value: 'lost', label: 'Perdido' },
-] as const
-
-const TEMPERATURES = [
-  { value: 'cold', label: 'Frio', color: 'bg-sky-50 text-sky-700 border-sky-200', icon: '❄️' },
-  { value: 'warm', label: 'Morno', color: 'bg-amber-50 text-amber-700 border-amber-200', icon: '🔥' },
-  { value: 'hot', label: 'Quente', color: 'bg-red-50 text-red-700 border-red-200', icon: '🔥🔥' },
-] as const
-
-const BANT_LABELS = {
-  budget: { label: 'Budget', description: 'Tem orçamento disponível para investir em treinamento?' },
-  authority: { label: 'Authority', description: 'É o decisor ou tem acesso direto a quem decide?' },
-  need: { label: 'Need', description: 'Tem necessidade real e reconhecida de desenvolvimento?' },
-  timeline: { label: 'Timeline', description: 'Tem prazo definido para implementar?' },
+const PIPELINE_LABELS: Record<string, string> = {
+  prospecting: 'Prospeccao',
+  first_contact: '1o Contato',
+  qualification: 'Qualificacao',
+  meeting: 'Reuniao',
+  proposal: 'Proposta',
+  negotiation: 'Negociacao',
+  won: 'Ganho',
+  lost: 'Perdido',
 }
 
-export default async function CloserWorkspacePage() {
+function daysSince(dateStr: string): number {
+  return Math.max(0, Math.round((Date.now() - new Date(dateStr).getTime()) / 86400000))
+}
+
+function formatCurrency(value: number): string {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 })
+}
+
+export default async function CloserPage() {
   const { leads, scores, activities } = await getLeadsForCloser()
+
+  // Filter to show leads in proposal/negotiation stages (closer's workspace)
+  const closerStages = ['proposal', 'negotiation', 'meeting']
+  const closerLeads = leads.filter((l) => closerStages.includes(l.pipeline_stage))
+  const wonLeads = leads.filter((l) => l.pipeline_stage === 'won')
 
   const scoresByLead = new Map(scores.map((s) => [s.lead_id, s]))
   const activitiesByLead = new Map<string, typeof activities>()
@@ -47,283 +47,205 @@ export default async function CloserWorkspacePage() {
     activitiesByLead.set(a.lead_id, list)
   }
 
-  const pendingLeads = leads.filter((l) => !scoresByLead.has(l.id) || scoresByLead.get(l.id)?.qualification_status === 'pending')
-  const qualifiedLeads = leads.filter((l) => scoresByLead.get(l.id)?.qualification_status === 'qualified')
-  const nurturingLeads = leads.filter((l) => scoresByLead.get(l.id)?.qualification_status === 'nurturing')
+  const totalValue = closerLeads.reduce((a, l) => a + (l.estimated_value || 0), 0)
+  const wonValue = wonLeads.reduce((a, l) => a + (l.estimated_value || 0), 0)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-violet-600/20 blur-[90px]" />
-        <div className="relative">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/20 text-violet-400">
-              <Target className="h-6 w-6" />
-            </span>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Closer Workspace</p>
-              <h1 className="font-heading text-3xl font-extrabold leading-tight md:text-4xl">
-                Qualificação de Leads
-              </h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link href="/admin/crm" className="text-[#64748b] hover:text-[#0f172a]">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-xl font-bold text-[#0f172a]">Closer - Negociacoes</h1>
+            <div className="mt-0.5 flex items-center gap-3 text-xs text-[#64748b]">
+              <span>{closerLeads.length} em negociacao</span>
+              {totalValue > 0 && <span>Pipeline: {formatCurrency(totalValue)}</span>}
+              {wonValue > 0 && <span className="text-green-700">Ganhos: {formatCurrency(wonValue)}</span>}
             </div>
           </div>
-          <p className="mt-4 max-w-2xl text-sm text-[#A9BDD8]">
-            Aplique scoring BANT, qualifique leads e avance no pipeline. Cada lead precisa ser classificado antes de receber proposta.
-          </p>
         </div>
-      </section>
+      </div>
 
-      {/* KPIs */}
-      <section className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <article className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-700">Aguardando qualificação</p>
-          <p className="mt-2 text-3xl font-extrabold text-amber-900">{pendingLeads.length}</p>
-        </article>
-        <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">Qualificados</p>
-          <p className="mt-2 text-3xl font-extrabold text-emerald-900">{qualifiedLeads.length}</p>
-        </article>
-        <article className="rounded-2xl border border-violet-200 bg-violet-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-700">Nurturing</p>
-          <p className="mt-2 text-3xl font-extrabold text-violet-900">{nurturingLeads.length}</p>
-        </article>
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Total no pipeline</p>
-          <p className="mt-2 text-3xl font-extrabold text-[#0F172A]">{leads.length}</p>
-        </article>
-      </section>
+      {/* Table */}
+      {closerLeads.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-[#d1d5db] bg-white py-12 text-center">
+          <Target className="mx-auto h-8 w-8 text-[#94a3b8]" />
+          <p className="mt-3 text-sm font-semibold text-[#64748b]">Nenhuma negociacao ativa</p>
+          <p className="mt-1 text-xs text-[#94a3b8]">Avance leads no pipeline para que aparecam aqui.</p>
+          <Link href="/admin/crm" className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#1565C0] hover:underline">
+            Ir para o pipeline
+          </Link>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-[#e2e8f0]">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-[#e2e8f0] bg-[#f8fafc]">
+                <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Empresa</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Valor</th>
+                <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] md:table-cell">Fase</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Dias</th>
+                <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] md:table-cell">Proxima Acao</th>
+                <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] lg:table-cell">BANT</th>
+                <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Acoes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#f1f5f9]">
+              {closerLeads.map((lead) => {
+                const days = daysSince(lead.created_at)
+                const score = scoresByLead.get(lead.id)
+                const recentActivities = activitiesByLead.get(lead.id)?.slice(0, 2) ?? []
 
-      {/* Pending Qualification */}
-      {pendingLeads.length > 0 && (
-        <section>
-          <div className="mb-4 flex items-center gap-2">
-            <AlertTriangle className="h-4.5 w-4.5 text-amber-500" />
-            <h2 className="text-lg font-extrabold text-[#0F172A]">Leads aguardando qualificação</h2>
-          </div>
-
-          <div className="space-y-4">
-            {pendingLeads.map((lead) => {
-              const existing = scoresByLead.get(lead.id)
-              const leadActivities = activitiesByLead.get(lead.id) ?? []
-
-              return (
-                <article key={lead.id} className="rounded-2xl border border-amber-200 bg-white p-6 shadow-sm">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                    {/* Lead Info */}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-3">
-                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0B4A8F]/10 text-sm font-bold text-[#0B4A8F]">
-                          {lead.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                return (
+                  <tr key={lead.id} className="bg-white hover:bg-[#f8fafc]">
+                    <td className="px-3 py-2.5">
+                      <p className="text-xs font-semibold text-[#0f172a]">{lead.company_name}</p>
+                      <p className="text-[10px] text-[#94a3b8]">{lead.full_name} {lead.whatsapp !== 'Nao informado' ? `| ${lead.whatsapp}` : ''}</p>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      {lead.estimated_value && lead.estimated_value > 0 ? (
+                        <span className="inline-flex items-center gap-0.5 text-xs font-bold text-[#065f46]">
+                          <DollarSign className="h-3 w-3" />
+                          {formatCurrency(lead.estimated_value)}
                         </span>
-                        <div>
-                          <p className="text-base font-bold text-[#0F172A]">{lead.full_name}</p>
-                          <div className="mt-0.5 flex items-center gap-2 text-xs text-[#64748B]">
-                            <Building2 className="h-3.5 w-3.5" /> {lead.company_name}
-                            <span>•</span>
-                            <Phone className="h-3.5 w-3.5" /> {lead.whatsapp}
-                          </div>
-                        </div>
+                      ) : (
+                        <span className="text-[11px] text-[#cbd5e1]">--</span>
+                      )}
+                    </td>
+                    <td className="hidden px-3 py-2.5 md:table-cell">
+                      <span className="rounded bg-[#f1f5f9] px-2 py-0.5 text-[11px] font-semibold text-[#475569]">
+                        {PIPELINE_LABELS[lead.pipeline_stage] ?? lead.pipeline_stage}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${days > 14 ? 'text-[#dc2626]' : days > 7 ? 'text-[#f59e0b]' : 'text-[#64748b]'}`}>
+                        <Clock className="h-3 w-3" />
+                        {days}d
+                      </span>
+                    </td>
+                    <td className="hidden px-3 py-2.5 md:table-cell">
+                      {lead.next_action ? (
+                        <span className="text-xs text-[#374151]">{lead.next_action}</span>
+                      ) : (
+                        <span className="text-[11px] text-[#cbd5e1]">Nenhuma</span>
+                      )}
+                    </td>
+                    <td className="hidden px-3 py-2.5 lg:table-cell">
+                      {score ? (
+                        <span className="rounded bg-[#eef2ff] px-2 py-0.5 text-[11px] font-bold text-[#4338ca]">
+                          {score.total_score}/20
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-[#cbd5e1]">--</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-1">
+                        {/* Fechar Ganho */}
+                        <form action={updateLeadPipeline}>
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <input type="hidden" name="pipeline_stage" value="won" />
+                          <input type="hidden" name="temperature" value="hot" />
+                          <button
+                            type="submit"
+                            className="inline-flex h-7 items-center gap-1 rounded bg-[#16a34a] px-2 text-[10px] font-bold text-white hover:bg-[#15803d]"
+                            title="Fechar como ganho"
+                          >
+                            <CheckCircle2 className="h-3 w-3" />
+                            Ganho
+                          </button>
+                        </form>
+
+                        {/* Marcar Perdido */}
+                        <form action={updateLeadPipeline}>
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <input type="hidden" name="pipeline_stage" value="lost" />
+                          <input type="hidden" name="temperature" value="cold" />
+                          <button
+                            type="submit"
+                            className="inline-flex h-7 items-center gap-1 rounded border border-[#fecaca] bg-[#fef2f2] px-2 text-[10px] font-bold text-[#dc2626] hover:bg-[#fecaca]"
+                            title="Marcar como perdido"
+                          >
+                            <XCircle className="h-3 w-3" />
+                            Perdido
+                          </button>
+                        </form>
+
+                        {/* Add note */}
+                        <form action={addActivity} className="flex items-center gap-1">
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <input type="hidden" name="activity_type" value="note" />
+                          <input
+                            name="title"
+                            placeholder="Nota..."
+                            className="h-7 w-28 rounded border border-[#d1d5db] px-2 text-[10px] outline-none focus:border-[#1565C0]"
+                          />
+                          <button
+                            type="submit"
+                            className="inline-flex h-7 items-center justify-center rounded border border-[#d1d5db] px-1.5 text-[#64748b] hover:bg-[#f3f4f6]"
+                            title="Salvar nota"
+                          >
+                            <MessageSquare className="h-3 w-3" />
+                          </button>
+                        </form>
                       </div>
 
-                      {lead.notes && (
-                        <p className="mt-2 rounded-lg bg-[#F7FAFE] px-3 py-2 text-xs text-[#334155]">{lead.notes}</p>
-                      )}
-
-                      {/* Activity Timeline */}
-                      {leadActivities.length > 0 && (
-                        <div className="mt-3 space-y-1.5">
-                          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#64748B]">Histórico</p>
-                          {leadActivities.slice(0, 3).map((a) => (
-                            <div key={a.id} className="flex items-center gap-2 text-xs text-[#64748B]">
-                              <div className="h-1.5 w-1.5 rounded-full bg-[#1E88E5]" />
-                              <span className="font-semibold">{a.title}</span>
-                              <span className="text-[10px]">{new Date(a.created_at).toLocaleDateString('pt-BR')}</span>
-                            </div>
+                      {/* Recent activities */}
+                      {recentActivities.length > 0 && (
+                        <div className="mt-1.5 space-y-0.5">
+                          {recentActivities.map((a) => (
+                            <p key={a.id} className="truncate text-[10px] text-[#94a3b8]">
+                              {a.title} - {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                            </p>
                           ))}
                         </div>
                       )}
-                    </div>
-
-                    {/* BANT Qualification Form */}
-                    <div className="w-full rounded-xl border border-[#E5ECF6] bg-[#F7FAFE] p-4 lg:w-[400px]">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#0B4A8F]">Scoring BANT</p>
-
-                      <form action={qualifyLead} className="mt-3 space-y-3">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-
-                        {Object.entries(BANT_LABELS).map(([key, { label, description }]) => (
-                          <div key={key}>
-                            <div className="flex items-center justify-between">
-                              <label className="text-xs font-bold text-[#334155]">{label}</label>
-                              <p className="text-[10px] text-[#94A3B8]">{description}</p>
-                            </div>
-                            <div className="mt-1 flex gap-1">
-                              {[0, 1, 2, 3, 4, 5].map((score) => (
-                                <label key={score} className="relative">
-                                  <input
-                                    type="radio"
-                                    name={`${key}_score`}
-                                    value={score}
-                                    defaultChecked={existing ? (existing as unknown as Record<string, number>)[`${key}_score`] === score : score === 0}
-                                    className="peer sr-only"
-                                  />
-                                  <span className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-[#D8E2EF] bg-white text-xs font-bold text-[#64748B] transition-all peer-checked:border-[#1E88E5] peer-checked:bg-[#1E88E5] peer-checked:text-white">
-                                    {score}
-                                  </span>
-                                </label>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-
-                        <textarea
-                          name="closer_notes"
-                          placeholder="Observações do closer..."
-                          defaultValue={existing?.closer_notes ?? ''}
-                          rows={2}
-                          className="w-full rounded-xl border border-[#D8E2EF] bg-white px-3 py-2 text-xs text-[#334155] outline-none focus:border-[#1E88E5]"
-                        />
-
-                        <button
-                          type="submit"
-                          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#1E88E5] text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
-                        >
-                          <BadgeCheck className="h-4 w-4" />
-                          Qualificar lead
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        </section>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* Qualified Leads */}
-      {qualifiedLeads.length > 0 && (
-        <section>
-          <div className="mb-4 flex items-center gap-2">
-            <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500" />
-            <h2 className="text-lg font-extrabold text-[#0F172A]">Leads qualificados</h2>
+      {/* Won leads summary */}
+      {wonLeads.length > 0 && (
+        <div>
+          <h2 className="mb-2 text-sm font-bold text-[#0f172a]">Fechados recentes ({wonLeads.length})</h2>
+          <div className="overflow-x-auto rounded-lg border border-[#bbf7d0]">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-[#bbf7d0] bg-[#f0fdf4]">
+                  <th className="px-3 py-2 text-[11px] font-bold uppercase text-[#166534]">Empresa</th>
+                  <th className="px-3 py-2 text-[11px] font-bold uppercase text-[#166534]">Valor</th>
+                  <th className="px-3 py-2 text-[11px] font-bold uppercase text-[#166534]">Data</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#dcfce7]">
+                {wonLeads.slice(0, 5).map((lead) => (
+                  <tr key={lead.id} className="bg-white">
+                    <td className="px-3 py-2">
+                      <p className="text-xs font-semibold text-[#0f172a]">{lead.company_name}</p>
+                      <p className="text-[10px] text-[#64748b]">{lead.full_name}</p>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="text-xs font-bold text-[#065f46]">
+                        {lead.estimated_value ? formatCurrency(lead.estimated_value) : '--'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-xs text-[#64748b]">
+                      {new Date(lead.updated_at).toLocaleDateString('pt-BR')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-
-          <div className="space-y-3">
-            {qualifiedLeads.map((lead) => {
-              const score = scoresByLead.get(lead.id)
-              const tempConfig = TEMPERATURES.find((t) => t.value === lead.temperature)
-
-              return (
-                <article key={lead.id} className="rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm">
-                  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-sm font-bold text-emerald-700">
-                        {score?.total_score ?? 0}
-                      </span>
-                      <div>
-                        <p className="text-sm font-bold text-[#0F172A]">{lead.full_name}</p>
-                        <p className="text-xs text-[#64748B]">{lead.company_name} • {lead.managers_range}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      {tempConfig && (
-                        <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-bold ${tempConfig.color}`}>
-                          {tempConfig.icon} {tempConfig.label}
-                        </span>
-                      )}
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                        BANT: {score?.total_score ?? 0}/20
-                      </span>
-                      <span className="text-[10px] font-bold uppercase text-[#64748B]">
-                        {PIPELINE_STAGES.find((s) => s.value === lead.pipeline_stage)?.label}
-                      </span>
-
-                      <form action={updateLeadPipeline} className="flex items-center gap-1">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <input type="hidden" name="temperature" value={lead.temperature} />
-                        <select
-                          name="pipeline_stage"
-                          defaultValue={lead.pipeline_stage}
-                          className="h-8 rounded-lg border border-[#D8E2EF] px-2 text-[11px] font-semibold text-[#334155] outline-none"
-                        >
-                          {PIPELINE_STAGES.map((s) => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
-                          ))}
-                        </select>
-                        <button type="submit" className="h-8 rounded-lg border border-[#D8E2EF] bg-white px-2 text-[10px] font-bold uppercase text-[#334155] hover:bg-slate-50">
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Nurturing */}
-      {nurturingLeads.length > 0 && (
-        <section>
-          <div className="mb-4 flex items-center gap-2">
-            <Flame className="h-4.5 w-4.5 text-amber-500" />
-            <h2 className="text-lg font-extrabold text-[#0F172A]">Nurturing (em aquecimento)</h2>
-          </div>
-
-          <div className="space-y-3">
-            {nurturingLeads.map((lead) => {
-              const score = scoresByLead.get(lead.id)
-
-              return (
-                <article key={lead.id} className="rounded-2xl border border-amber-200 bg-white p-5 shadow-sm">
-                  <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-50 text-sm font-bold text-amber-700">
-                        {score?.total_score ?? 0}
-                      </span>
-                      <div>
-                        <p className="text-sm font-bold text-[#0F172A]">{lead.full_name}</p>
-                        <p className="text-xs text-[#64748B]">{lead.company_name}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">
-                        BANT: {score?.total_score ?? 0}/20
-                      </span>
-
-                      <form action={addActivity} className="flex items-center gap-1">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <input type="hidden" name="activity_type" value="note" />
-                        <input
-                          name="title"
-                          placeholder="Adicionar nota..."
-                          className="h-8 w-48 rounded-lg border border-[#D8E2EF] px-2 text-[11px] text-[#334155] outline-none"
-                        />
-                        <button type="submit" className="h-8 rounded-lg bg-amber-500 px-3 text-[10px] font-bold uppercase text-white hover:bg-amber-600">
-                          Salvar
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Empty */}
-      {leads.length === 0 && (
-        <section className="rounded-2xl border border-[#D8E2EF] bg-white p-12 text-center shadow-sm">
-          <Target className="mx-auto h-10 w-10 text-[#94A3B8]" />
-          <h2 className="mt-4 text-xl font-extrabold text-[#0F172A]">Nenhum lead no pipeline</h2>
-          <p className="mt-2 text-sm text-[#64748B]">Converta prospects do SDR ou aguarde leads do formulário B2B.</p>
-        </section>
+        </div>
       )}
     </div>
   )
