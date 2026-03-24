@@ -34,6 +34,8 @@ export async function signup(formData: FormData) {
     const confirmPassword = formData.get('confirmPassword') as string
     const email = formData.get('email') as string
     const fullName = formData.get('fullName') as string
+    const whatsapp = (formData.get('whatsapp') as string)?.replace(/\D/g, '') || ''
+    const company = (formData.get('company') as string)?.trim() || ''
     const redirectTo = formData.get('redirectTo') as string
 
     if (password !== confirmPassword) {
@@ -54,6 +56,8 @@ export async function signup(formData: FormData) {
         email_confirm: true, // Auto-confirm email — no verification email sent
         user_metadata: {
             full_name: fullName,
+            whatsapp: whatsapp ? `+55${whatsapp}` : '',
+            company: company,
         },
     })
 
