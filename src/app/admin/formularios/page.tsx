@@ -37,9 +37,9 @@ type Formulario = {
 const formularios: Formulario[] = [
   {
     id: 'autoavaliacao',
-    titulo: 'Autoavaliação — Líder/Supervisor',
+    titulo: '1.4.1 — Autoavaliação do Líder/Supervisor',
     descricao:
-      'Formulário de múltipla escolha com diagnóstico automático. 6 questões sobre percepção da função, gestão de equipes, comunicação, tecnologia, ética e expectativas. Resultado com perfil de liderança.',
+      'Formulário de múltipla escolha preenchido pelo SUPERVISOR. 6 questões sobre percepção da função, gestão de equipes, comunicação, tecnologia, ética e expectativas. Ao final, gera o Diagnóstico de Liderança Estratégica com perfil (Reativo / Em Transição / Líder de Valor).',
     tipo: 'multipla_escolha',
     duracao: '~5 min',
     rota: '/treinamento/autoavaliacao',
@@ -49,36 +49,10 @@ const formularios: Formulario[] = [
     bgCor: '#EFF6FE',
   },
   {
-    id: 'diagnostico',
-    titulo: 'Diagnóstico de Liderança Estratégica',
-    descricao:
-      'Formulário dissertativo completo com 6 etapas: identificação, reflexão de papel, autoavaliação das 5 dimensões, maturidade 4.0, gestão de equipes e plano de ação de 12 semanas.',
-    tipo: 'dissertativo',
-    duracao: '~15 min',
-    rota: '/treinamento/diagnostico-lideranca',
-    requerLogin: false,
-    icon: FileText,
-    cor: '#F57C00',
-    bgCor: '#FFF8F0',
-  },
-  {
-    id: 'pdi',
-    titulo: 'Plano de Desenvolvimento Individual (PDI)',
-    descricao:
-      'Relatório PDI gerado automaticamente a partir da comparação entre Autoavaliação e Avaliação Executiva. O supervisor acessa seu PDI após ambas as avaliações serem preenchidas.',
-    tipo: 'relatorio',
-    duracao: 'Auto',
-    rota: '/treinamento/pdi',
-    requerLogin: true,
-    icon: BookOpen,
-    cor: '#7B1FA2',
-    bgCor: '#F3E5F5',
-  },
-  {
     id: 'avaliacao-executiva',
-    titulo: 'Avaliação Executiva — Alinhamento Estratégico',
+    titulo: '1.3.1 — Avaliação Executiva (Gestor/RH)',
     descricao:
-      'Formulário para RH/Gestor avaliar o supervisor. 8 seções: perfil do elo estratégico, gestão de equipe, conflitos geracionais, dados e IA, ética, autonomia, prioridade estratégica e critérios de sucesso.',
+      'Formulário preenchido pelo GESTOR ou RH sobre o supervisor. 8 seções: perfil do elo estratégico, gestão de equipe, conflitos geracionais, dados e IA, ética, autonomia, prioridade estratégica e critérios de sucesso.',
     tipo: 'misto',
     duracao: '~10 min',
     rota: '/treinamento/avaliacao-executiva',
@@ -86,6 +60,19 @@ const formularios: Formulario[] = [
     icon: Building2,
     cor: '#00695C',
     bgCor: '#E0F2F1',
+  },
+  {
+    id: 'pdi',
+    titulo: 'PDI — Plano de Desenvolvimento Individual',
+    descricao:
+      'Relatório GERADO AUTOMATICAMENTE do cruzamento da Autoavaliação (1.4.1) com a Avaliação Executiva (1.3.1). Identifica gaps, pontos cegos, forças ocultas e gera plano de 12 semanas com foco de mentoria.',
+    tipo: 'relatorio',
+    duracao: 'Auto',
+    rota: '/treinamento/pdi',
+    requerLogin: true,
+    icon: BookOpen,
+    cor: '#7B1FA2',
+    bgCor: '#F3E5F5',
   },
 ]
 
@@ -152,33 +139,42 @@ export default async function AdminFormulariosPage() {
             Central de documentos
           </p>
           <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">
-            Formulários e Diagnósticos
+            Formulários e PDI
           </h1>
           <p className="mt-4 max-w-lg text-sm text-[#A9BDD8]">
-            Copie os links dos formulários para enviar aos líderes e supervisores.
-            Acompanhe as respostas e resultados aqui.
+            Fluxo: Supervisor preenche a Autoavaliação (1.4.1) → Gestor preenche a Avaliação Executiva (1.3.1) → Sistema gera o PDI automaticamente.
           </p>
         </div>
       </section>
 
-      {/* KPIs da Autoavaliação */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* KPIs do Fluxo */}
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
           <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1565C0]/10">
-            <Users className="h-4.5 w-4.5 text-[#1565C0]" />
+            <ClipboardCheck className="h-4.5 w-4.5 text-[#1565C0]" />
           </div>
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
-            Total de respostas
+            Autoavaliações (1.4.1)
           </p>
           <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalAutoavaliacao ?? 0}</p>
         </article>
 
+        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
+          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#00695C]/10">
+            <Building2 className="h-4.5 w-4.5 text-[#00695C]" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
+            Avaliações Executivas (1.3.1)
+          </p>
+          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
+        </article>
+
         <article className="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-red-700">
-            Supervisor Reativo
+            Reativo
           </p>
           <p className="mt-2 text-3xl font-extrabold text-red-900">{perfilCounts.reativo}</p>
-          <p className="mt-1 text-xs text-red-600">7-10 pontos</p>
+          <p className="mt-1 text-xs text-red-600">7-10 pts</p>
         </article>
 
         <article className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
@@ -186,7 +182,7 @@ export default async function AdminFormulariosPage() {
             Em Transição
           </p>
           <p className="mt-2 text-3xl font-extrabold text-amber-900">{perfilCounts.transicao}</p>
-          <p className="mt-1 text-xs text-amber-600">11-15 pontos</p>
+          <p className="mt-1 text-xs text-amber-600">11-15 pts</p>
         </article>
 
         <article className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
@@ -194,7 +190,7 @@ export default async function AdminFormulariosPage() {
             Líder de Valor
           </p>
           <p className="mt-2 text-3xl font-extrabold text-emerald-900">{perfilCounts.lider_valor}</p>
-          <p className="mt-1 text-xs text-emerald-600">16-21 pontos</p>
+          <p className="mt-1 text-xs text-emerald-600">16-21 pts</p>
         </article>
       </section>
 
