@@ -25,7 +25,7 @@ type Formulario = {
   id: string
   titulo: string
   descricao: string
-  tipo: 'multipla_escolha' | 'dissertativo' | 'misto'
+  tipo: 'multipla_escolha' | 'dissertativo' | 'misto' | 'relatorio'
   duracao: string
   rota: string
   requerLogin: boolean
@@ -65,9 +65,9 @@ const formularios: Formulario[] = [
     id: 'pdi',
     titulo: 'Plano de Desenvolvimento Individual (PDI)',
     descricao:
-      'Formulário completo de PDI com 5 etapas: diagnóstico das 5 dimensões da liderança, avaliação de Hard Skills e Soft Skills, roteiro de aceleração de 12 semanas e competências do Supervisor 4.0.',
-    tipo: 'misto',
-    duracao: '~10 min',
+      'Relatório PDI gerado automaticamente a partir da comparação entre Autoavaliação e Avaliação Executiva. O supervisor acessa seu PDI após ambas as avaliações serem preenchidas.',
+    tipo: 'relatorio',
+    duracao: 'Auto',
     rota: '/treinamento/pdi',
     requerLogin: true,
     icon: BookOpen,
@@ -253,7 +253,7 @@ export default async function AdminFormulariosPage() {
                         className="rounded-md px-2 py-0.5 text-[11px] font-bold uppercase"
                         style={{ backgroundColor: form.bgCor, color: form.cor }}
                       >
-                        {form.tipo === 'multipla_escolha' ? 'Múltipla escolha' : form.tipo === 'dissertativo' ? 'Dissertativo' : 'Misto'}
+                        {form.tipo === 'multipla_escolha' ? 'Múltipla escolha' : form.tipo === 'dissertativo' ? 'Dissertativo' : form.tipo === 'relatorio' ? 'Relatório auto-gerado' : 'Misto'}
                       </span>
                       <span className="text-xs text-[#64748B]">{form.duracao}</span>
                       {form.requerLogin && (

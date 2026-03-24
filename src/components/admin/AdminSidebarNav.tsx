@@ -8,6 +8,7 @@ import {
   BriefcaseBusiness,
   Calendar,
   ClipboardList,
+  FileBarChart,
   LayoutDashboard,
   MessageSquare,
   Target,
@@ -26,6 +27,7 @@ const navGroups: NavGroup[] = [
       { href: '/admin', label: 'Visão geral', icon: LayoutDashboard },
       { href: '/admin/alunos', label: 'Alunos', icon: Users },
       { href: '/admin/gestores', label: 'Gestores', icon: Briefcase },
+      { href: '/admin/relatorios', label: 'Relatorios PDI', icon: FileBarChart },
     ],
   },
   {
