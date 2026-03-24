@@ -11,6 +11,7 @@ import {
   FileBarChart,
   GraduationCap,
   LayoutDashboard,
+  Link2,
   MessageSquare,
   Target,
   Users,
@@ -29,6 +30,7 @@ const navGroups: NavGroup[] = [
       { href: '/admin/alunos', label: 'Alunos', icon: Users },
       { href: '/admin/gestores', label: 'Gestores', icon: Briefcase },
       { href: '/admin/relatorios', label: 'Relatorios PDI', icon: FileBarChart },
+      { href: '/admin/classificacao', label: 'Classificacao', icon: Link2 },
     ],
   },
   {

@@ -66,11 +66,11 @@ export default async function AlunoFichaPage({ params }: Props) {
     .eq('user_id', id)
     .order('created_at', { ascending: false })
 
-  /* ── Executive Assessments (about this aluno) ── */
+  /* ── Executive Assessments (about this aluno — check both user_id and supervisor_user_id) ── */
   const { data: execAssessments } = await supabase
     .from('leadership_executive_assessments')
     .select('*')
-    .eq('user_id', id)
+    .or(`user_id.eq.${id},supervisor_user_id.eq.${id}`)
     .order('created_at', { ascending: false })
 
   /* ── Training Participations ── */

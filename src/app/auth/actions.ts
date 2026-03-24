@@ -37,27 +37,31 @@ export async function signup(formData: FormData) {
         return { error: 'As senhas não coincidem.' }
     }
 
-    const data = {
-        email: email,
-        password: password,
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
+    const redirectTo = formData.get('redirectTo') as string
+
+    const { error } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
             data: {
                 full_name: fullName,
-            }
-        }
-    }
-
-    const { error } = await supabase.auth.signUp(data)
+            },
+            emailRedirectTo: `${siteUrl}${redirectTo || '/dashboard'}`,
+        },
+    })
 
     if (error) {
-        if (error.message.toLowerCase().includes('rate limit')) {
-            return { error: 'Limite de cadastros excedido temporariamente pelo servidor. Por favor, aguarde alguns minutos e tente novamente.' }
+        if (error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('security')) {
+            return { error: 'Por favor, aguarde alguns segundos e tente novamente.' }
+        }
+        if (error.message.toLowerCase().includes('already registered')) {
+            return { error: 'Este email já está cadastrado. Faça login ou use outro email.' }
         }
         return { error: error.message }
     }
 
     revalidatePath('/', 'layout')
-    const redirectTo = formData.get('redirectTo') as string
     redirect(redirectTo || '/dashboard')
 }
 

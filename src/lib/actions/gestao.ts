@@ -382,6 +382,238 @@ export async function removeRelationship(formData: FormData) {
   revalidatePath('/admin/gestao')
 }
 
+// ── PDI Classification & Linking ─────────────────────
+
+/**
+ * Get all executive assessments that are NOT yet linked to a supervisor user.
+ */
+export async function getUnlinkedExecAssessments() {
+  const { supabase } = await verifyAdmin()
+
+  const { data } = await supabase
+    .from('leadership_executive_assessments')
+    .select('id, user_id, nome_empresa, nome_supervisor, cargo_supervisor, nome_avaliador, media_dimensoes, pdi_type, created_at')
+    .is('supervisor_user_id', null)
+    .order('created_at', { ascending: false })
+
+  if (!data || data.length === 0) return []
+
+  // Resolve who filled each assessment
+  const userIds = [...new Set(data.map((d) => d.user_id))]
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', userIds)
+
+  const profileMap = new Map<string, string>()
+  for (const p of profiles ?? []) {
+    profileMap.set(p.id, p.full_name ?? 'Sem nome')
+  }
+
+  return data.map((d) => ({
+    ...d,
+    filled_by_name: profileMap.get(d.user_id) ?? 'Desconhecido',
+  }))
+}
+
+/**
+ * Get all executive assessments that ARE linked to a supervisor user.
+ */
+export async function getLinkedExecAssessments() {
+  const { supabase } = await verifyAdmin()
+
+  const { data } = await supabase
+    .from('leadership_executive_assessments')
+    .select('id, user_id, supervisor_user_id, nome_empresa, nome_supervisor, cargo_supervisor, nome_avaliador, media_dimensoes, pdi_type, created_at')
+    .not('supervisor_user_id', 'is', null)
+    .order('created_at', { ascending: false })
+
+  if (!data || data.length === 0) return []
+
+  // Resolve user names
+  const allUserIds = [...new Set([
+    ...data.map((d) => d.user_id),
+    ...data.map((d) => d.supervisor_user_id).filter(Boolean),
+  ])]
+
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, full_name')
+    .in('id', allUserIds as string[])
+
+  const profileMap = new Map<string, string>()
+  for (const p of profiles ?? []) {
+    profileMap.set(p.id, p.full_name ?? 'Sem nome')
+  }
+
+  // Check if PDI exists for linked supervisor
+  const supervisorIds = data.map((d) => d.supervisor_user_id).filter(Boolean) as string[]
+  const { data: selfAssessments } = await supabase
+    .from('leadership_self_assessments')
+    .select('user_id')
+    .in('user_id', supervisorIds)
+
+  const hasSelfSet = new Set((selfAssessments ?? []).map((sa) => sa.user_id))
+
+  return data.map((d) => ({
+    ...d,
+    filled_by_name: profileMap.get(d.user_id) ?? 'Desconhecido',
+    supervisor_name: d.supervisor_user_id ? profileMap.get(d.supervisor_user_id) ?? 'Desconhecido' : null,
+    has_pdi: d.supervisor_user_id ? hasSelfSet.has(d.supervisor_user_id) : false,
+  }))
+}
+
+/**
+ * Link an executive assessment to a supervisor user.
+ * Also creates a gestor_aluno_relationships entry if not already present.
+ */
+export async function linkExecToSupervisor(formData: FormData) {
+  const { supabase } = await verifyAdmin()
+
+  const assessmentId = str(formData, 'assessment_id')
+  const supervisorUserId = str(formData, 'supervisor_user_id')
+
+  if (!assessmentId || !supervisorUserId) return
+
+  // Update the executive assessment
+  const { error } = await supabase
+    .from('leadership_executive_assessments')
+    .update({
+      supervisor_user_id: supervisorUserId,
+      pdi_type: 'corporate',
+    })
+    .eq('id', assessmentId)
+
+  if (error) {
+    console.error('Error linking exec to supervisor:', error)
+    return
+  }
+
+  // Get the assessment to find the gestor (user_id = the person who filled it)
+  const { data: assessment } = await supabase
+    .from('leadership_executive_assessments')
+    .select('user_id, nome_empresa')
+    .eq('id', assessmentId)
+    .single()
+
+  if (assessment) {
+    // Check if relationship already exists
+    const { data: existing } = await supabase
+      .from('gestor_aluno_relationships')
+      .select('id')
+      .eq('gestor_user_id', assessment.user_id)
+      .eq('aluno_user_id', supervisorUserId)
+      .limit(1)
+      .maybeSingle()
+
+    if (!existing) {
+      await supabase.from('gestor_aluno_relationships').insert({
+        gestor_user_id: assessment.user_id,
+        aluno_user_id: supervisorUserId,
+        company_name: assessment.nome_empresa || null,
+        relationship_type: 'direct_manager',
+      })
+    }
+  }
+
+  revalidatePath('/admin/classificacao')
+}
+
+/**
+ * Unlink an executive assessment from a supervisor.
+ */
+export async function unlinkExecFromSupervisor(formData: FormData) {
+  const { supabase } = await verifyAdmin()
+
+  const assessmentId = str(formData, 'assessment_id')
+  if (!assessmentId) return
+
+  const { error } = await supabase
+    .from('leadership_executive_assessments')
+    .update({
+      supervisor_user_id: null,
+    })
+    .eq('id', assessmentId)
+
+  if (error) {
+    console.error('Error unlinking exec from supervisor:', error)
+  }
+
+  revalidatePath('/admin/classificacao')
+}
+
+/**
+ * Search users (profiles) by name for the linking UI.
+ */
+export async function searchUsers(query: string) {
+  const { supabase } = await verifyAdmin()
+
+  if (!query || query.length < 2) return []
+
+  const { data } = await supabase
+    .from('profiles')
+    .select('id, full_name, role')
+    .ilike('full_name', `%${query}%`)
+    .order('full_name')
+    .limit(10)
+
+  return data ?? []
+}
+
+/**
+ * Get KPI counts for the classification page.
+ */
+export async function getClassificacaoKPIs() {
+  const { supabase } = await verifyAdmin()
+
+  // Count individual PDIs (exec assessments without supervisor_user_id)
+  const { count: pendingCount } = await supabase
+    .from('leadership_executive_assessments')
+    .select('id', { count: 'exact', head: true })
+    .is('supervisor_user_id', null)
+
+  // Count corporate PDIs (exec assessments with supervisor_user_id)
+  const { count: corporateCount } = await supabase
+    .from('leadership_executive_assessments')
+    .select('id', { count: 'exact', head: true })
+    .not('supervisor_user_id', 'is', null)
+
+  // Count individual PDIs: users with self-assessment but no exec linked to them
+  const { data: selfOnly } = await supabase
+    .from('leadership_self_assessments')
+    .select('user_id')
+
+  const selfUserIds = [...new Set((selfOnly ?? []).map((s) => s.user_id))]
+
+  let individualCount = 0
+  if (selfUserIds.length > 0) {
+    const { count } = await supabase
+      .from('leadership_executive_assessments')
+      .select('supervisor_user_id', { count: 'exact', head: true })
+      .in('supervisor_user_id', selfUserIds)
+
+    // Individual = selfUserIds that do NOT have a corporate exec linked
+    const linkedSupervisorIds = new Set<string>()
+    const { data: linkedExecs } = await supabase
+      .from('leadership_executive_assessments')
+      .select('supervisor_user_id')
+      .not('supervisor_user_id', 'is', null)
+      .in('supervisor_user_id', selfUserIds)
+
+    for (const le of linkedExecs ?? []) {
+      if (le.supervisor_user_id) linkedSupervisorIds.add(le.supervisor_user_id)
+    }
+
+    individualCount = selfUserIds.filter((uid) => !linkedSupervisorIds.has(uid)).length
+  }
+
+  return {
+    individual: individualCount,
+    corporate: corporateCount ?? 0,
+    pending: pendingCount ?? 0,
+  }
+}
+
 // ── Alunos List with Status ───────────────────────────
 
 export async function getAlunosWithStatus() {

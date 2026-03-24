@@ -53,11 +53,11 @@ export default async function PDIPage() {
     .order('created_at', { ascending: false })
     .limit(1)
 
-  // Fetch latest executive assessment
+  // Fetch latest executive assessment (check both user_id and supervisor_user_id)
   const { data: execAssessments } = await supabase
     .from('leadership_executive_assessments')
     .select('*')
-    .eq('user_id', user.id)
+    .or(`user_id.eq.${user.id},supervisor_user_id.eq.${user.id}`)
     .order('created_at', { ascending: false })
     .limit(1)
 
