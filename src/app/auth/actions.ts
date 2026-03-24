@@ -20,7 +20,8 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/dashboard')
+    const redirectTo = formData.get('redirectTo') as string
+    redirect(redirectTo || '/dashboard')
 }
 
 // Returns an error string on failure, or redirects on success
@@ -56,7 +57,8 @@ export async function signup(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/dashboard')
+    const redirectTo = formData.get('redirectTo') as string
+    redirect(redirectTo || '/dashboard')
 }
 
 export async function logout() {

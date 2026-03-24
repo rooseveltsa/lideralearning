@@ -1,6 +1,7 @@
 'use client'
 
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { login } from "@/app/auth/actions"
 import { useState, useTransition } from "react"
 import { Loader2 } from "lucide-react"
@@ -18,6 +19,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function LoginPage() {
+    const searchParams = useSearchParams()
+    const redirectTo = searchParams.get('redirect') || ''
     const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
 
@@ -58,6 +61,7 @@ export default function LoginPage() {
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
+                        {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
                         <CardContent className="grid gap-5">
                             {error && (
                                 <div className="bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444] text-sm p-3 rounded-xl font-medium text-center">
@@ -111,7 +115,7 @@ export default function LoginPage() {
                             </Button>
                             <div className="text-center text-sm text-[#64748B]">
                                 Não tem uma licença corporativa?{" "}
-                                <Link href="/auth/register" className="text-[#1565C0] font-bold hover:text-[#1E88E5] transition-colors">
+                                <Link href={`/auth/register${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`} className="text-[#1565C0] font-bold hover:text-[#1E88E5] transition-colors">
                                     Criar Conta
                                 </Link>
                             </div>
