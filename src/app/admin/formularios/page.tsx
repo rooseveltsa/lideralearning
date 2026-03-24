@@ -1,4 +1,6 @@
 import {
+  BookOpen,
+  Building2,
   ClipboardCheck,
   ClipboardList,
   Copy,
@@ -21,7 +23,7 @@ type Formulario = {
   id: string
   titulo: string
   descricao: string
-  tipo: 'multipla_escolha' | 'dissertativo'
+  tipo: 'multipla_escolha' | 'dissertativo' | 'misto'
   duracao: string
   rota: string
   requerLogin: boolean
@@ -56,6 +58,32 @@ const formularios: Formulario[] = [
     icon: FileText,
     cor: '#F57C00',
     bgCor: '#FFF8F0',
+  },
+  {
+    id: 'pdi',
+    titulo: 'Plano de Desenvolvimento Individual (PDI)',
+    descricao:
+      'Formulário completo de PDI com 5 etapas: diagnóstico das 5 dimensões da liderança, avaliação de Hard Skills e Soft Skills, roteiro de aceleração de 12 semanas e competências do Supervisor 4.0.',
+    tipo: 'misto',
+    duracao: '~10 min',
+    rota: '/treinamento/pdi',
+    requerLogin: true,
+    icon: BookOpen,
+    cor: '#7B1FA2',
+    bgCor: '#F3E5F5',
+  },
+  {
+    id: 'avaliacao-executiva',
+    titulo: 'Avaliação Executiva — Alinhamento Estratégico',
+    descricao:
+      'Formulário para RH/Gestor avaliar o supervisor. 8 seções: perfil do elo estratégico, gestão de equipe, conflitos geracionais, dados e IA, ética, autonomia, prioridade estratégica e critérios de sucesso.',
+    tipo: 'misto',
+    duracao: '~10 min',
+    rota: '/treinamento/avaliacao-executiva',
+    requerLogin: true,
+    icon: Building2,
+    cor: '#00695C',
+    bgCor: '#E0F2F1',
   },
 ]
 
@@ -178,7 +206,7 @@ export default async function AdminFormulariosPage() {
                         className="rounded-md px-2 py-0.5 text-[11px] font-bold uppercase"
                         style={{ backgroundColor: form.bgCor, color: form.cor }}
                       >
-                        {form.tipo === 'multipla_escolha' ? 'Múltipla escolha' : 'Dissertativo'}
+                        {form.tipo === 'multipla_escolha' ? 'Múltipla escolha' : form.tipo === 'dissertativo' ? 'Dissertativo' : 'Misto'}
                       </span>
                       <span className="text-xs text-[#64748B]">{form.duracao}</span>
                       {form.requerLogin && (
