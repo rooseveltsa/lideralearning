@@ -86,6 +86,33 @@ export async function signup(formData: FormData) {
         return { error: 'Conta criada! Faça login com suas credenciais.' }
     }
 
+    // After successful signIn, create prospect in CRM for lead tracking
+    try {
+        // Check if prospect with this email already exists (email is not unique in schema)
+        const { data: existing } = await admin
+            .from('crm_prospects')
+            .select('id')
+            .eq('email', email)
+            .limit(1)
+            .maybeSingle()
+
+        if (!existing) {
+            await admin.from('crm_prospects').insert({
+                full_name: fullName,
+                job_title: 'Não informado',
+                job_function: 'outro',
+                company_name: company || 'Não informado',
+                email: email,
+                phone: whatsapp ? `+55${whatsapp}` : null,
+                outreach_status: 'connected',
+                notes: `Cadastro via site. Redirect: ${redirectTo || '/dashboard'}`,
+            })
+        }
+    } catch (e) {
+        // Non-blocking - don't fail signup if CRM insert fails
+        console.error('[signup] CRM prospect creation failed:', e)
+    }
+
     revalidatePath('/', 'layout')
     redirect(redirectTo || '/dashboard')
 }

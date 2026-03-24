@@ -62,6 +62,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Update CRM prospect status - they completed a form
+  if (json.userEmail) {
+    const perfil = getPerfilLabel(json.pontuacaoTotal)
+    try {
+      await admin
+        .from('crm_prospects')
+        .update({
+          outreach_status: 'replied',
+          notes: `Preencheu autoavaliacao. Perfil: ${perfil}. Score: ${json.pontuacaoTotal}/21`,
+        })
+        .eq('email', json.userEmail)
+    } catch (e) {
+      console.error('[autoavaliacao] CRM update failed:', e)
+    }
+  }
+
   // Generate partial PDI and send email (non-blocking — errors are logged, not thrown)
   if (json.userEmail) {
     const perfil = getPerfilLabel(json.pontuacaoTotal)

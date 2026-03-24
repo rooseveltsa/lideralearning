@@ -14,6 +14,7 @@ import {
   Link2,
   MessageSquare,
   Target,
+  UserPlus,
   Users,
 } from 'lucide-react'
 
@@ -27,6 +28,7 @@ const navGroups: NavGroup[] = [
     label: 'Operação',
     items: [
       { href: '/admin', label: 'Visão geral', icon: LayoutDashboard },
+      { href: '/admin/inscritos', label: 'Inscritos', icon: UserPlus },
       { href: '/admin/alunos', label: 'Alunos', icon: Users },
       { href: '/admin/gestores', label: 'Gestores', icon: Briefcase },
       { href: '/admin/relatorios', label: 'Relatorios PDI', icon: FileBarChart },
