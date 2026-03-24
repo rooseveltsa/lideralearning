@@ -434,18 +434,35 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
           </p>
         </div>
 
-        {/* CTA */}
-        <div className="text-center">
-          <p className="mb-4 text-sm font-semibold italic text-[#64748B]">
-            Se você se identificou com este diagnóstico, o próximo passo não é trabalhar mais — é liderar melhor.
+        {/* CTA - Ver PDI */}
+        <div className="rounded-2xl border border-[#7B1FA2]/20 bg-[#F3E5F5] p-6 text-center">
+          <h4 className="text-base font-extrabold text-[#7B1FA2]">
+            Seu PDI foi gerado automaticamente!
+          </h4>
+          <p className="mx-auto mt-2 max-w-md text-sm text-[#64748B]">
+            Com base nas suas respostas, geramos seu Plano de Desenvolvimento Individual
+            com recomendações personalizadas e um roteiro de 12 semanas.
           </p>
-          <a
-            href="https://wa.me/5564996099020?text=Ol%C3%A1%2C%20fiz%20a%20autoavalia%C3%A7%C3%A3o%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"
-          >
-            Falar com Claudemir no WhatsApp
-          </a>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/treinamento/pdi"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#7B1FA2] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#6A1B9A]"
+            >
+              <Trophy className="h-4 w-4" />
+              Ver meu PDI completo
+            </a>
+            <a
+              href="https://wa.me/5564996099020?text=Ol%C3%A1%2C%20fiz%20a%20autoavalia%C3%A7%C3%A3o%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"
+            >
+              Falar com Claudemir
+            </a>
+          </div>
         </div>
+
+        <p className="text-center text-sm font-semibold italic text-[#64748B]">
+          O próximo passo não é trabalhar mais — é liderar melhor.
+        </p>
       </div>
     )
   }

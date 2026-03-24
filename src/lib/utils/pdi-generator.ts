@@ -46,6 +46,7 @@ export type PDIReport = {
   alunoName: string
   company: string | null
   generatedAt: string
+  mode: 'full' | 'partial' // partial = only self-assessment, full = both assessments
 
   // Scores
   selfAssessment: {
@@ -57,7 +58,7 @@ export type PDIReport = {
     details: Record<string, number>
     nivelAtual: string
     nivelEsperado: string
-  }
+  } | null // null when mode = partial
 
   // Analysis
   overallAlignment: number // 0-100%
@@ -511,6 +512,101 @@ export function getPDIStatus(
 }
 
 /**
+ * Generate a PARTIAL PDI report based only on the self-assessment.
+ * Used for lead capture — the supervisor gets an initial diagnostic PDI
+ * immediately after filling the autoavaliação (1.4.1).
+ * When the executive assessment (1.3.1) is later added, the full PDI replaces this.
+ */
+export function generatePartialPDI(
+  alunoId: string,
+  alunoName: string,
+  company: string | null,
+  selfAssessment: Record<string, unknown>,
+): PDIReport {
+  const selfData = selfAssessment as SelfFields
+  const perfil = (selfData.perfil as string) || 'transicao'
+  const total = (selfData.pontuacao_total as number) || 0
+
+  // Build dimensions from self-assessment only
+  const selfDimensions = ALL_DIMENSIONS.filter((d) => d.selfKey !== null)
+  const dimensions: PDIDimension[] = selfDimensions.map((dim) => {
+    const selfRaw = dim.selfKey ? (selfData[dim.selfKey] as number | null | undefined) ?? null : null
+    const selfNorm = selfRaw !== null ? normalizeScore(selfRaw, dim.selfMax) : 50
+
+    // Without exec, we estimate gap based on distance from ideal (100)
+    const gap = 100 - selfNorm
+    const priority = classifyPriority(gap > 60 ? gap - 20 : gap) // adjust threshold for single-source
+    const recommendation = getRecommendation(dim.name, gap, selfNorm, selfNorm)
+
+    return {
+      name: dim.name,
+      selfScore: selfNorm,
+      execScore: 0, // no exec data
+      gap,
+      priority,
+      recommendation,
+    }
+  })
+
+  // Self details
+  const selfDetails: Record<string, number> = {}
+  for (const dim of ALL_DIMENSIONS) {
+    if (dim.selfKey) {
+      const raw = selfData[dim.selfKey] as number | null | undefined
+      if (raw !== null && raw !== undefined) selfDetails[dim.name] = raw
+    }
+  }
+
+  // Strengths: score >= 67% (2/3 or 3/3)
+  const strengths = dimensions.filter((d) => d.selfScore >= 67).map((d) => d.name)
+
+  // Areas to develop: score < 50%
+  const criticalGaps = dimensions.filter((d) => d.selfScore < 50).map((d) => d.name)
+
+  const weakDimensions = [...dimensions].sort((a, b) => a.selfScore - b.selfScore).filter((d) => d.selfScore < 67)
+
+  return {
+    alunoId,
+    alunoName,
+    company,
+    generatedAt: new Date().toISOString(),
+    mode: 'partial',
+
+    selfAssessment: { total, perfil, details: selfDetails },
+    execAssessment: null,
+
+    overallAlignment: 0, // no alignment without exec
+    dimensions,
+
+    strengths,
+    criticalGaps,
+    blindSpots: [],
+    hiddenStrengths: [],
+
+    developmentPlan: {
+      phase1: generatePhase1(weakDimensions),
+      phase2: generatePhase2(weakDimensions),
+      phase3: generatePhase3(weakDimensions),
+    },
+
+    kpisToTrack: generateKPIs(dimensions, perfil),
+
+    mentoringFocus: {
+      session30days: [
+        'Validar autopercepção com feedback 360 da equipe.',
+        'Identificar top 2 áreas de desenvolvimento prioritário.',
+        'Alinhar expectativas com gestor direto.',
+      ],
+      session60days: [
+        'Revisar progresso nas áreas identificadas.',
+        'Preparar plano de sustentação pós-treinamento.',
+        'Definir metas para os próximos 90 dias.',
+      ],
+    },
+  }
+}
+
+/**
  * Generate a complete PDI report from two assessments.
  */
 export function generatePDI(
@@ -607,6 +703,7 @@ export function generatePDI(
     alunoName,
     company,
     generatedAt: new Date().toISOString(),
+    mode: 'full',
 
     selfAssessment: {
       total: (selfData.pontuacao_total as number) || 0,

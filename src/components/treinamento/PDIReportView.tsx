@@ -257,14 +257,24 @@ export default function PDIReportView({ report, hidePrint }: Props) {
             </p>
             <p className="mt-0.5 text-xs text-[#64748B]">{report.selfAssessment.total} pontos</p>
           </div>
-          <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFD] p-4">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Nivel Atual</p>
-            <p className="mt-1 text-lg font-extrabold text-[#0F172A]">{report.execAssessment.nivelAtual}</p>
-          </div>
-          <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFD] p-4">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Nivel Esperado</p>
-            <p className="mt-1 text-lg font-extrabold text-[#1565C0]">{report.execAssessment.nivelEsperado}</p>
-          </div>
+          {report.execAssessment ? (
+            <>
+              <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFD] p-4">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Nivel Atual</p>
+                <p className="mt-1 text-lg font-extrabold text-[#0F172A]">{report.execAssessment.nivelAtual}</p>
+              </div>
+              <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFD] p-4">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Nivel Esperado</p>
+                <p className="mt-1 text-lg font-extrabold text-[#1565C0]">{report.execAssessment.nivelEsperado}</p>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 sm:col-span-2">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">PDI Parcial</p>
+              <p className="mt-1 text-sm font-bold text-amber-800">Baseado na sua autoavaliacao</p>
+              <p className="mt-0.5 text-xs text-amber-600">O PDI completo sera gerado quando o gestor preencher a Avaliacao Executiva</p>
+            </div>
+          )}
           <div className="rounded-xl border border-[#D8E2EF] bg-[#F8FAFD] p-4">
             <p className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">Gaps Criticos</p>
             <p className="mt-1 text-lg font-extrabold text-red-600">{report.criticalGaps.length}</p>

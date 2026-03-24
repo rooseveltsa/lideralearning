@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
-import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
+import { generatePDI, generatePartialPDI, getPDIStatus } from '@/lib/utils/pdi-generator'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import PDIReportView from '@/components/treinamento/PDIReportView'
@@ -110,6 +110,16 @@ export default async function PDIPage() {
                   company,
                   selfAssessments![0] as Record<string, unknown>,
                   execAssessments![0] as Record<string, unknown>,
+                )}
+              />
+            ) : hasSelf ? (
+              /* Partial PDI: only self-assessment available */
+              <PDIReportView
+                report={generatePartialPDI(
+                  user.id,
+                  alunoName,
+                  company,
+                  selfAssessments![0] as Record<string, unknown>,
                 )}
               />
             ) : (
