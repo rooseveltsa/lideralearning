@@ -12,7 +12,7 @@ const navLinks = [
   { href: '/contato', label: 'Diagnóstico' },
 ]
 
-const darkHeroRoutes = ['/', '/empresas', '/cursos']
+const darkHeroRoutes = ['/', '/empresas', '/cursos', '/treinamento']
 
 export default function SiteHeader() {
   const pathname = usePathname()
@@ -25,7 +25,7 @@ export default function SiteHeader() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const hasDarkHero = useMemo(() => darkHeroRoutes.includes(pathname), [pathname])
+  const hasDarkHero = useMemo(() => darkHeroRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`)), [pathname])
   const isSolid = isScrolled || isMobileOpen
   const isDarkContext = hasDarkHero && !isSolid
 
