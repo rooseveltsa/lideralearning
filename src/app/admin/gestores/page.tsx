@@ -1,123 +1,189 @@
 import Link from 'next/link'
-import { Briefcase, ChevronRight, Users } from 'lucide-react'
+import {
+  Briefcase,
+  ChevronRight,
+  ClipboardCheck,
+  FileText,
+  GraduationCap,
+  Plus,
+  Search,
+  Users,
+} from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 
 export default async function AdminGestoresPage() {
   const supabase = await createClient()
 
-  // Fetch all hr_manager profiles
   const { data: gestores } = await supabase
     .from('profiles')
     .select('id, full_name, role, created_at')
     .eq('role', 'hr_manager')
     .order('created_at', { ascending: false })
 
-  // Fetch relationship counts
+  // Fetch relationships with aluno details
   const { data: relationships } = await supabase
     .from('gestor_aluno_relationships')
-    .select('gestor_user_id, company_name')
+    .select('gestor_user_id, aluno_user_id, company_name, relationship_type')
 
-  const gestorStats = new Map<string, { count: number; company: string }>()
+  // Fetch assessment counts per aluno
+  const { data: selfAssessments } = await supabase
+    .from('leadership_self_assessments')
+    .select('user_id')
+
+  const { data: trainings } = await supabase
+    .from('presential_training_participants')
+    .select('user_id, status')
+
+  const selfSet = new Set(selfAssessments?.map((s) => s.user_id) ?? [])
+  const trainedSet = new Set(
+    trainings?.filter((t) => t.status === 'attended').map((t) => t.user_id) ?? []
+  )
+
+  // Fetch aluno profiles
+  const alunoIds = [...new Set(relationships?.map((r) => r.aluno_user_id) ?? [])]
+  const { data: alunoProfiles } = alunoIds.length > 0
+    ? await supabase.from('profiles').select('id, full_name').in('id', alunoIds)
+    : { data: [] }
+
+  const alunoMap = new Map(alunoProfiles?.map((p) => [p.id, p.full_name]) ?? [])
+
+  type GestorInfo = {
+    count: number
+    company: string
+    alunos: Array<{ id: string; name: string; hasSelf: boolean; trained: boolean }>
+  }
+  const gestorStats = new Map<string, GestorInfo>()
+
   if (relationships) {
     for (const rel of relationships) {
-      const existing = gestorStats.get(rel.gestor_user_id)
-      gestorStats.set(rel.gestor_user_id, {
-        count: (existing?.count ?? 0) + 1,
-        company: rel.company_name ?? existing?.company ?? '',
+      const existing = gestorStats.get(rel.gestor_user_id) ?? {
+        count: 0,
+        company: '',
+        alunos: [],
+      }
+      existing.count++
+      existing.company = rel.company_name ?? existing.company
+      existing.alunos.push({
+        id: rel.aluno_user_id,
+        name: alunoMap.get(rel.aluno_user_id) ?? 'Sem nome',
+        hasSelf: selfSet.has(rel.aluno_user_id),
+        trained: trainedSet.has(rel.aluno_user_id),
       })
+      gestorStats.set(rel.gestor_user_id, existing)
     }
   }
 
+  const totalSupervisors = Array.from(gestorStats.values()).reduce((s, g) => s + g.count, 0)
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
-        <div className="relative">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">
-            Empresas contratantes
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-extrabold leading-tight md:text-4xl">
-            Gestores e RH
-          </h1>
-          <p className="mt-4 max-w-lg text-sm text-[#A9BDD8]">
-            Visualize os gestores que contrataram o treinamento e acompanhe
-            o progresso dos supervisores vinculados.
+    <div className="space-y-6">
+      {/* Header compacto */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#0F172A]">Gestores e RH</h1>
+          <p className="mt-1 text-sm text-[#64748B]">
+            {gestores?.length ?? 0} gestores · {totalSupervisors} supervisores vinculados
           </p>
         </div>
-      </section>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/classificacao"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-sm font-bold text-[#334155] hover:bg-[#F7FAFE]"
+          >
+            <ClipboardCheck className="h-4 w-4" />
+            Classificação
+          </Link>
+        </div>
+      </div>
 
-      {/* KPIs */}
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#7B1FA2]/10">
-            <Briefcase className="h-4.5 w-4.5 text-[#7B1FA2]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Total gestores</p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{gestores?.length ?? 0}</p>
-        </article>
-        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#1565C0]/10">
-            <Users className="h-4.5 w-4.5 text-[#1565C0]" />
-          </div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Supervisores vinculados</p>
-          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">
-            {Array.from(gestorStats.values()).reduce((sum, g) => sum + g.count, 0)}
-          </p>
-        </article>
-      </section>
-
-      {/* List */}
+      {/* Lista compacta */}
       {!gestores || gestores.length === 0 ? (
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white py-24 text-center shadow-sm">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[#E5E7EB] bg-[#F8FAFC]">
-            <Briefcase className="h-8 w-8 text-[#94A3B8]" />
-          </div>
-          <h3 className="mb-2 font-heading text-xl font-extrabold text-[#111827]">Nenhum gestor cadastrado</h3>
-          <p className="font-medium text-[#64748B]">
-            Para vincular um gestor, altere o role do perfil para &quot;hr_manager&quot; no Supabase.
+        <div className="rounded-2xl border border-dashed border-[#D8E2EF] bg-white py-16 text-center">
+          <Briefcase className="mx-auto h-8 w-8 text-[#94A3B8]" />
+          <p className="mt-3 text-sm font-bold text-[#0F172A]">Nenhum gestor cadastrado</p>
+          <p className="mt-1 text-xs text-[#64748B]">
+            Altere o role para &quot;hr_manager&quot; no Supabase para vincular.
           </p>
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {gestores.map((gestor) => {
+        <div className="overflow-hidden rounded-2xl border border-[#D8E2EF] bg-white shadow-sm">
+          {gestores.map((gestor, i) => {
             const stats = gestorStats.get(gestor.id)
             return (
-              <article
+              <div
                 key={gestor.id}
-                className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                className={`${i > 0 ? 'border-t border-[#E5ECF6]' : ''}`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7B1FA2]/10 text-lg font-extrabold text-[#7B1FA2]">
-                      {gestor.full_name?.charAt(0).toUpperCase() ?? '?'}
+                {/* Gestor row */}
+                <div className="flex items-center gap-4 px-5 py-4 hover:bg-[#FAFCFF]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#7B1FA2]/10 text-sm font-extrabold text-[#7B1FA2]">
+                    {gestor.full_name?.charAt(0).toUpperCase() ?? '?'}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="truncate text-sm font-bold text-[#0F172A]">
+                        {gestor.full_name}
+                      </h3>
+                      <span className="shrink-0 rounded-md bg-[#7B1FA2]/10 px-2 py-0.5 text-[10px] font-bold text-[#7B1FA2]">
+                        {stats?.company || 'Sem empresa'}
+                      </span>
                     </div>
-                    <div>
-                      <h3 className="text-base font-extrabold text-[#0F172A]">{gestor.full_name}</h3>
-                      <p className="mt-0.5 text-xs text-[#64748B]">
-                        {stats?.company || 'Sem empresa vinculada'}
-                      </p>
+                    <p className="mt-0.5 text-xs text-[#64748B]">
+                      {stats?.count ?? 0} supervisores · Desde{' '}
+                      {new Date(gestor.created_at).toLocaleDateString('pt-BR')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/gestores/${gestor.id}`}
+                      className="inline-flex items-center gap-1 rounded-lg bg-[#1565C0] px-3 py-2 text-xs font-bold text-white hover:bg-[#0B4A8F]"
+                    >
+                      Ver detalhes
+                      <ChevronRight className="h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Supervisores inline */}
+                {stats && stats.alunos.length > 0 && (
+                  <div className="border-t border-dashed border-[#E5ECF6] bg-[#F8FAFD] px-5 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      {stats.alunos.slice(0, 5).map((aluno) => (
+                        <Link
+                          key={aluno.id}
+                          href={`/admin/alunos/${aluno.id}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-[#D8E2EF] bg-white px-3 py-1.5 text-xs hover:border-[#1565C0] hover:bg-[#F0F7FF]"
+                        >
+                          <span className="font-medium text-[#334155]">{aluno.name}</span>
+                          <span className="flex gap-1">
+                            {aluno.hasSelf && (
+                              <span className="rounded bg-emerald-100 px-1 py-0.5 text-[9px] font-bold text-emerald-700" title="Autoavaliação preenchida">
+                                AA
+                              </span>
+                            )}
+                            {aluno.trained && (
+                              <span className="rounded bg-blue-100 px-1 py-0.5 text-[9px] font-bold text-blue-700" title="Participou da turma">
+                                TP
+                              </span>
+                            )}
+                            {!aluno.hasSelf && !aluno.trained && (
+                              <span className="rounded bg-amber-100 px-1 py-0.5 text-[9px] font-bold text-amber-700">
+                                Pendente
+                              </span>
+                            )}
+                          </span>
+                        </Link>
+                      ))}
+                      {stats.alunos.length > 5 && (
+                        <span className="inline-flex items-center px-2 text-xs text-[#64748B]">
+                          +{stats.alunos.length - 5} mais
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <Link
-                    href={`/admin/gestores/${gestor.id}`}
-                    className="inline-flex items-center gap-1 rounded-lg border border-[#D8E2EF] bg-white px-3 py-2 text-xs font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
-                  >
-                    Ver
-                    <ChevronRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-                <div className="mt-4 flex items-center gap-4">
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-[#1565C0]/10 px-2.5 py-1 text-xs font-bold text-[#1565C0]">
-                    <Users className="h-3 w-3" />
-                    {stats?.count ?? 0} supervisores
-                  </span>
-                  <span className="text-xs text-[#94A3B8]">
-                    Desde {new Date(gestor.created_at).toLocaleDateString('pt-BR')}
-                  </span>
-                </div>
-              </article>
+                )}
+              </div>
             )
           })}
         </div>
