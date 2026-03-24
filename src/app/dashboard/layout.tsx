@@ -16,14 +16,16 @@ export default async function DashboardLayout({
   } = await supabase.auth.getUser()
 
   let isAdmin = false
+  let userRole = ''
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .single()
-    
-    isAdmin = profile?.role === 'admin'
+
+    userRole = profile?.role ?? ''
+    isAdmin = userRole === 'admin'
   }
 
   return (
@@ -50,7 +52,7 @@ export default async function DashboardLayout({
 
         <div className="py-6">
           <div className="mt-1">
-            <SidebarNav isAdmin={isAdmin} />
+            <SidebarNav isAdmin={isAdmin} role={userRole} />
           </div>
         </div>
 

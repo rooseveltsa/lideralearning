@@ -1,5 +1,16 @@
 import Link from 'next/link'
-import { ArrowRight, BookOpen, BriefcaseBusiness, Eye, TrendingUp, Users } from 'lucide-react'
+import {
+  ArrowRight,
+  BookOpen,
+  BriefcaseBusiness,
+  Calendar,
+  ClipboardCheck,
+  Eye,
+  MapPin,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -20,11 +31,93 @@ export default async function AdminPage() {
     supabase.from('b2b_leads').select('*', { count: 'exact', head: true }),
   ])
 
+  // ── Novas queries (tabelas podem não existir ainda) ──
+  let turmasAgendadas = 0
+  let proximasTurmas: Array<{
+    id: string
+    title: string
+    date: string
+    location: string | null
+    participant_count: number | null
+  }> = []
+  try {
+    const { count } = await supabase
+      .from('presential_trainings')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'scheduled')
+    turmasAgendadas = count ?? 0
+
+    const { data } = await supabase
+      .from('presential_trainings')
+      .select('id, title, date, location, participant_count')
+      .eq('status', 'scheduled')
+      .order('date', { ascending: true })
+      .limit(3)
+    proximasTurmas = (data ?? []) as typeof proximasTurmas
+  } catch {
+    // Table may not exist
+  }
+
+  let mentoriasPendentes = 0
+  let mentoriasSemana: Array<{
+    id: string
+    scheduled_date: string
+    profiles: { full_name: string } | null
+  }> = []
+  try {
+    const { count } = await supabase
+      .from('mentoring_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'scheduled')
+    mentoriasPendentes = count ?? 0
+
+    const now = new Date()
+    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+    const { data } = await supabase
+      .from('mentoring_sessions')
+      .select('id, scheduled_date, profiles!inner(full_name)')
+      .eq('status', 'scheduled')
+      .gte('scheduled_date', now.toISOString())
+      .lte('scheduled_date', weekLater.toISOString())
+      .order('scheduled_date', { ascending: true })
+      .limit(5)
+    mentoriasSemana = (data ?? []) as unknown as typeof mentoriasSemana
+  } catch {
+    // Table may not exist
+  }
+
+  let gestoresAtivos = 0
+  try {
+    const { count } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'hr_manager')
+    gestoresAtivos = count ?? 0
+  } catch {
+    // Column/value may not exist
+  }
+
+  let formulariosPendentes = 0
+  try {
+    const { count: totalProfiles } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+    const { count: totalAutoavaliacao } = await supabase
+      .from('leadership_self_assessments')
+      .select('user_id', { count: 'exact', head: true })
+    formulariosPendentes = Math.max(0, (totalProfiles ?? 0) - (totalAutoavaliacao ?? 0))
+  } catch {
+    // Tables may not exist
+  }
+
   const stats = [
     { label: 'Formações totais', value: totalCourses ?? 0, icon: BookOpen, color: '#0B4A8F' },
     { label: 'Formações publicadas', value: publishedCourses ?? 0, icon: Eye, color: '#2E7D32' },
     { label: 'Alunos cadastrados', value: totalStudents ?? 0, icon: Users, color: '#7C3AED' },
     { label: 'Matrículas ativas', value: totalEnrollments ?? 0, icon: TrendingUp, color: '#D97706' },
+    { label: 'Turmas agendadas', value: turmasAgendadas, icon: Calendar, color: '#0D47A1' },
+    { label: 'Mentorias pendentes', value: mentoriasPendentes, icon: UserCheck, color: '#4A148C' },
+    { label: 'Gestores ativos', value: gestoresAtivos, icon: Users, color: '#00695C' },
   ]
 
   return (
@@ -100,6 +193,98 @@ export default async function AdminPage() {
             </span>
           </Link>
         ))}
+      </section>
+
+      {/* ── Novas seções ── */}
+
+      {/* Próximas Turmas */}
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-[#0B4A8F]" />
+            <h2 className="text-lg font-extrabold text-[#0F172A]">Proximas Turmas</h2>
+          </div>
+        </div>
+
+        {proximasTurmas.length === 0 ? (
+          <p className="mt-4 text-center text-sm text-[#94A3B8]">Nenhuma turma agendada no momento.</p>
+        ) : (
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            {proximasTurmas.map((turma) => (
+              <article
+                key={turma.id}
+                className="rounded-xl border border-[#E5ECF6] bg-[#FAFCFF] p-4"
+              >
+                <h3 className="text-sm font-bold text-[#0F172A]">{turma.title}</h3>
+                <div className="mt-2 space-y-1 text-xs text-[#64748B]">
+                  <p className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {new Date(turma.date).toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </p>
+                  {turma.location && (
+                    <p className="flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" />
+                      {turma.location}
+                    </p>
+                  )}
+                  <p className="flex items-center gap-1.5">
+                    <Users className="h-3.5 w-3.5" />
+                    {turma.participant_count ?? 0} participantes
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Mentorias da Semana */}
+      <section className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <UserCheck className="h-5 w-5 text-[#4A148C]" />
+          <h2 className="text-lg font-extrabold text-[#0F172A]">Mentorias da Semana</h2>
+        </div>
+
+        {mentoriasSemana.length === 0 ? (
+          <p className="mt-4 text-center text-sm text-[#94A3B8]">Nenhuma mentoria agendada nos proximos 7 dias.</p>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {mentoriasSemana.map((mentoria) => (
+              <div
+                key={mentoria.id}
+                className="flex items-center justify-between rounded-xl border border-[#E5ECF6] bg-[#FAFCFF] px-4 py-3"
+              >
+                <p className="text-sm font-semibold text-[#0F172A]">
+                  {mentoria.profiles?.full_name ?? 'Aluno'}
+                </p>
+                <p className="text-xs text-[#64748B]">
+                  {new Date(mentoria.scheduled_date).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Formulários Pendentes */}
+      <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="h-5 w-5 text-amber-700" />
+          <h2 className="text-lg font-extrabold text-amber-900">Formularios Pendentes</h2>
+        </div>
+        <p className="mt-3 text-sm text-amber-800">
+          <strong className="text-2xl font-extrabold">{formulariosPendentes}</strong>{' '}
+          usuarios ainda nao preencheram a autoavaliacao de lideranca.
+        </p>
       </section>
     </div>
   )

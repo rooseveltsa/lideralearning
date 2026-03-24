@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, LayoutDashboard, Settings, User, Shield } from 'lucide-react'
+import { BookOpen, LayoutDashboard, Settings, Shield, User, UsersRound } from 'lucide-react'
 
 const navGroups = [
   {
@@ -21,11 +21,25 @@ const navGroups = [
   },
 ]
 
-export default function SidebarNav({ isAdmin = false }: { isAdmin?: boolean }) {
+type SidebarNavProps = {
+  isAdmin?: boolean
+  role?: string
+}
+
+export default function SidebarNav({ isAdmin = false, role }: SidebarNavProps) {
   const pathname = usePathname()
 
   const allNavGroups = [...navGroups]
-  
+
+  if (role === 'hr_manager') {
+    allNavGroups.push({
+      label: 'Gestão',
+      links: [
+        { href: '/dashboard/equipe', label: 'Minha Equipe', icon: UsersRound },
+      ],
+    })
+  }
+
   if (isAdmin) {
     allNavGroups.push({
       label: 'Administração',

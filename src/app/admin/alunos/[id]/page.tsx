@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
+import ComparativeChart from './ComparativeChart'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -54,7 +55,7 @@ export default async function AlunoFichaPage({ params }: Props) {
   /* ── Self Assessments ── */
   const { data: selfAssessments } = await supabase
     .from('leadership_self_assessments')
-    .select('id, pontuacao_total, perfil, created_at')
+    .select('*')
     .eq('user_id', id)
     .order('created_at', { ascending: false })
 
@@ -68,7 +69,7 @@ export default async function AlunoFichaPage({ params }: Props) {
   /* ── Executive Assessments (about this aluno) ── */
   const { data: execAssessments } = await supabase
     .from('leadership_executive_assessments')
-    .select('id, created_at')
+    .select('*')
     .eq('user_id', id)
     .order('created_at', { ascending: false })
 
@@ -293,6 +294,12 @@ export default async function AlunoFichaPage({ params }: Props) {
           </div>
         ))}
       </section>
+
+      {/* Comparative Chart */}
+      <ComparativeChart
+        selfAssessment={selfAssessments?.[0] ?? null}
+        execAssessment={execAssessments?.[0] ?? null}
+      />
 
       {/* Timeline */}
       <section className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm">

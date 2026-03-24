@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import {
+  BarChart3,
   BookOpen,
   Building2,
   ClipboardCheck,
@@ -99,6 +101,28 @@ export default async function AdminFormulariosPage() {
     .from('leadership_self_assessments')
     .select('*', { count: 'exact', head: true })
 
+  // Buscar contagem de PDI
+  let totalPdi = 0
+  try {
+    const { count } = await supabase
+      .from('leadership_pdi')
+      .select('*', { count: 'exact', head: true })
+    totalPdi = count ?? 0
+  } catch {
+    // Table may not exist yet
+  }
+
+  // Buscar contagem de avaliacao executiva
+  let totalExecutiva = 0
+  try {
+    const { count } = await supabase
+      .from('leadership_executive_assessments')
+      .select('*', { count: 'exact', head: true })
+    totalExecutiva = count ?? 0
+  } catch {
+    // Table may not exist yet
+  }
+
   // Buscar contagem por perfil
   const { data: perfilData } = await supabase
     .from('leadership_self_assessments')
@@ -171,6 +195,29 @@ export default async function AdminFormulariosPage() {
           </p>
           <p className="mt-2 text-3xl font-extrabold text-emerald-900">{perfilCounts.lider_valor}</p>
           <p className="mt-1 text-xs text-emerald-600">16-21 pontos</p>
+        </article>
+      </section>
+
+      {/* KPIs extras — PDI e Executiva */}
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-2">
+        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
+          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#7B1FA2]/10">
+            <BookOpen className="h-4.5 w-4.5 text-[#7B1FA2]" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
+            Respostas PDI
+          </p>
+          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalPdi}</p>
+        </article>
+
+        <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
+          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-[#00695C]/10">
+            <Building2 className="h-4.5 w-4.5 text-[#00695C]" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">
+            Avaliacoes Executivas
+          </p>
+          <p className="mt-1 text-3xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
         </article>
       </section>
 
@@ -254,6 +301,13 @@ export default async function AdminFormulariosPage() {
                     <ExternalLink className="h-3.5 w-3.5" />
                     Abrir em nova aba
                   </a>
+                  <Link
+                    href={`/admin/formularios/respostas/${form.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#D8E2EF] bg-white px-3 py-2 text-xs font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
+                  >
+                    <BarChart3 className="h-3.5 w-3.5" />
+                    Ver respostas
+                  </Link>
                 </div>
               </article>
             )
