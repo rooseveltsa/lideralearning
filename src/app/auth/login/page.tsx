@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { login } from "@/app/auth/actions"
-import { useState, useTransition } from "react"
+import { useState, useTransition, Suspense } from "react"
 import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen w-full items-center justify-center p-4 bg-[#F8FAFC]">
+                <Loader2 className="h-8 w-8 animate-spin text-[#1565C0]" />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
+    )
+}
+
+function LoginForm() {
     const searchParams = useSearchParams()
     const redirectTo = searchParams.get('redirect') || ''
     const [error, setError] = useState<string | null>(null)
