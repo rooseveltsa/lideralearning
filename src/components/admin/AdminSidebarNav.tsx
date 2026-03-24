@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BookOpen, BriefcaseBusiness, LayoutDashboard, Target, Users } from 'lucide-react'
+import { BookOpen, BriefcaseBusiness, ClipboardList, LayoutDashboard, Target, Users } from 'lucide-react'
 
 const navLinks = [
   { href: '/admin', label: 'Visão geral', icon: LayoutDashboard },
   { href: '/admin/cursos', label: 'Formações', icon: BookOpen },
   { href: '/admin/alunos', label: 'Alunos', icon: Users },
+  { href: '/admin/formularios', label: 'Formulários', icon: ClipboardList },
   { href: '/admin/leads', label: 'Pipeline B2B', icon: BriefcaseBusiness },
   { href: '/admin/crm', label: 'CRM Vendas', icon: Target },
 ]
