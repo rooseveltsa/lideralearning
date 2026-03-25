@@ -1,488 +1,530 @@
 import Link from 'next/link'
 import {
+  AlertTriangle,
   ArrowRight,
-  BookOpen,
-  BriefcaseBusiness,
   Calendar,
+  CheckCircle2,
   ClipboardCheck,
-  MapPin,
-  Plus,
-  Target,
+  GraduationCap,
   TrendingUp,
   UserCheck,
   UserPlus,
   Users,
 } from 'lucide-react'
 
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/service'
 
+// ── Helpers ──
+
+function timeAgo(dateStr: string): string {
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diffMs = now - then
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'agora'
+  if (mins < 60) return `${mins}min atras`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h atras`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days}d atras`
+  return `${Math.floor(days / 30)}m atras`
+}
+
+type ActivityEvent = {
+  id: string
+  type: 'signup' | 'self_assessment' | 'exec_assessment' | 'training_participant'
+  description: string
+  date: string
+  href: string
+}
+
 export default async function AdminPage() {
+  const supabase = await createClient()
   const admin = createAdminClient()
 
+  // ── Get current user name ──
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  let userName = 'Administrador'
+  if (user) {
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single()
+      if (profile?.full_name) userName = profile.full_name.split(' ')[0]
+    } catch { /* */ }
+  }
+
   // ── Core counts ──
-  let totalCourses = 0
-  let publishedCourses = 0
-  let totalProfiles = 0
-  let totalEnrollments = 0
+  let totalPessoas = 0
+  let totalAvaliacoes = 0
+  let totalTurmas = 0
   let totalLeads = 0
 
   try {
     const [r1, r2, r3, r4, r5] = await Promise.all([
-      admin.from('courses').select('*', { count: 'exact', head: true }),
-      admin.from('courses').select('*', { count: 'exact', head: true }).eq('is_published', true),
       admin.from('profiles').select('*', { count: 'exact', head: true }),
-      admin.from('enrollments').select('*', { count: 'exact', head: true }),
+      admin.from('leadership_self_assessments').select('*', { count: 'exact', head: true }),
+      admin.from('leadership_executive_assessments').select('*', { count: 'exact', head: true }),
+      admin.from('presential_trainings').select('*', { count: 'exact', head: true }),
       admin.from('b2b_leads').select('*', { count: 'exact', head: true }),
     ])
-    totalCourses = r1.count ?? 0
-    publishedCourses = r2.count ?? 0
-    totalProfiles = r3.count ?? 0
-    totalEnrollments = r4.count ?? 0
+    totalPessoas = r1.count ?? 0
+    totalAvaliacoes = (r2.count ?? 0) + (r3.count ?? 0)
+    totalTurmas = r4.count ?? 0
     totalLeads = r5.count ?? 0
   } catch { /* tables may not exist */ }
 
-  // ── Assessment counts ──
-  let totalAutoavaliacao = 0
-  let totalPdi = 0
-  let totalExecutiva = 0
+  // ── Activity Feed — merge recent events ──
+  const events: ActivityEvent[] = []
 
-  try {
-    const { count } = await admin.from('leadership_self_assessments').select('*', { count: 'exact', head: true })
-    totalAutoavaliacao = count ?? 0
-  } catch { /* */ }
-  try {
-    const { count } = await admin.from('leadership_pdi').select('*', { count: 'exact', head: true })
-    totalPdi = count ?? 0
-  } catch { /* */ }
-  try {
-    const { count } = await admin.from('leadership_executive_assessments').select('*', { count: 'exact', head: true })
-    totalExecutiva = count ?? 0
-  } catch { /* */ }
-
-  // ── Perfil breakdown ──
-  const perfilCounts = { reativo: 0, transicao: 0, lider_valor: 0 }
-  try {
-    const { data: perfilData } = await admin.from('leadership_self_assessments').select('perfil')
-    if (perfilData) {
-      for (const row of perfilData as { perfil: string }[]) {
-        if (row.perfil in perfilCounts) {
-          perfilCounts[row.perfil as keyof typeof perfilCounts]++
-        }
-      }
-    }
-  } catch { /* */ }
-
-  // ── Ultimas Inscricoes (5 most recent signups with form status) ──
-  type RecentSignup = {
-    id: string
-    full_name: string
-    email: string
-    created_at: string
-    hasAutoavaliacao: boolean
-    hasExec: boolean
-    hasPdi: boolean
-  }
-
-  let recentSignups: RecentSignup[] = []
   try {
     const { data: recentProfiles } = await admin
       .from('profiles')
       .select('id, full_name, created_at')
       .order('created_at', { ascending: false })
       .limit(5)
-
-    if (recentProfiles && recentProfiles.length > 0) {
-      // Get emails from auth
-      const { data: authData } = await admin.auth.admin.listUsers({ perPage: 1000 })
-      const emailMap: Record<string, string> = {}
-      if (authData?.users) {
-        for (const u of authData.users) {
-          emailMap[u.id] = u.email ?? ''
-        }
+    if (recentProfiles) {
+      for (const p of recentProfiles) {
+        events.push({
+          id: `signup-${p.id}`,
+          type: 'signup',
+          description: `${p.full_name || 'Novo usuario'} se cadastrou`,
+          date: p.created_at,
+          href: `/admin/pessoas/${p.id}`,
+        })
       }
-
-      // Check form completion for these users
-      const userIds = recentProfiles.map((p) => p.id)
-
-      const [saRes, execRes, pdiRes] = await Promise.all([
-        admin.from('leadership_self_assessments').select('user_id').in('user_id', userIds),
-        admin.from('leadership_executive_assessments').select('user_id').in('user_id', userIds),
-        admin.from('leadership_pdi').select('user_id').in('user_id', userIds),
-      ])
-
-      const saSet = new Set((saRes.data ?? []).map((r: { user_id: string }) => r.user_id))
-      const execSet = new Set((execRes.data ?? []).map((r: { user_id: string }) => r.user_id))
-      const pdiSet = new Set((pdiRes.data ?? []).map((r: { user_id: string }) => r.user_id))
-
-      recentSignups = recentProfiles.map((p) => ({
-        id: p.id,
-        full_name: p.full_name ?? 'Sem nome',
-        email: emailMap[p.id] ?? '',
-        created_at: p.created_at,
-        hasAutoavaliacao: saSet.has(p.id),
-        hasExec: execSet.has(p.id),
-        hasPdi: pdiSet.has(p.id),
-      }))
     }
   } catch { /* */ }
 
-  // ── Turmas agendadas ──
-  let turmasAgendadas = 0
-  let proximasTurmas: Array<{
-    id: string
-    title: string
-    date: string
-    location: string | null
-    participant_count: number | null
-  }> = []
   try {
-    const { count } = await admin
-      .from('presential_trainings')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'scheduled')
-    turmasAgendadas = count ?? 0
-
-    const { data } = await admin
-      .from('presential_trainings')
-      .select('id, title, date, location, participant_count')
-      .eq('status', 'scheduled')
-      .order('date', { ascending: true })
-      .limit(3)
-    proximasTurmas = (data ?? []) as typeof proximasTurmas
-  } catch { /* */ }
-
-  // ── Mentorias ──
-  let mentoriasPendentes = 0
-  let mentoriasSemana: Array<{
-    id: string
-    scheduled_date: string
-    aluno_user_id: string
-    aluno_name: string
-  }> = []
-  try {
-    const { count } = await admin
-      .from('mentoring_sessions')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'scheduled')
-    mentoriasPendentes = count ?? 0
-
-    const now = new Date()
-    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-    const { data } = await admin
-      .from('mentoring_sessions')
-      .select('id, scheduled_date, aluno_user_id')
-      .eq('status', 'scheduled')
-      .gte('scheduled_date', now.toISOString())
-      .lte('scheduled_date', weekLater.toISOString())
-      .order('scheduled_date', { ascending: true })
+    const { data: recentSA } = await admin
+      .from('leadership_self_assessments')
+      .select('id, user_id, created_at')
+      .order('created_at', { ascending: false })
       .limit(5)
-
-    if (data && data.length > 0) {
-      const alunoIds = data.map((m) => m.aluno_user_id).filter(Boolean)
-      const { data: profiles } = await admin
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', alunoIds)
-      const nameMap: Record<string, string> = {}
-      if (profiles) {
-        for (const p of profiles) {
-          nameMap[p.id] = p.full_name ?? 'Aluno'
+    if (recentSA) {
+      const userIds = recentSA.map((r) => r.user_id).filter(Boolean)
+      let nameMap: Record<string, string> = {}
+      if (userIds.length > 0) {
+        const { data: profiles } = await admin
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        if (profiles) {
+          for (const p of profiles) nameMap[p.id] = p.full_name ?? 'Usuario'
         }
       }
-      mentoriasSemana = data.map((m) => ({
-        id: m.id,
-        scheduled_date: m.scheduled_date,
-        aluno_user_id: m.aluno_user_id,
-        aluno_name: nameMap[m.aluno_user_id] ?? 'Aluno',
-      }))
+      for (const sa of recentSA) {
+        events.push({
+          id: `sa-${sa.id}`,
+          type: 'self_assessment',
+          description: `${nameMap[sa.user_id] || 'Usuario'} preencheu Autoavaliacao`,
+          date: sa.created_at,
+          href: '/admin/avaliacoes',
+        })
+      }
     }
   } catch { /* */ }
 
-  // ── Gestores ──
-  let gestoresAtivos = 0
   try {
-    const { count } = await admin.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'hr_manager')
-    gestoresAtivos = count ?? 0
+    const { data: recentExec } = await admin
+      .from('leadership_executive_assessments')
+      .select('id, user_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5)
+    if (recentExec) {
+      const userIds = recentExec.map((r) => r.user_id).filter(Boolean)
+      let nameMap: Record<string, string> = {}
+      if (userIds.length > 0) {
+        const { data: profiles } = await admin
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        if (profiles) {
+          for (const p of profiles) nameMap[p.id] = p.full_name ?? 'Usuario'
+        }
+      }
+      for (const ea of recentExec) {
+        events.push({
+          id: `exec-${ea.id}`,
+          type: 'exec_assessment',
+          description: `${nameMap[ea.user_id] || 'Gestor'} enviou Avaliacao Executiva`,
+          date: ea.created_at,
+          href: '/admin/avaliacoes',
+        })
+      }
+    }
   } catch { /* */ }
 
-  const formulariosPendentes = Math.max(0, totalProfiles - totalAutoavaliacao)
+  try {
+    const { data: recentParticipants } = await admin
+      .from('presential_training_participants')
+      .select('id, training_id, user_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(5)
+    if (recentParticipants) {
+      const userIds = recentParticipants.map((r) => r.user_id).filter(Boolean)
+      let nameMap: Record<string, string> = {}
+      if (userIds.length > 0) {
+        const { data: profiles } = await admin
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        if (profiles) {
+          for (const p of profiles) nameMap[p.id] = p.full_name ?? 'Participante'
+        }
+      }
+      for (const tp of recentParticipants) {
+        events.push({
+          id: `tp-${tp.id}`,
+          type: 'training_participant',
+          description: `${nameMap[tp.user_id] || 'Participante'} entrou em uma turma`,
+          date: tp.created_at,
+          href: '/admin/treinamentos',
+        })
+      }
+    }
+  } catch { /* */ }
 
-  const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '--'
+  // Sort all events by date desc, take top 10
+  events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const recentEvents = events.slice(0, 10)
+
+  // ── Pending Actions ──
+  type PendingAction = {
+    id: string
+    label: string
+    count: number
+    href: string
+  }
+
+  const pendingActions: PendingAction[] = []
+
+  // Exec assessments without link
+  try {
+    const { data: execAssessments } = await admin
+      .from('leadership_executive_assessments')
+      .select('id, user_id')
+    const { data: selfAssessments } = await admin
+      .from('leadership_self_assessments')
+      .select('user_id')
+    if (execAssessments && selfAssessments) {
+      const selfUserIds = new Set(selfAssessments.map((s) => s.user_id))
+      const unlinked = execAssessments.filter((e) => !selfUserIds.has(e.user_id))
+      if (unlinked.length > 0) {
+        pendingActions.push({
+          id: 'unlinked-exec',
+          label: `${unlinked.length} avaliacoes executivas sem vinculo`,
+          count: unlinked.length,
+          href: '/admin/avaliacoes',
+        })
+      }
+    }
+  } catch { /* */ }
+
+  // Leads without classification
+  try {
+    const { count } = await admin
+      .from('b2b_leads')
+      .select('*', { count: 'exact', head: true })
+      .or('status.is.null,status.eq.')
+    if (count && count > 0) {
+      pendingActions.push({
+        id: 'unclassified-leads',
+        label: `${count} leads sem classificacao`,
+        count,
+        href: '/admin/comercial',
+      })
+    }
+  } catch { /* */ }
+
+  // Turmas with available slots
+  try {
+    const { data: turmas } = await admin
+      .from('presential_trainings')
+      .select('id, title, max_participants, participant_count')
+      .eq('status', 'scheduled')
+    if (turmas) {
+      for (const t of turmas) {
+        const remaining = (t.max_participants ?? 0) - (t.participant_count ?? 0)
+        if (remaining > 0) {
+          pendingActions.push({
+            id: `turma-${t.id}`,
+            label: `${t.title} — ${remaining} vagas restantes`,
+            count: remaining,
+            href: '/admin/treinamentos',
+          })
+        }
+      }
+    }
+  } catch { /* */ }
+
+  // Mentorias count
+  try {
+    const { count } = await admin
+      .from('mentoring_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'scheduled')
+    if (count === 0) {
+      pendingActions.push({
+        id: 'no-mentorias',
+        label: '0 mentorias agendadas',
+        count: 0,
+        href: '/admin/treinamentos',
+      })
+    }
+  } catch { /* */ }
+
+  // ── Quick Vision Cards data ──
+  let leadsThisWeek = 0
+  let activeStudents = 0
+  let completedThisMonth = 0
+  let totalPdi = 0
+  let proposalsSent = 0
+
+  try {
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    const { count } = await admin
+      .from('b2b_leads')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', oneWeekAgo)
+    leadsThisWeek = count ?? 0
+  } catch { /* */ }
+
+  try {
+    const { count } = await admin
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('role', 'student')
+    activeStudents = count ?? 0
+  } catch { /* */ }
+
+  try {
+    const monthStart = new Date()
+    monthStart.setDate(1)
+    monthStart.setHours(0, 0, 0, 0)
+    const { count } = await admin
+      .from('leadership_self_assessments')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', monthStart.toISOString())
+    completedThisMonth = count ?? 0
+  } catch { /* */ }
+
+  try {
+    const { count } = await admin
+      .from('leadership_pdi')
+      .select('*', { count: 'exact', head: true })
+    totalPdi = count ?? 0
+  } catch { /* */ }
+
+  try {
+    const { count } = await admin
+      .from('b2b_leads')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'proposal_sent')
+    proposalsSent = count ?? 0
+  } catch { /* */ }
+
+  // ── Icon for event type ──
+  function eventIcon(type: ActivityEvent['type']) {
+    switch (type) {
+      case 'signup':
+        return <UserPlus className="h-3.5 w-3.5 text-[#7C3AED]" />
+      case 'self_assessment':
+        return <ClipboardCheck className="h-3.5 w-3.5 text-[#1565C0]" />
+      case 'exec_assessment':
+        return <UserCheck className="h-3.5 w-3.5 text-[#00695C]" />
+      case 'training_participant':
+        return <GraduationCap className="h-3.5 w-3.5 text-[#E65100]" />
+    }
+  }
+
+  const today = new Date().toLocaleDateString('pt-BR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <section className="rounded-2xl border border-[#1A2B46] bg-[#060D1A] px-6 py-5 text-white shadow-lg">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Centro de comando</p>
-            <h1 className="mt-1 font-heading text-2xl font-extrabold">Painel Administrativo</h1>
-            <p className="mt-1 max-w-xl text-xs text-[#A9BDD8]">
-              Visao geral de formularios, alunos e operacao educacional.
-            </p>
-          </div>
-          <div className="flex gap-2 text-[11px] text-[#A9BDD8]">
-            <span className="rounded-lg border border-[#274364] bg-[#0A1528] px-3 py-1.5">
-              Leads B2B: <strong className="text-white">{totalLeads}</strong>
-            </span>
-            <span className="rounded-lg border border-[#274364] bg-[#0A1528] px-3 py-1.5">
-              Gestores: <strong className="text-white">{gestoresAtivos}</strong>
-            </span>
-          </div>
+      {/* ── Welcome + Quick Numbers ── */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-[#0F172A]">
+            Ola, {userName}
+          </h1>
+          <p className="text-[13px] capitalize text-[#64748B]">{today}</p>
         </div>
-      </section>
-
-      {/* ── Acoes Rapidas ── */}
-      <section>
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#0F172A]">
-          <Plus className="h-4 w-4 text-[#1565C0]" />
-          Acoes Rapidas
-        </h2>
         <div className="flex flex-wrap gap-2">
-          <Link
-            href="/admin/leads"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-xs font-bold text-[#334155] transition-colors hover:border-[#1565C0] hover:bg-[#F7FAFE]"
-          >
-            <UserPlus className="h-4 w-4 text-[#1565C0]" />
-            Novo Lead
-          </Link>
-          <Link
-            href="/admin/alunos"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-xs font-bold text-[#334155] transition-colors hover:border-[#7C3AED] hover:bg-[#FAF5FF]"
-          >
-            <Users className="h-4 w-4 text-[#7C3AED]" />
-            Ver Inscritos
-          </Link>
-          <Link
-            href="/admin/formularios/respostas/autoavaliacao"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-xs font-bold text-[#334155] transition-colors hover:border-[#1565C0] hover:bg-[#EFF6FE]"
-          >
-            <ClipboardCheck className="h-4 w-4 text-[#1565C0]" />
-            Ver Autoavaliacoes
-          </Link>
-          <Link
-            href="/admin/formularios/respostas/avaliacao-executiva"
-            className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-xs font-bold text-[#334155] transition-colors hover:border-[#00695C] hover:bg-[#E0F2F1]"
-          >
-            <Target className="h-4 w-4 text-[#00695C]" />
-            Ver Executivas
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Formularios KPIs ── */}
-      <section>
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#0F172A]">
-          <ClipboardCheck className="h-4 w-4 text-[#1565C0]" />
-          Formularios de Lideranca
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          <Link href="/admin/formularios/respostas/autoavaliacao" className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm transition-colors hover:border-[#1565C0]/30">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Autoavaliacoes</p>
-            <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalAutoavaliacao}</p>
-          </Link>
-          <Link href="/admin/formularios/respostas/avaliacao-executiva" className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm transition-colors hover:border-[#00695C]/30">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">Executivas</p>
-            <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalExecutiva}</p>
-          </Link>
-          <Link href="/admin/formularios/respostas/pdi" className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm transition-colors hover:border-[#7B1FA2]/30">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">PDIs</p>
-            <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{totalPdi}</p>
-          </Link>
-          <article className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-red-700">Reativo</p>
-            <p className="mt-1 text-2xl font-extrabold text-red-900">{perfilCounts.reativo}</p>
-          </article>
-          <article className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Transicao</p>
-            <p className="mt-1 text-2xl font-extrabold text-amber-900">{perfilCounts.transicao}</p>
-          </article>
-          <article className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Lider Valor</p>
-            <p className="mt-1 text-2xl font-extrabold text-emerald-900">{perfilCounts.lider_valor}</p>
-          </article>
-        </div>
-      </section>
-
-      {/* ── Ultimas Inscricoes ── */}
-      <section className="rounded-xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-2 text-sm font-extrabold text-[#0F172A]">
-            <UserPlus className="h-4 w-4 text-[#7C3AED]" />
-            Ultimas Inscricoes
-          </h2>
-          <Link href="/admin/alunos" className="text-[11px] font-bold text-[#1E88E5] hover:underline">
-            Ver todos <ArrowRight className="ml-0.5 inline h-3 w-3" />
-          </Link>
-        </div>
-        {recentSignups.length === 0 ? (
-          <p className="mt-3 text-xs text-[#94A3B8]">Nenhuma inscricao recente.</p>
-        ) : (
-          <div className="mt-3 space-y-2">
-            {recentSignups.map((s) => (
-              <Link
-                key={s.id}
-                href={`/admin/alunos/${s.id}`}
-                className="flex items-center justify-between rounded-lg border border-[#E5ECF6] bg-[#FAFCFF] px-4 py-2.5 transition-colors hover:border-[#1565C0]/30"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EFF6FE] text-sm font-bold text-[#1565C0]">
-                    {s.full_name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#0F172A]">{s.full_name}</p>
-                    <p className="text-[11px] text-[#64748B]">{s.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1">
-                    <span className={`rounded px-1 py-0.5 text-[9px] font-bold ${s.hasAutoavaliacao ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
-                      AA
-                    </span>
-                    <span className={`rounded px-1 py-0.5 text-[9px] font-bold ${s.hasExec ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
-                      EX
-                    </span>
-                    <span className={`rounded px-1 py-0.5 text-[9px] font-bold ${s.hasPdi ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'}`}>
-                      PDI
-                    </span>
-                  </div>
-                  <span className="text-[11px] text-[#94A3B8]">{formatDate(s.created_at)}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* ── Operacao KPIs ── */}
-      <section>
-        <h2 className="mb-3 flex items-center gap-2 text-sm font-extrabold text-[#0F172A]">
-          <TrendingUp className="h-4 w-4 text-[#F57C00]" />
-          Operacao
-        </h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
           {[
-            { label: 'Usuarios', value: totalProfiles, icon: Users, color: '#7C3AED', href: '/admin/alunos' },
-            { label: 'Formacoes', value: totalCourses, icon: BookOpen, color: '#0B4A8F', href: '/admin/cursos' },
-            { label: 'Matriculas', value: totalEnrollments, icon: TrendingUp, color: '#D97706', href: null },
-            { label: 'Turmas', value: turmasAgendadas, icon: Calendar, color: '#0D47A1', href: null },
-            { label: 'Mentorias pend.', value: mentoriasPendentes, icon: UserCheck, color: '#4A148C', href: null },
-          ].map((stat) => {
-            const Icon = stat.icon
-            const inner = (
-              <article className="rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm transition-colors hover:border-[#C5D9F0]">
-                <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4" style={{ color: stat.color }} />
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">{stat.label}</p>
-                </div>
-                <p className="mt-1 text-2xl font-extrabold text-[#0F172A]">{stat.value}</p>
-              </article>
-            )
-            return stat.href ? (
-              <Link key={stat.label} href={stat.href}>{inner}</Link>
-            ) : (
-              <div key={stat.label}>{inner}</div>
-            )
-          })}
+            { value: totalPessoas, label: 'pessoas' },
+            { value: totalAvaliacoes, label: 'avaliacoes' },
+            { value: totalTurmas, label: 'turmas' },
+            { value: totalLeads, label: 'leads' },
+          ].map((pill) => (
+            <span
+              key={pill.label}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#E5ECF6] bg-white px-3 py-1 text-[12px] text-[#475569] shadow-sm"
+            >
+              <strong className="font-bold text-[#0F172A]">{pill.value}</strong>
+              {pill.label}
+            </span>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* ── Quick links ── */}
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { title: 'Formularios', desc: 'Autoavaliacao, PDI e Executiva', href: '/admin/formularios', icon: ClipboardCheck, color: '#1565C0' },
-          { title: 'Usuarios', desc: `${totalProfiles} cadastrados, ${totalAutoavaliacao} preencheram`, href: '/admin/alunos', icon: Users, color: '#7C3AED' },
-          { title: 'Formacoes', desc: `${publishedCourses} publicadas de ${totalCourses}`, href: '/admin/cursos', icon: BookOpen, color: '#0B4A8F' },
-          { title: 'Pipeline B2B', desc: `${totalLeads} leads registrados`, href: '/admin/leads', icon: BriefcaseBusiness, color: '#D97706' },
-        ].map(({ title, desc, href, icon: Icon, color }) => (
-          <Link
-            key={title}
-            href={href}
-            className="group flex items-center gap-4 rounded-xl border border-[#D8E2EF] bg-white px-4 py-3 shadow-sm transition-all hover:border-[#C5D9F0] hover:shadow-md"
-          >
-            <Icon className="h-5 w-5 shrink-0" style={{ color }} />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-[#0F172A]">{title}</p>
-              <p className="truncate text-xs text-[#64748B]">{desc}</p>
+      {/* ── Section 1: Atividade Recente ── */}
+      <section>
+        <h2 className="mb-3 text-sm font-bold text-[#0F172A]">Atividade Recente</h2>
+        <div className="rounded-2xl border border-[#E5ECF6] bg-white shadow-sm">
+          {recentEvents.length === 0 ? (
+            <p className="px-4 py-6 text-center text-[13px] text-[#94A3B8]">
+              Nenhuma atividade recente.
+            </p>
+          ) : (
+            <div className="divide-y divide-[#F1F5F9]">
+              {recentEvents.map((event) => (
+                <Link
+                  key={event.id}
+                  href={event.href}
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-[#F8FAFD]"
+                >
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F1F5F9]">
+                    {eventIcon(event.type)}
+                  </div>
+                  <p className="flex-1 text-[13px] text-[#334155]">{event.description}</p>
+                  <span className="shrink-0 text-[11px] text-[#94A3B8]">
+                    {timeAgo(event.date)}
+                  </span>
+                </Link>
+              ))}
             </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-[#94A3B8] transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        ))}
-      </section>
-
-      {/* ── Proximas Turmas ── */}
-      <section className="rounded-xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-[#0B4A8F]" />
-          <h2 className="text-sm font-extrabold text-[#0F172A]">Proximas Turmas</h2>
+          )}
         </div>
-        {proximasTurmas.length === 0 ? (
-          <p className="mt-3 text-xs text-[#94A3B8]">Nenhuma turma agendada.</p>
-        ) : (
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {proximasTurmas.map((turma) => (
-              <div key={turma.id} className="rounded-lg border border-[#E5ECF6] bg-[#FAFCFF] px-3 py-2.5">
-                <p className="text-xs font-bold text-[#0F172A]">{turma.title}</p>
-                <div className="mt-1 space-y-0.5 text-[11px] text-[#64748B]">
-                  <p className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {new Date(turma.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}
-                  </p>
-                  {turma.location && (
-                    <p className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {turma.location}
-                    </p>
-                  )}
-                  <p className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    {turma.participant_count ?? 0} participantes
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </section>
 
-      {/* ── Mentorias da Semana ── */}
-      <section className="rounded-xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-        <div className="flex items-center gap-2">
-          <UserCheck className="h-4 w-4 text-[#4A148C]" />
-          <h2 className="text-sm font-extrabold text-[#0F172A]">Mentorias da Semana</h2>
-        </div>
-        {mentoriasSemana.length === 0 ? (
-          <p className="mt-3 text-xs text-[#94A3B8]">Nenhuma mentoria agendada nos proximos 7 dias.</p>
-        ) : (
-          <div className="mt-3 space-y-2">
-            {mentoriasSemana.map((m) => (
-              <Link
-                key={m.id}
-                href={`/admin/alunos/${m.aluno_user_id}`}
-                className="flex items-center justify-between rounded-lg border border-[#E5ECF6] bg-[#FAFCFF] px-3 py-2 transition-colors hover:border-[#4A148C]/20"
-              >
-                <p className="text-xs font-semibold text-[#0F172A]">{m.aluno_name}</p>
-                <p className="text-[11px] text-[#64748B]">
-                  {new Date(m.scheduled_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* ── Formularios Pendentes ── */}
-      {formulariosPendentes > 0 && (
-        <section className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-amber-700" />
-            <p className="text-sm text-amber-800">
-              <strong className="text-xl font-extrabold">{formulariosPendentes}</strong>{' '}
-              usuarios ainda nao preencheram a autoavaliacao.
+      {/* ── Section 2: Acoes Pendentes ── */}
+      <section>
+        <h2 className="mb-3 text-sm font-bold text-[#0F172A]">Acoes Pendentes</h2>
+        {pendingActions.length === 0 ? (
+          <div className="flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            <p className="text-[13px] font-medium text-emerald-700">
+              Tudo em dia! Nenhuma acao pendente.
             </p>
           </div>
-        </section>
-      )}
+        ) : (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {pendingActions.map((action) => (
+              <Link
+                key={action.id}
+                href={action.href}
+                className="group flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 transition-colors hover:border-amber-300 hover:bg-amber-50"
+              >
+                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                <span className="flex-1 text-[13px] text-amber-800">{action.label}</span>
+                <ArrowRight className="h-3.5 w-3.5 shrink-0 text-amber-400 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Section 3: Visao Rapida (3 cards) ── */}
+      <section>
+        <h2 className="mb-3 text-sm font-bold text-[#0F172A]">Visao Rapida</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {/* Card: Pessoas */}
+          <div className="rounded-2xl border border-[#E5ECF6] bg-white p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-[#7C3AED]" />
+              <h3 className="text-[13px] font-bold text-[#0F172A]">Pessoas</h3>
+            </div>
+            <div className="mt-3 space-y-1.5">
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Total cadastrados</span>
+                <span className="font-bold text-[#0F172A]">{totalPessoas}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Leads esta semana</span>
+                <span className="font-bold text-[#0F172A]">{leadsThisWeek}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Alunos ativos</span>
+                <span className="font-bold text-[#0F172A]">{activeStudents}</span>
+              </div>
+            </div>
+            <Link
+              href="/admin/pessoas"
+              className="mt-3 flex items-center gap-1 text-[12px] font-semibold text-[#1565C0] hover:underline"
+            >
+              Ver mais <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          {/* Card: Avaliacoes */}
+          <div className="rounded-2xl border border-[#E5ECF6] bg-white p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck className="h-4 w-4 text-[#1565C0]" />
+              <h3 className="text-[13px] font-bold text-[#0F172A]">Avaliacoes</h3>
+            </div>
+            <div className="mt-3 space-y-1.5">
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Concluidas este mes</span>
+                <span className="font-bold text-[#0F172A]">{completedThisMonth}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">PDIs gerados</span>
+                <span className="font-bold text-[#0F172A]">{totalPdi}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Total avaliacoes</span>
+                <span className="font-bold text-[#0F172A]">{totalAvaliacoes}</span>
+              </div>
+            </div>
+            <Link
+              href="/admin/avaliacoes"
+              className="mt-3 flex items-center gap-1 text-[12px] font-semibold text-[#1565C0] hover:underline"
+            >
+              Ver mais <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          {/* Card: Comercial */}
+          <div className="rounded-2xl border border-[#E5ECF6] bg-white p-4 shadow-sm">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-[#E65100]" />
+              <h3 className="text-[13px] font-bold text-[#0F172A]">Comercial</h3>
+            </div>
+            <div className="mt-3 space-y-1.5">
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Leads no pipeline</span>
+                <span className="font-bold text-[#0F172A]">{totalLeads}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Propostas enviadas</span>
+                <span className="font-bold text-[#0F172A]">{proposalsSent}</span>
+              </div>
+              <div className="flex items-center justify-between text-[12px]">
+                <span className="text-[#64748B]">Leads esta semana</span>
+                <span className="font-bold text-[#0F172A]">{leadsThisWeek}</span>
+              </div>
+            </div>
+            <Link
+              href="/admin/comercial"
+              className="mt-3 flex items-center gap-1 text-[12px] font-semibold text-[#1565C0] hover:underline"
+            >
+              Ver mais <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
