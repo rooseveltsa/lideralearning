@@ -86,6 +86,21 @@ export async function signup(formData: FormData) {
         return { error: 'Conta criada! Faça login com suas credenciais.' }
     }
 
+    // Create profile in profiles table (essential for all admin features)
+    if (newUser?.user) {
+        try {
+            await admin.from('profiles').upsert({
+                id: newUser.user.id,
+                full_name: fullName,
+                role: 'student',
+                whatsapp: whatsapp ? `+55${whatsapp}` : '',
+                company: company,
+            }, { onConflict: 'id' })
+        } catch (e) {
+            console.error('[signup] Profile creation failed:', e)
+        }
+    }
+
     // After successful signIn, create prospect in CRM for lead tracking
     try {
         // Check if prospect with this email already exists (email is not unique in schema)

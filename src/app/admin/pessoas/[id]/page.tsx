@@ -69,22 +69,41 @@ export default async function PessoaFichaPage({ params }: Props) {
   const { id } = await params
   const admin = createAdminClient()
 
-  /* ── Profile ── */
-  const { data: profile } = await admin
+  /* ── Profile + Auth ── */
+  let userEmail = ''
+  let userCreatedAt = ''
+  try {
+    const { data: authData } = await admin.auth.admin.getUserById(id)
+    userEmail = authData?.user?.email ?? ''
+    userCreatedAt = authData?.user?.created_at ?? ''
+    if (!authData?.user) notFound()
+  } catch {
+    notFound()
+  }
+
+  const { data: profileData } = await admin
     .from('profiles')
     .select('id, full_name, role, whatsapp, company, created_at')
     .eq('id', id)
     .single()
 
-  if (!profile) notFound()
+  // If no profile exists, create one on-the-fly from auth data
+  const profile = profileData ?? {
+    id,
+    full_name: userEmail.split('@')[0],
+    role: 'student',
+    whatsapp: '',
+    company: '',
+    created_at: userCreatedAt,
+  }
 
-  /* ── Email from auth ── */
-  let userEmail = ''
-  try {
-    const { data: authData } = await admin.auth.admin.getUserById(id)
-    userEmail = authData?.user?.email ?? ''
-  } catch {
-    /* ignore */
+  if (!profileData) {
+    // Auto-create the missing profile
+    await admin.from('profiles').upsert({
+      id,
+      full_name: profile.full_name,
+      role: 'student',
+    }, { onConflict: 'id' }).then(() => {})
   }
 
   /* ── Gestor relationship ── */
