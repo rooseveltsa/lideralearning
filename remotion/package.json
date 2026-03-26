@@ -1,0 +1,24 @@
+{
+  "name": "remotion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "studio": "npx remotion studio src/index.ts",
+    "render": "npx remotion render src/index.ts LideraStories out/lidera-stories.mp4",
+    "render-gif": "npx remotion render src/index.ts LideraStories out/lidera-stories.gif --image-format=png"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/bundler": "^4.0.440",
+    "@remotion/cli": "^4.0.440",
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.440",
+    "typescript": "^6.0.2"
+  }
+}

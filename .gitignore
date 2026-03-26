@@ -47,3 +47,6 @@ next-env.d.ts
 # test scripts
 test-supabase*.mjs
 aios-core/
+remotion/node_modules/
+remotion/out/
+remotion/.cache/

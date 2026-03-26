@@ -22,39 +22,15 @@ import {
   unlinkExecFromSupervisor,
 } from '@/lib/actions/gestao'
 
+import type {
+  SelfAssessment,
+  ExecAssessment,
+  PdiRow,
+} from './types'
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-type SelfAssessment = {
-  id: string
-  user_id: string
-  perfil_lideranca: string | null
-  media_dimensoes: number | null
-  created_at: string
-}
-
-type ExecAssessment = {
-  id: string
-  user_id: string
-  supervisor_user_id: string | null
-  nome_supervisor: string
-  cargo_supervisor: string | null
-  nome_avaliador: string | null
-  nome_empresa: string | null
-  media_dimensoes: number | null
-  pdi_type: string | null
-  created_at: string
-  respostas: Record<string, unknown> | null
-}
-
-type PdiRow = {
-  id: string
-  aluno_user_id: string
-  plano: Record<string, unknown> | null
-  alignment_score: number | null
-  created_at: string
-}
 
 type SearchResult = {
   id: string
@@ -89,6 +65,34 @@ const TYPE_BADGES: Record<string, { label: string; color: string }> = {
   pdi: { label: 'PDI', color: 'bg-purple-50 text-purple-700 border-purple-200' },
 }
 
+const PERFIL_BADGES: Record<string, { label: string; color: string }> = {
+  reativo: { label: 'Reativo', color: 'bg-red-50 text-red-700 border-red-200' },
+  transicao: { label: 'Transicao', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  lider_valor: { label: 'Lider de Valor', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+}
+
+const SELF_DIMENSIONS = [
+  { key: 'q_percepcao' as const, label: 'Percepcao da Funcao', max: 3 },
+  { key: 'q_gestao' as const, label: 'Gestao de Equipes', max: 3 },
+  { key: 'q_comunicacao' as const, label: 'Comunicacao e Postura', max: 3 },
+  { key: 'q_tecnologia' as const, label: 'Tecnologia e KPIs', max: 3 },
+  { key: 'q_etica' as const, label: 'Alicerce Etico', max: 3 },
+  { key: 'q_dor' as const, label: 'Dor Atual e Expectativa', max: 3 },
+]
+
+const EXEC_DIMENSIONS = [
+  { key: 'dim_comunicacao' as const, label: 'Comunicacao' },
+  { key: 'dim_tomada_decisao' as const, label: 'Tomada de Decisao' },
+  { key: 'dim_gestao_equipe' as const, label: 'Gestao de Equipe' },
+  { key: 'dim_orientacao_resultados' as const, label: 'Orientacao a Resultados' },
+  { key: 'dim_adaptabilidade' as const, label: 'Adaptabilidade' },
+  { key: 'dim_lideranca_estrategica' as const, label: 'Lideranca Estrategica' },
+  { key: 'dim_desenvolvimento_pessoas' as const, label: 'Desenvolvimento de Pessoas' },
+  { key: 'dim_inovacao' as const, label: 'Inovacao' },
+  { key: 'dim_etica_integridade' as const, label: 'Etica e Integridade' },
+  { key: 'dim_gestao_crise' as const, label: 'Gestao de Crise' },
+]
+
 const ASSESSMENT_LINKS = [
   {
     label: 'Autoavaliacao',
@@ -116,6 +120,13 @@ function getName(profileMap: Record<string, string>, userId: string) {
   return profileMap[userId] ?? 'Desconhecido'
 }
 
+function scoreBarColor(score: number, max: number): string {
+  const pct = score / max
+  if (pct >= 0.8) return 'bg-emerald-500'
+  if (pct >= 0.5) return 'bg-amber-500'
+  return 'bg-red-500'
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -125,7 +136,6 @@ export default function AvaliacoesClient({
   execAssessments,
   pdis,
   profileMap,
-  authUsers,
 }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('respostas')
   const [typeFilter, setTypeFilter] = useState<'all' | 'self' | 'exec'>('all')
@@ -145,10 +155,9 @@ export default function AvaliacoesClient({
     uniqueKey: string
     userId: string
     type: 'self' | 'exec'
-    score: number | null
-    profile: string | null
     date: string
-    detail: Record<string, unknown> | null
+    selfData?: SelfAssessment
+    execData?: ExecAssessment
   }
 
   const unifiedRows: UnifiedRow[] = [
@@ -157,20 +166,16 @@ export default function AvaliacoesClient({
       uniqueKey: `self-${s.id}`,
       userId: s.user_id,
       type: 'self' as const,
-      score: s.media_dimensoes,
-      profile: s.perfil_lideranca,
       date: s.created_at,
-      detail: null,
+      selfData: s,
     })),
     ...execAssessments.map((e) => ({
       id: e.id,
       uniqueKey: `exec-${e.id}`,
       userId: e.user_id,
       type: 'exec' as const,
-      score: e.media_dimensoes,
-      profile: e.nome_avaliador,
       date: e.created_at,
-      detail: e.respostas,
+      execData: e,
     })),
   ]
     .filter((r) => typeFilter === 'all' || r.type === typeFilter)
@@ -238,20 +243,19 @@ export default function AvaliacoesClient({
     hasSelf: boolean
     hasExec: boolean
     pdi: PdiRow | null
-    alignmentScore: number | null
   }
 
   const pdiStatusMap = new Map<string, PdiStatus>()
 
-  // Collect all unique users from self and exec
   const allUserIds = new Set<string>()
   for (const s of selfAssessments) allUserIds.add(s.user_id)
   for (const e of execAssessments) allUserIds.add(e.user_id)
+  for (const p of pdis) allUserIds.add(p.user_id)
 
   for (const uid of allUserIds) {
     const hasSelf = selfAssessments.some((s) => s.user_id === uid)
     const hasExec = execAssessments.some((e) => e.user_id === uid)
-    const pdi = pdis.find((p) => p.aluno_user_id === uid) ?? null
+    const pdi = pdis.find((p) => p.user_id === uid) ?? null
 
     pdiStatusMap.set(uid, {
       userId: uid,
@@ -259,7 +263,6 @@ export default function AvaliacoesClient({
       hasSelf,
       hasExec,
       pdi,
-      alignmentScore: pdi?.alignment_score ?? null,
     })
   }
 
@@ -355,6 +358,19 @@ export default function AvaliacoesClient({
                       {unifiedRows.map((row) => {
                         const isExpanded = expandedRow === row.uniqueKey
                         const badge = TYPE_BADGES[row.type]
+
+                        // Summary column display
+                        let summaryText = '--'
+                        if (row.type === 'self' && row.selfData) {
+                          const p = PERFIL_BADGES[row.selfData.perfil_lideranca]
+                          summaryText = p ? p.label : row.selfData.perfil_lideranca
+                        } else if (row.type === 'exec' && row.execData) {
+                          summaryText =
+                            row.execData.media_dimensoes != null
+                              ? row.execData.media_dimensoes.toFixed(1)
+                              : '--'
+                        }
+
                         return (
                           <TableRowGroup key={row.uniqueKey}>
                             <tr
@@ -381,57 +397,199 @@ export default function AvaliacoesClient({
                                 </span>
                               </td>
                               <td className="px-4 text-[13px] text-[#334155]">
-                                {row.type === 'self'
-                                  ? row.profile ?? '--'
-                                  : row.score != null
-                                    ? row.score.toFixed(1)
-                                    : '--'}
+                                {summaryText}
                               </td>
                               <td className="px-4 text-[13px] text-[#64748B]">
                                 {formatDate(row.date)}
                               </td>
                             </tr>
-                            {isExpanded && (
+
+                            {/* ── Expanded: Self-Assessment Detail ── */}
+                            {isExpanded && row.type === 'self' && row.selfData && (
                               <tr className="bg-[#F7FAFE]">
                                 <td colSpan={5} className="px-6 py-4">
-                                  <div className="text-[12px] text-[#334155]">
-                                    <p className="font-bold text-[#0F172A]">
-                                      Detalhes da resposta
-                                    </p>
-                                    {row.type === 'self' && (
-                                      <div className="mt-2 space-y-1">
-                                        <p>
-                                          <span className="font-semibold">Perfil:</span>{' '}
-                                          {row.profile ?? 'Nao definido'}
-                                        </p>
-                                        <p>
-                                          <span className="font-semibold">
-                                            Media dimensoes:
-                                          </span>{' '}
-                                          {row.score != null ? row.score.toFixed(2) : '--'}
-                                        </p>
+                                  <div className="space-y-4">
+                                    {/* Header with profile badge and total */}
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-[13px] font-extrabold text-[#0F172A]">
+                                        Autoavaliacao
+                                      </span>
+                                      {(() => {
+                                        const p = PERFIL_BADGES[row.selfData!.perfil_lideranca]
+                                        return p ? (
+                                          <span
+                                            className={`inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${p.color}`}
+                                          >
+                                            {p.label}
+                                          </span>
+                                        ) : (
+                                          <span className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-[10px] font-bold text-gray-600">
+                                            {row.selfData!.perfil_lideranca}
+                                          </span>
+                                        )
+                                      })()}
+                                      <span className="ml-auto text-[12px] font-bold text-[#64748B]">
+                                        Pontuacao total: {row.selfData.pontuacao_total}/18
+                                      </span>
+                                    </div>
+
+                                    {/* Dimension scores with bars */}
+                                    <div className="grid gap-2 sm:grid-cols-2">
+                                      {SELF_DIMENSIONS.map((dim) => {
+                                        const val = row.selfData![dim.key]
+                                        return (
+                                          <div key={dim.key} className="flex items-center gap-2">
+                                            <span className="w-40 shrink-0 text-[11px] text-[#64748B]">
+                                              {dim.label}
+                                            </span>
+                                            <div className="flex flex-1 items-center gap-2">
+                                              <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#E5ECF6]">
+                                                <div
+                                                  className={`h-full rounded-full transition-all ${val != null ? scoreBarColor(val, dim.max) : 'bg-gray-300'}`}
+                                                  style={{
+                                                    width: val != null ? `${(val / dim.max) * 100}%` : '0%',
+                                                  }}
+                                                />
+                                              </div>
+                                              <span className="w-6 text-right text-[11px] font-bold text-[#334155]">
+                                                {val ?? '-'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+
+                                    {/* Text responses */}
+                                    {(row.selfData.texto_dor_atual || row.selfData.texto_custo_futuro) && (
+                                      <div className="space-y-2 rounded-xl border border-[#E5ECF6] bg-white p-3">
+                                        {row.selfData.texto_dor_atual && (
+                                          <div>
+                                            <span className="text-[11px] font-bold text-[#94A3B8]">
+                                              Dor atual:
+                                            </span>
+                                            <p className="mt-0.5 text-[12px] text-[#334155]">
+                                              {row.selfData.texto_dor_atual}
+                                            </p>
+                                          </div>
+                                        )}
+                                        {row.selfData.texto_custo_futuro && (
+                                          <div>
+                                            <span className="text-[11px] font-bold text-[#94A3B8]">
+                                              Custo futuro:
+                                            </span>
+                                            <p className="mt-0.5 text-[12px] text-[#334155]">
+                                              {row.selfData.texto_custo_futuro}
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
-                                    {row.type === 'exec' && (
-                                      <div className="mt-2 space-y-1">
-                                        <p>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+
+                            {/* ── Expanded: Executive Assessment Detail ── */}
+                            {isExpanded && row.type === 'exec' && row.execData && (
+                              <tr className="bg-[#F7FAFE]">
+                                <td colSpan={5} className="px-6 py-4">
+                                  <div className="space-y-4">
+                                    {/* Header */}
+                                    <div className="flex flex-wrap items-center gap-3">
+                                      <span className="text-[13px] font-extrabold text-[#0F172A]">
+                                        Avaliacao Executiva
+                                      </span>
+                                      {row.execData.media_dimensoes != null && (
+                                        <span className="inline-flex rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10px] font-bold text-teal-700">
+                                          Media: {row.execData.media_dimensoes.toFixed(1)}
+                                        </span>
+                                      )}
+                                      {row.execData.nivel_confianca != null && (
+                                        <span className="text-[11px] text-[#64748B]">
+                                          Confianca: {row.execData.nivel_confianca}/5
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Meta info */}
+                                    <div className="flex flex-wrap gap-4 text-[11px] text-[#64748B]">
+                                      {row.execData.nome_avaliador && (
+                                        <span>
                                           <span className="font-semibold">Avaliador:</span>{' '}
-                                          {row.profile ?? '--'}
-                                        </p>
-                                        <p>
-                                          <span className="font-semibold">Score:</span>{' '}
-                                          {row.score != null ? row.score.toFixed(2) : '--'}
-                                        </p>
-                                        {row.detail && (
-                                          <details className="mt-2">
-                                            <summary className="cursor-pointer font-semibold text-[#1565C0]">
-                                              Ver respostas completas
-                                            </summary>
-                                            <pre className="mt-2 max-h-60 overflow-auto rounded-lg bg-white p-3 text-[11px]">
-                                              {JSON.stringify(row.detail, null, 2)}
-                                            </pre>
-                                          </details>
-                                        )}
+                                          {row.execData.nome_avaliador}
+                                        </span>
+                                      )}
+                                      {row.execData.nome_empresa && (
+                                        <span>
+                                          <span className="font-semibold">Empresa:</span>{' '}
+                                          {row.execData.nome_empresa}
+                                        </span>
+                                      )}
+                                      {row.execData.cargo_supervisor && (
+                                        <span>
+                                          <span className="font-semibold">Cargo:</span>{' '}
+                                          {row.execData.cargo_supervisor}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Dimension scores with bars */}
+                                    <div className="grid gap-2 sm:grid-cols-2">
+                                      {EXEC_DIMENSIONS.map((dim) => {
+                                        const val = row.execData![dim.key]
+                                        return (
+                                          <div key={dim.key} className="flex items-center gap-2">
+                                            <span className="w-48 shrink-0 text-[11px] text-[#64748B]">
+                                              {dim.label}
+                                            </span>
+                                            <div className="flex flex-1 items-center gap-2">
+                                              <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#E5ECF6]">
+                                                <div
+                                                  className={`h-full rounded-full transition-all ${val != null ? scoreBarColor(val, 5) : 'bg-gray-300'}`}
+                                                  style={{
+                                                    width: val != null ? `${(val / 5) * 100}%` : '0%',
+                                                  }}
+                                                />
+                                              </div>
+                                              <span className="w-6 text-right text-[11px] font-bold text-[#334155]">
+                                                {val ?? '-'}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+
+                                    {/* Open-ended responses */}
+                                    {(row.execData.ponto_forte ||
+                                      row.execData.area_melhoria ||
+                                      row.execData.impacto_equipe ||
+                                      row.execData.recomendacao ||
+                                      row.execData.comentario_adicional ||
+                                      row.execData.recomendacao_geral) && (
+                                      <div className="space-y-2 rounded-xl border border-[#E5ECF6] bg-white p-3">
+                                        {[
+                                          { key: 'ponto_forte', label: 'Ponto forte' },
+                                          { key: 'area_melhoria', label: 'Area de melhoria' },
+                                          { key: 'impacto_equipe', label: 'Impacto na equipe' },
+                                          { key: 'recomendacao', label: 'Recomendacao' },
+                                          { key: 'comentario_adicional', label: 'Comentario adicional' },
+                                          { key: 'recomendacao_geral', label: 'Recomendacao geral' },
+                                        ].map(({ key, label }) => {
+                                          const val = row.execData![key as keyof ExecAssessment]
+                                          if (!val) return null
+                                          return (
+                                            <div key={key}>
+                                              <span className="text-[11px] font-bold text-[#94A3B8]">
+                                                {label}:
+                                              </span>
+                                              <p className="mt-0.5 text-[12px] text-[#334155]">
+                                                {String(val)}
+                                              </p>
+                                            </div>
+                                          )
+                                        })}
                                       </div>
                                     )}
                                   </div>
@@ -698,7 +856,7 @@ export default function AvaliacoesClient({
                         Status PDI
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
-                        Alinhamento
+                        Media
                       </th>
                       <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
                         Acao
@@ -711,14 +869,17 @@ export default function AvaliacoesClient({
                       let statusColor: string
 
                       if (ps.pdi) {
-                        statusLabel = 'Gerado'
+                        statusLabel = 'PDI Completo'
                         statusColor =
                           'bg-emerald-50 text-emerald-700 border-emerald-200'
                       } else if (ps.hasSelf && ps.hasExec) {
                         statusLabel = 'Pronto para gerar'
                         statusColor = 'bg-blue-50 text-blue-700 border-blue-200'
                       } else if (ps.hasSelf) {
-                        statusLabel = 'Aguardando executiva'
+                        statusLabel = 'PDI Parcial (sem executiva)'
+                        statusColor = 'bg-amber-50 text-amber-700 border-amber-200'
+                      } else if (ps.hasExec) {
+                        statusLabel = 'Apenas executiva'
                         statusColor = 'bg-amber-50 text-amber-700 border-amber-200'
                       } else {
                         statusLabel = 'Sem avaliacoes'
@@ -752,8 +913,8 @@ export default function AvaliacoesClient({
                             </span>
                           </td>
                           <td className="px-4 text-[13px] text-[#334155]">
-                            {ps.alignmentScore != null
-                              ? `${ps.alignmentScore.toFixed(0)}%`
+                            {ps.pdi?.media_dimensoes != null
+                              ? ps.pdi.media_dimensoes.toFixed(1)
                               : '--'}
                           </td>
                           <td className="px-4 text-right">
