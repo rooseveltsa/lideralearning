@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   BarChart3,
+  BookOpen,
   ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
@@ -16,6 +17,7 @@ const navItems = [
   { href: '/admin/pessoas', label: 'Pessoas', icon: Users },
   { href: '/admin/avaliacoes', label: 'Avaliacoes', icon: ClipboardCheck },
   { href: '/admin/treinamentos', label: 'Treinamentos', icon: GraduationCap },
+  { href: '/admin/conteudo', label: 'Programa', icon: BookOpen },
   { href: '/admin/comercial', label: 'Comercial', icon: TrendingUp },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ]

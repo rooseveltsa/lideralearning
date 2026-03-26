@@ -69,7 +69,7 @@ function LoginForm() {
                             Entrar na Plataforma
                         </CardTitle>
                         <CardDescription className="text-center text-[#64748B] text-base">
-                            Insira suas credenciais corporativas.
+                            Acesse sua conta para continuar.
                         </CardDescription>
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
@@ -81,12 +81,12 @@ function LoginForm() {
                                 </div>
                             )}
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">E-mail Corporativo</Label>
+                                <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">E-mail</Label>
                                 <Input
                                     id="email"
                                     name="email"
                                     type="email"
-                                    placeholder="ceo@empresa.com"
+                                    placeholder="seu@email.com"
                                     required
                                     className="h-12 px-4 rounded-xl border-[#E5E7EB] bg-[#F8FAFC] text-base focus-visible:ring-[#1E88E5]/50 focus-visible:ring-2 focus-visible:border-[#1E88E5] transition-all"
                                 />
@@ -122,11 +122,11 @@ function LoginForm() {
                                         Entrando...
                                     </>
                                 ) : (
-                                    "Acessar Dashboard"
+                                    "Entrar"
                                 )}
                             </Button>
                             <div className="text-center text-sm text-[#64748B]">
-                                Não tem uma licença corporativa?{" "}
+                                Ainda nao tem conta?{" "}
                                 <Link href={`/auth/register${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`} className="text-[#1565C0] font-bold hover:text-[#1E88E5] transition-colors">
                                     Criar Conta
                                 </Link>

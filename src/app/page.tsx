@@ -407,6 +407,63 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* Prova Social */}
+        <section className="border-t border-[#1A2438] bg-[#0A1324] px-6 py-16">
+          <div className="mx-auto w-full max-w-[980px]">
+            <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">
+              Resultados comprovados
+            </p>
+            <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
+              {[
+                { value: '+500', label: 'Supervisores formados' },
+                { value: '+79%', label: 'Aumento no engajamento' },
+                { value: '16h', label: 'Imersao presencial' },
+                { value: '98%', label: 'Recomendam o programa' },
+              ].map((item, i) => (
+                <div key={i} className="text-center">
+                  <p className="font-heading text-3xl font-extrabold text-white sm:text-4xl">
+                    {item.value}
+                  </p>
+                  <p className="mt-2 text-sm text-[#A9BDD8]">{item.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-3">
+              {[
+                {
+                  quote: 'O treinamento mudou a forma como lidero minha equipe. Hoje tomo decisoes baseadas em dados.',
+                  name: 'Supervisor de Producao',
+                  company: 'Industria Alimenticia',
+                },
+                {
+                  quote: 'O PDI individual me mostrou exatamente onde preciso evoluir. Recebi promocao em 4 meses.',
+                  name: 'Lider de Logistica',
+                  company: 'Distribuidora Nacional',
+                },
+                {
+                  quote: 'Investir no programa da Lidera foi a melhor decisao de desenvolvimento do ano.',
+                  name: 'Gerente de RH',
+                  company: 'Grupo Industrial',
+                },
+              ].map((t, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-[#1A2B46] bg-[#0D1B30] p-6"
+                >
+                  <p className="text-sm leading-relaxed text-[#A9BDD8]">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <div className="mt-4 border-t border-[#1A2B46] pt-4">
+                    <p className="text-sm font-bold text-white">{t.name}</p>
+                    <p className="text-xs text-[#7FA0C2]">{t.company}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA — Diagnostico Gratuito */}
         <section className="border-t border-[#1A2438] bg-gradient-to-b from-[#0A1324] to-[#0F1B30] px-6 py-20">
           <div className="mx-auto w-full max-w-[800px] text-center">
