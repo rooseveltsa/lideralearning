@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
+  BarChart3,
   ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
@@ -16,6 +17,7 @@ const navItems = [
   { href: '/admin/avaliacoes', label: 'Avaliacoes', icon: ClipboardCheck },
   { href: '/admin/treinamentos', label: 'Treinamentos', icon: GraduationCap },
   { href: '/admin/comercial', label: 'Comercial', icon: TrendingUp },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
 export default function AdminSidebarNav() {

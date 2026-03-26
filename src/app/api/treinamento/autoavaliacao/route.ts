@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/service'
 import { generatePartialPDI } from '@/lib/utils/pdi-generator'
 import { sendPDIEmail } from '@/lib/email/send-pdi'
+import { sendEmail } from '@/lib/email/send'
 
 type Payload = {
   userId: string
@@ -163,6 +164,19 @@ export async function POST(request: Request) {
     } catch (emailErr) {
       console.error('[autoavaliacao] Email processing error:', emailErr)
     }
+  }
+
+  // Send assessment-complete notification email (non-blocking)
+  if (json.userEmail) {
+    sendEmail(json.userEmail, 'assessment-complete', {
+      name: json.userName || 'Participante',
+      perfil,
+      score: json.pontuacaoTotal,
+    })
+      .then((result) => {
+        if (!result.success) console.error('[autoavaliacao] Assessment email failed:', result.error)
+      })
+      .catch((err) => console.error('[autoavaliacao] Assessment email exception:', err))
   }
 
   return NextResponse.json({ success: true, diagnosticoId: data.id })

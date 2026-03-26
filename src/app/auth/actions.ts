@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/service'
+import { sendEmail } from '@/lib/email/send'
 
 // Returns an error string on failure, or redirects on success
 export async function login(formData: FormData) {
@@ -127,6 +128,13 @@ export async function signup(formData: FormData) {
         // Non-blocking - don't fail signup if CRM insert fails
         console.error('[signup] CRM prospect creation failed:', e)
     }
+
+    // Send welcome email (non-blocking — don't await)
+    sendEmail(email, 'welcome', { name: fullName })
+      .then((result) => {
+        if (!result.success) console.error('[signup] Welcome email failed:', result.error)
+      })
+      .catch((err) => console.error('[signup] Welcome email exception:', err))
 
     revalidatePath('/', 'layout')
     redirect(redirectTo || '/dashboard')

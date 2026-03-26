@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound, useRouter } from 'next/navigation'
 import {
   ArrowRight,
+  Award,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -14,7 +15,7 @@ import {
   RotateCcw,
 } from 'lucide-react'
 
-import { getCourseDetails, markLessonAccess, markLessonCompleted } from '@/lib/actions/lms'
+import { checkAndIssueCertificate, getCourseDetails, markLessonAccess, markLessonCompleted } from '@/lib/actions/lms'
 import type { CourseDetails } from '@/lib/actions/lms'
 import { Progress } from '@/types/database'
 
@@ -39,6 +40,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
   const [notFoundState, setNotFoundState] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [courseData, setCourseData] = useState<CourseDetails | null>(null)
+  const [certificateCode, setCertificateCode] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -164,6 +166,19 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
 
     setCourseData(updated)
     void markLessonAccess(updated.enrollmentId, lesson_id)
+
+    // Auto-issue certificate if all lessons are now complete
+    if (!isCompleted) {
+      try {
+        const certResult = await checkAndIssueCertificate(updated.enrollmentId, course_id)
+        if (certResult.verificationCode) {
+          setCertificateCode(certResult.verificationCode)
+        }
+      } catch {
+        // Certificate check is non-blocking
+      }
+    }
+
     setMarking(false)
   }
 
@@ -230,6 +245,41 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
           {loadError}
         </div>
+      ) : null}
+
+      {certificateCode ? (
+        <section className="relative overflow-hidden rounded-2xl border border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-5 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-green-100 text-green-600">
+                <Award className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-green-800">Parabens! Certificado emitido automaticamente!</p>
+                <p className="text-xs text-green-600">
+                  Codigo: <span className="font-semibold">{certificateCode}</span>
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Link
+                href={`/certificado/${certificateCode}`}
+                target="_blank"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-green-600 px-4 text-xs font-bold text-white transition-colors hover:bg-green-700"
+              >
+                <Award className="h-3.5 w-3.5" />
+                Ver certificado
+              </Link>
+              <Link
+                href={`/dashboard/certificado/${course_id}`}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-green-300 bg-white px-4 text-xs font-bold text-green-700 transition-colors hover:bg-green-50"
+              >
+                Pagina do certificado
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+        </section>
       ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">

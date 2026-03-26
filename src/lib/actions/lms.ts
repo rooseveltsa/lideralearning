@@ -426,6 +426,104 @@ export async function getUserLearningSnapshot(): Promise<UserLearningSnapshot> {
   }
 }
 
+/**
+ * Checks whether all lessons in a course are completed for a given enrollment.
+ * If 100% complete and no certificate exists yet, auto-creates the certificate record.
+ * Returns the verification code if a certificate exists/was created, or null otherwise.
+ */
+export async function checkAndIssueCertificate(
+  enrollmentId: string,
+  courseId: string
+): Promise<{ issued: boolean; verificationCode: string | null }> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return { issued: false, verificationCode: null }
+
+  // Get all lessons in the course
+  const { data: modules } = await supabase
+    .from('modules')
+    .select('id')
+    .eq('course_id', courseId)
+
+  if (!modules || modules.length === 0) return { issued: false, verificationCode: null }
+
+  const moduleIds = modules.map((m) => m.id)
+  const { data: lessons } = await supabase
+    .from('lessons')
+    .select('id')
+    .in('module_id', moduleIds)
+
+  if (!lessons || lessons.length === 0) return { issued: false, verificationCode: null }
+
+  // Get completed progress
+  const { data: completedProgress } = await supabase
+    .from('progress')
+    .select('lesson_id')
+    .eq('enrollment_id', enrollmentId)
+    .eq('is_completed', true)
+
+  const completedIds = new Set((completedProgress ?? []).map((p) => p.lesson_id))
+  const allComplete = lessons.every((lesson) => completedIds.has(lesson.id))
+
+  if (!allComplete) return { issued: false, verificationCode: null }
+
+  // Check if certificate already exists
+  const { data: existing } = await supabase
+    .from('certificates')
+    .select('verification_code')
+    .eq('enrollment_id', enrollmentId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (existing?.verification_code) {
+    return { issued: false, verificationCode: existing.verification_code as string }
+  }
+
+  // Generate new certificate
+  const { randomUUID } = await import('crypto')
+  const verificationCode = `LIDERA-${randomUUID().replace(/-/g, '').slice(0, 12).toUpperCase()}`
+
+  const { data: inserted, error } = await supabase
+    .from('certificates')
+    .insert({
+      enrollment_id: enrollmentId,
+      user_id: user.id,
+      course_id: courseId,
+      verification_code: verificationCode,
+    })
+    .select('verification_code')
+    .single()
+
+  if (error) {
+    // Handle race condition — another request may have created it
+    if (error.code === '23505') {
+      const { data: retry } = await supabase
+        .from('certificates')
+        .select('verification_code')
+        .eq('enrollment_id', enrollmentId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      return {
+        issued: true,
+        verificationCode: (retry?.verification_code as string) ?? null,
+      }
+    }
+
+    console.error('Error issuing certificate:', error)
+    return { issued: false, verificationCode: null }
+  }
+
+  return {
+    issued: true,
+    verificationCode: (inserted?.verification_code as string) ?? null,
+  }
+}
+
 function normalizeEnrollmentCourse(
   course: EnrollmentWithCourse['courses']
 ): Pick<Course, 'id' | 'title' | 'description' | 'thumbnail_url' | 'price' | 'is_published'> | null {

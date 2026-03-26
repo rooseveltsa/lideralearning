@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Award, CheckCircle2, Lock, QrCode, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Award, CheckCircle2, Download, Lock, Printer, QrCode, ShieldCheck } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
 
@@ -314,6 +314,27 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
 
               <div className="flex flex-wrap gap-3">
                 <PrintButton />
+                {certId ? (
+                  <a
+                    href={`/certificado/${certId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#1E88E5] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Imprimir certificado
+                  </a>
+                ) : null}
+                {certId ? (
+                  <a
+                    href={`/api/certificado/pdf/${certId}`}
+                    download
+                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-5 text-sm font-bold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+                  >
+                    <Download className="h-4 w-4" />
+                    Baixar PDF
+                  </a>
+                ) : null}
                 {verifyUrl ? (
                   <a
                     href={verifyUrl}
