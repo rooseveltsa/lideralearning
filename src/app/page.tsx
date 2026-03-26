@@ -407,6 +407,34 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* CTA — Diagnostico Gratuito */}
+        <section className="border-t border-[#1A2438] bg-gradient-to-b from-[#0A1324] to-[#0F1B30] px-6 py-20">
+          <div className="mx-auto w-full max-w-[800px] text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F57C00]">Gratuito e confidencial</p>
+            <h2 className="mt-3 font-heading text-3xl font-extrabold text-white sm:text-4xl">
+              Descubra seu perfil de lideranca em 5 minutos
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#A9BDD8]">
+              Faca a autoavaliacao e receba um diagnostico personalizado com seu Plano de Desenvolvimento Individual (PDI) gerado automaticamente.
+            </p>
+            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <Link
+                href="/treinamento/autoavaliacao"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/25 transition-all hover:bg-[#E65100] hover:shadow-xl hover:shadow-[#F57C00]/30"
+              >
+                Fazer meu diagnostico gratuito
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <Link
+                href="/treinamento/modulos"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#335077] px-6 py-4 text-sm font-bold text-[#D4E4F6] transition-colors hover:border-[#4F77AA] hover:text-white"
+              >
+                Ver programa completo
+              </Link>
+            </div>
+          </div>
+        </section>
+
         <section className="border-t border-[#1A2438] bg-[#050A14] px-6 py-20">
           <div className="mx-auto w-full max-w-[980px]">
             <div className="mb-10 text-center">
