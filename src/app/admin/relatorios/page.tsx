@@ -11,7 +11,7 @@ import {
   Users,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
 
 // ---------------------------------------------------------------------------
@@ -33,10 +33,10 @@ type AlunoWithPDI = {
 // ---------------------------------------------------------------------------
 
 export default async function AdminRelatoriosPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   // Fetch all alunos (role = 'aluno')
-  const { data: alunos } = await supabase
+  const { data: alunos } = await admin
     .from('profiles')
     .select('id, full_name, role')
     .eq('role', 'aluno')
@@ -54,7 +54,7 @@ export default async function AdminRelatoriosPage() {
   }
 
   // Fetch all relationships for company names
-  const { data: relationships } = await supabase
+  const { data: relationships } = await admin
     .from('gestor_aluno_relationships')
     .select('aluno_user_id, company_name')
 
@@ -66,7 +66,7 @@ export default async function AdminRelatoriosPage() {
   }
 
   // Fetch all self assessments (latest per user)
-  const { data: selfAssessments } = await supabase
+  const { data: selfAssessments } = await admin
     .from('leadership_self_assessments')
     .select('*')
     .order('created_at', { ascending: false })
@@ -81,7 +81,7 @@ export default async function AdminRelatoriosPage() {
   }
 
   // Fetch all exec assessments (latest per user)
-  const { data: execAssessments } = await supabase
+  const { data: execAssessments } = await admin
     .from('leadership_executive_assessments')
     .select('*')
     .order('created_at', { ascending: false })

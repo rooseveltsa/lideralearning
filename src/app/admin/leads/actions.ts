@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 const LEAD_STATUSES = ['new', 'contacted', 'qualified', 'proposal_sent', 'won', 'lost'] as const
 
@@ -19,7 +20,8 @@ async function verifyAdmin() {
     redirect('/auth/login')
   }
 
-  const { data: profile } = await supabase
+  const admin = createAdminClient()
+  const { data: profile } = await admin
     .from('profiles')
     .select('role')
     .eq('id', user.id)
@@ -29,7 +31,7 @@ async function verifyAdmin() {
     redirect('/dashboard')
   }
 
-  return { supabase, userId: user.id }
+  return { admin, userId: user.id }
 }
 
 function normalizeStatus(value: FormDataEntryValue | null): LeadStatus | null {
@@ -40,7 +42,7 @@ function normalizeStatus(value: FormDataEntryValue | null): LeadStatus | null {
 }
 
 export async function updateLeadStatus(formData: FormData): Promise<void> {
-  const { supabase } = await verifyAdmin()
+  const { admin } = await verifyAdmin()
 
   const leadId = typeof formData.get('lead_id') === 'string' ? (formData.get('lead_id') as string).trim() : ''
   const nextStatus = normalizeStatus(formData.get('status'))
@@ -57,7 +59,7 @@ export async function updateLeadStatus(formData: FormData): Promise<void> {
     payload.last_contact_at = new Date().toISOString()
   }
 
-  const { error } = await supabase.from('b2b_leads').update(payload).eq('id', leadId)
+  const { error } = await admin.from('b2b_leads').update(payload).eq('id', leadId)
 
   if (error) {
     return
@@ -67,7 +69,7 @@ export async function updateLeadStatus(formData: FormData): Promise<void> {
 }
 
 export async function createDraftProposal(formData: FormData): Promise<void> {
-  const { supabase, userId } = await verifyAdmin()
+  const { admin, userId } = await verifyAdmin()
 
   const leadId = typeof formData.get('lead_id') === 'string' ? (formData.get('lead_id') as string).trim() : ''
   const companyName = typeof formData.get('company_name') === 'string' ? (formData.get('company_name') as string).trim() : ''
@@ -78,7 +80,7 @@ export async function createDraftProposal(formData: FormData): Promise<void> {
 
   const title = companyName ? `Proposta comercial - ${companyName}` : 'Proposta comercial'
 
-  const { error: proposalError } = await supabase.from('proposals').insert({
+  const { error: proposalError } = await admin.from('proposals').insert({
     lead_id: leadId,
     title,
     status: 'draft',
@@ -89,7 +91,7 @@ export async function createDraftProposal(formData: FormData): Promise<void> {
     return
   }
 
-  const { error: leadError } = await supabase
+  const { error: leadError } = await admin
     .from('b2b_leads')
     .update({ status: 'proposal_sent', last_contact_at: new Date().toISOString() })
     .eq('id', leadId)

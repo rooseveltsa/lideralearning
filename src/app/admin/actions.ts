@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -9,7 +10,8 @@ async function verifyAdmin() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/auth/login')
 
-    const { data: profile } = await supabase
+    const admin = createAdminClient()
+    const { data: profile } = await admin
         .from('profiles')
         .select('role')
         .eq('id', user.id)
@@ -17,15 +19,15 @@ async function verifyAdmin() {
 
     if (profile?.role !== 'admin') redirect('/dashboard')
 
-    return { supabase, user }
+    return { admin, user }
 }
 
 // ---------- CURSOS ----------
 
 export async function createCourse(formData: FormData) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { data, error } = await supabase
+    const { data, error } = await admin
         .from('courses')
         .insert({
             title: formData.get('title') as string,
@@ -44,9 +46,9 @@ export async function createCourse(formData: FormData) {
 }
 
 export async function updateCourse(courseId: string, formData: FormData) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { error } = await supabase
+    const { error } = await admin
         .from('courses')
         .update({
             title: formData.get('title') as string,
@@ -64,9 +66,9 @@ export async function updateCourse(courseId: string, formData: FormData) {
 }
 
 export async function publishCourse(courseId: string, publish: boolean) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { error } = await supabase
+    const { error } = await admin
         .from('courses')
         .update({ is_published: publish })
         .eq('id', courseId)
@@ -79,9 +81,9 @@ export async function publishCourse(courseId: string, publish: boolean) {
 }
 
 export async function deleteCourse(courseId: string) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { error } = await supabase
+    const { error } = await admin
         .from('courses')
         .delete()
         .eq('id', courseId)
@@ -95,11 +97,11 @@ export async function deleteCourse(courseId: string) {
 // ---------- MÓDULOS ----------
 
 export async function createModule(formData: FormData) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
     const courseId = formData.get('course_id') as string
 
     // Obter próximo order_index
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
         .from('modules')
         .select('order_index')
         .eq('course_id', courseId)
@@ -108,7 +110,7 @@ export async function createModule(formData: FormData) {
 
     const nextIndex = (existing?.[0]?.order_index ?? 0) + 1
 
-    const { error } = await supabase
+    const { error } = await admin
         .from('modules')
         .insert({
             course_id: courseId,
@@ -123,9 +125,9 @@ export async function createModule(formData: FormData) {
 }
 
 export async function deleteModule(moduleId: string, courseId: string) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { error } = await supabase.from('modules').delete().eq('id', moduleId)
+    const { error } = await admin.from('modules').delete().eq('id', moduleId)
 
     if (error) return { error: error.message }
 
@@ -136,11 +138,11 @@ export async function deleteModule(moduleId: string, courseId: string) {
 // ---------- AULAS ----------
 
 export async function createLesson(formData: FormData) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
     const moduleId = formData.get('module_id') as string
     const courseId = formData.get('course_id') as string
 
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
         .from('lessons')
         .select('order_index')
         .eq('module_id', moduleId)
@@ -149,7 +151,7 @@ export async function createLesson(formData: FormData) {
 
     const nextIndex = (existing?.[0]?.order_index ?? 0) + 1
 
-    const { error } = await supabase
+    const { error } = await admin
         .from('lessons')
         .insert({
             module_id: moduleId,
@@ -167,9 +169,9 @@ export async function createLesson(formData: FormData) {
 }
 
 export async function deleteLesson(lessonId: string, courseId: string) {
-    const { supabase } = await verifyAdmin()
+    const { admin } = await verifyAdmin()
 
-    const { error } = await supabase.from('lessons').delete().eq('id', lessonId)
+    const { error } = await admin.from('lessons').delete().eq('id', lessonId)
 
     if (error) return { error: error.message }
 

@@ -1,12 +1,12 @@
 import { Calendar, CheckCircle2, Clock, MessageSquare } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 export default async function AdminMentoriasPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   // Fetch all mentoring sessions with aluno names
-  const { data: sessions } = await supabase
+  const { data: sessions } = await admin
     .from('mentoring_sessions')
     .select('id, aluno_user_id, session_type, scheduled_date, completed_date, status, notes, mentor_name')
     .order('scheduled_date', { ascending: false })
@@ -15,7 +15,7 @@ export default async function AdminMentoriasPage() {
   const alunoIds = [...new Set(sessions?.map((s) => s.aluno_user_id) ?? [])]
   const alunoNames = new Map<string, string>()
   if (alunoIds.length > 0) {
-    const { data: profiles } = await supabase
+    const { data: profiles } = await admin
       .from('profiles')
       .select('id, full_name')
       .in('id', alunoIds)

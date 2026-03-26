@@ -1,19 +1,19 @@
 import Link from 'next/link'
 import { CheckCircle2, ChevronRight, XCircle } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 export default async function AdminAlunosPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   // Fetch ALL profiles — admins also fill forms during testing
-  const { data: profiles } = await supabase
+  const { data: profiles } = await admin
     .from('profiles')
     .select('id, full_name, role, created_at')
     .order('created_at', { ascending: false })
 
   // Fetch self-assessment data per user
-  const { data: assessmentData } = await supabase
+  const { data: assessmentData } = await admin
     .from('leadership_self_assessments')
     .select('user_id, perfil, pontuacao_total')
 
@@ -31,7 +31,7 @@ export default async function AdminAlunosPage() {
   // Fetch PDI data per user
   let pdiMap = new Map<string, number>()
   try {
-    const { data: pdiData } = await supabase
+    const { data: pdiData } = await admin
       .from('leadership_pdi')
       .select('user_id')
     if (pdiData) {
@@ -46,7 +46,7 @@ export default async function AdminAlunosPage() {
   // Fetch executive assessment data per user
   let execMap = new Map<string, number>()
   try {
-    const { data: execData } = await supabase
+    const { data: execData } = await admin
       .from('leadership_executive_assessments')
       .select('user_id')
     if (execData) {
@@ -59,7 +59,7 @@ export default async function AdminAlunosPage() {
   }
 
   // Fetch gestor relationships
-  const { data: relationships } = await supabase
+  const { data: relationships } = await admin
     .from('gestor_aluno_relationships')
     .select('aluno_user_id, company_name')
 

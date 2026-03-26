@@ -1,6 +1,6 @@
 import { BadgeCheck, Building2, Clock3, FileText, Phone } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import { createDraftProposal, updateLeadStatus } from './actions'
 
 const STATUS_OPTIONS = [
@@ -37,9 +37,9 @@ type ProposalRow = {
 }
 
 export default async function AdminLeadsPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
-  const { data: leadsData, error: leadsError } = await supabase
+  const { data: leadsData, error: leadsError } = await admin
     .from('b2b_leads')
     .select('id, full_name, company_name, managers_range, whatsapp, email, status, created_at')
     .order('created_at', { ascending: false })
@@ -53,7 +53,7 @@ export default async function AdminLeadsPage() {
 
   const proposalsByLead = new Map<string, number>()
   if (leadIds.length > 0) {
-    const { data: proposals } = await supabase.from('proposals').select('lead_id').in('lead_id', leadIds)
+    const { data: proposals } = await admin.from('proposals').select('lead_id').in('lead_id', leadIds)
     for (const row of (proposals ?? []) as ProposalRow[]) {
       proposalsByLead.set(row.lead_id, (proposalsByLead.get(row.lead_id) ?? 0) + 1)
     }

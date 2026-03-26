@@ -1,13 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import { notFound } from 'next/navigation'
 import CourseEditorClient from './CourseEditorClient'
 import type { CourseEditorCourse } from './CourseEditorClient'
 
 export default async function EditarCursoPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const supabase = await createClient()
+    const admin = createAdminClient()
 
-    const { data: course, error } = await supabase
+    const { data: course, error } = await admin
         .from('courses')
         .select(`
       id, title, description, price, thumbnail_url, is_published,

@@ -115,11 +115,11 @@ export async function getGestorWithAlunos(gestorId: string) {
     { data: mentoringSessions },
   ] = await Promise.all([
     supabase
-      .from('self_assessments')
+      .from('leadership_self_assessments')
       .select('id, user_id')
       .in('user_id', alunoIds),
     supabase
-      .from('executive_assessments')
+      .from('leadership_executive_assessments')
       .select('id, user_id')
       .in('user_id', alunoIds),
     supabase
@@ -209,17 +209,17 @@ export async function getAlunoCompleteProfile(alunoId: string): Promise<AlunoCom
       .eq('aluno_user_id', alunoId)
       .limit(1),
     supabase
-      .from('self_assessments')
+      .from('leadership_self_assessments')
       .select('id, pontuacao_total, perfil, created_at')
       .eq('user_id', alunoId)
       .order('created_at', { ascending: false }),
     supabase
-      .from('executive_assessments')
+      .from('leadership_executive_assessments')
       .select('*')
       .eq('user_id', alunoId)
       .order('created_at', { ascending: false }),
     supabase
-      .from('pdis')
+      .from('leadership_pdi')
       .select('id, media_dimensoes, created_at')
       .eq('user_id', alunoId)
       .order('created_at', { ascending: false }),
@@ -643,15 +643,15 @@ export async function getAlunosWithStatus() {
       .select('aluno_user_id, company_name')
       .in('aluno_user_id', alunoIds),
     supabase
-      .from('self_assessments')
+      .from('leadership_self_assessments')
       .select('user_id, created_at')
       .in('user_id', alunoIds),
     supabase
-      .from('executive_assessments')
+      .from('leadership_executive_assessments')
       .select('user_id, created_at')
       .in('user_id', alunoIds),
     supabase
-      .from('pdis')
+      .from('leadership_pdi')
       .select('user_id, created_at')
       .in('user_id', alunoIds),
     supabase

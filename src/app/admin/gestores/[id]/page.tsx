@@ -12,7 +12,7 @@ import {
   XCircle,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -20,10 +20,10 @@ type Props = {
 
 export default async function GestorDetailPage({ params }: Props) {
   const { id } = await params
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   /* ── Gestor profile ── */
-  const { data: gestor } = await supabase
+  const { data: gestor } = await admin
     .from('profiles')
     .select('id, full_name, role, created_at')
     .eq('id', id)
@@ -33,7 +33,7 @@ export default async function GestorDetailPage({ params }: Props) {
   if (!gestor) notFound()
 
   /* ── Relationships (supervisors linked to this gestor) ── */
-  const { data: relationships } = await supabase
+  const { data: relationships } = await admin
     .from('gestor_aluno_relationships')
     .select('aluno_user_id, company_name, relationship_type')
     .eq('gestor_user_id', id)
@@ -44,7 +44,7 @@ export default async function GestorDetailPage({ params }: Props) {
   /* ── Fetch supervisor profiles ── */
   let alunoProfiles: Array<{ id: string; full_name: string }> = []
   if (alunoIds.length > 0) {
-    const { data } = await supabase
+    const { data } = await admin
       .from('profiles')
       .select('id, full_name')
       .in('id', alunoIds)
@@ -60,23 +60,23 @@ export default async function GestorDetailPage({ params }: Props) {
 
   if (alunoIds.length > 0) {
     const [saRes, eaRes, pdiRes, partRes, mentRes] = await Promise.all([
-      supabase
+      admin
         .from('leadership_self_assessments')
         .select('user_id, perfil')
         .in('user_id', alunoIds),
-      supabase
+      admin
         .from('leadership_executive_assessments')
         .select('user_id')
         .in('user_id', alunoIds),
-      supabase
+      admin
         .from('leadership_pdi')
         .select('user_id')
         .in('user_id', alunoIds),
-      supabase
+      admin
         .from('presential_training_participants')
         .select('user_id, status')
         .in('user_id', alunoIds),
-      supabase
+      admin
         .from('mentoring_sessions')
         .select('aluno_user_id, session_type, status')
         .in('aluno_user_id', alunoIds),

@@ -10,28 +10,28 @@ import {
   Users,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 export default async function AdminGestoresPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
-  const { data: gestores } = await supabase
+  const { data: gestores } = await admin
     .from('profiles')
     .select('id, full_name, role, created_at')
     .eq('role', 'hr_manager')
     .order('created_at', { ascending: false })
 
   // Fetch relationships with aluno details
-  const { data: relationships } = await supabase
+  const { data: relationships } = await admin
     .from('gestor_aluno_relationships')
     .select('gestor_user_id, aluno_user_id, company_name, relationship_type')
 
   // Fetch assessment counts per aluno
-  const { data: selfAssessments } = await supabase
+  const { data: selfAssessments } = await admin
     .from('leadership_self_assessments')
     .select('user_id')
 
-  const { data: trainings } = await supabase
+  const { data: trainings } = await admin
     .from('presential_training_participants')
     .select('user_id, status')
 
@@ -43,7 +43,7 @@ export default async function AdminGestoresPage() {
   // Fetch aluno profiles
   const alunoIds = [...new Set(relationships?.map((r) => r.aluno_user_id) ?? [])]
   const { data: alunoProfiles } = alunoIds.length > 0
-    ? await supabase.from('profiles').select('id, full_name').in('id', alunoIds)
+    ? await admin.from('profiles').select('id, full_name').in('id', alunoIds)
     : { data: [] }
 
   const alunoMap = new Map(alunoProfiles?.map((p) => [p.id, p.full_name]) ?? [])

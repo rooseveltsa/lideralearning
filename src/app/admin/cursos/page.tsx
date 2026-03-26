@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Eye, EyeOff, Pencil, Plus } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 
 type CourseRow = {
   id: string
@@ -16,9 +16,9 @@ type CourseRow = {
 const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 
 export default async function AdminCursosPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
-  const { data } = await supabase
+  const { data } = await admin
     .from('courses')
     .select('id, title, price, is_published, created_at, thumbnail_url')
     .order('created_at', { ascending: false })

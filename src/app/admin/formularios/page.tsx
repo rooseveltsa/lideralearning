@@ -9,13 +9,13 @@ import {
   Eye,
 } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import CopyLinkButton from './CopyLinkButton'
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
 
 export default async function AdminFormulariosPage() {
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   // ── Real counts from DB ──
   let totalAutoavaliacao = 0
@@ -23,21 +23,21 @@ export default async function AdminFormulariosPage() {
   let totalExecutiva = 0
 
   try {
-    const { count } = await supabase
+    const { count } = await admin
       .from('leadership_self_assessments')
       .select('*', { count: 'exact', head: true })
     totalAutoavaliacao = count ?? 0
   } catch { /* table may not exist */ }
 
   try {
-    const { count } = await supabase
+    const { count } = await admin
       .from('leadership_pdi')
       .select('*', { count: 'exact', head: true })
     totalPdi = count ?? 0
   } catch { /* table may not exist */ }
 
   try {
-    const { count } = await supabase
+    const { count } = await admin
       .from('leadership_executive_assessments')
       .select('*', { count: 'exact', head: true })
     totalExecutiva = count ?? 0
@@ -46,7 +46,7 @@ export default async function AdminFormulariosPage() {
   // ── Perfil breakdown ──
   const perfilCounts = { reativo: 0, transicao: 0, lider_valor: 0 }
   try {
-    const { data: perfilData } = await supabase
+    const { data: perfilData } = await admin
       .from('leadership_self_assessments')
       .select('perfil')
     if (perfilData) {

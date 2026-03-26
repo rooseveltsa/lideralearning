@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, FileBarChart } from 'lucide-react'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
 import PDIReportView from '@/components/treinamento/PDIReportView'
 import PrintPDIButton from './PrintButton'
@@ -13,10 +13,10 @@ type Props = {
 
 export default async function AdminPDIAlunoPage({ params }: Props) {
   const { alunoId } = await params
-  const supabase = await createClient()
+  const admin = createAdminClient()
 
   // Fetch profile
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('id, full_name, role')
     .eq('id', alunoId)
@@ -25,7 +25,7 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
   if (!profile) notFound()
 
   // Fetch relationship for company
-  const { data: relationship } = await supabase
+  const { data: relationship } = await admin
     .from('gestor_aluno_relationships')
     .select('company_name')
     .eq('aluno_user_id', alunoId)
@@ -33,7 +33,7 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
     .maybeSingle()
 
   // Fetch latest self-assessment
-  const { data: selfAssessments } = await supabase
+  const { data: selfAssessments } = await admin
     .from('leadership_self_assessments')
     .select('*')
     .eq('user_id', alunoId)
@@ -41,7 +41,7 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
     .limit(1)
 
   // Fetch latest exec assessment
-  const { data: execAssessments } = await supabase
+  const { data: execAssessments } = await admin
     .from('leadership_executive_assessments')
     .select('*')
     .eq('user_id', alunoId)
