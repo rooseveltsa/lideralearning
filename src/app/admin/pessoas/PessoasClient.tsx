@@ -37,6 +37,8 @@ export type PessoaRow = {
   selfPerfil: string | null
   selfScore: number | null
   alunosCount: number
+  pdiMedia: number | null
+  pdiFase: number | null
 }
 
 type FilterTab = 'todos' | 'leads' | 'alunos' | 'gestores'
@@ -534,6 +536,39 @@ function TableRow({
                           {p.selfScore} pts
                         </span>
                       )}
+                    </div>
+                  )}
+                  {p.hasPdi && (
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {p.hasAutoavaliacao && p.hasExec ? (
+                        <span className="inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                          PDI Completo
+                        </span>
+                      ) : (
+                        <span className="inline-block rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">
+                          PDI Individual
+                        </span>
+                      )}
+                      {p.pdiMedia !== null && (
+                        <span className="text-[11px] font-bold text-[#7B1FA2]">
+                          Media: {p.pdiMedia}/5
+                        </span>
+                      )}
+                      {p.pdiFase !== null && (
+                        <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
+                          p.pdiFase === 1 ? 'bg-red-50 text-red-700' :
+                          p.pdiFase === 2 ? 'bg-amber-50 text-amber-700' :
+                          'bg-emerald-50 text-emerald-700'
+                        }`}>
+                          Fase {p.pdiFase}
+                        </span>
+                      )}
+                      <Link
+                        href={`/admin/pessoas/${p.id}`}
+                        className="text-[11px] font-bold text-[#7B1FA2] hover:underline"
+                      >
+                        Ver PDI completo
+                      </Link>
                     </div>
                   )}
                 </div>

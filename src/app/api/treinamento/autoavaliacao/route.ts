@@ -62,9 +62,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  const perfil = getPerfilLabel(json.pontuacaoTotal)
+
   // Update CRM prospect status - they completed a form
   if (json.userEmail) {
-    const perfil = getPerfilLabel(json.pontuacaoTotal)
     try {
       await admin
         .from('crm_prospects')
@@ -78,17 +79,70 @@ export async function POST(request: Request) {
     }
   }
 
-  // Generate partial PDI and send email (non-blocking — errors are logged, not thrown)
-  if (json.userEmail) {
-    const perfil = getPerfilLabel(json.pontuacaoTotal)
+  // ── AUTO-GENERATE PDI from self-assessment ──
+  const respostas = {
+    percepcao: json.respostas.percepcao ?? 0,
+    gestao: json.respostas.gestao ?? 0,
+    comunicacao: json.respostas.comunicacao ?? 0,
+    tecnologia: json.respostas.tecnologia ?? 0,
+    etica: json.respostas.etica ?? 0,
+    dor: json.respostas.dor ?? 0,
+  }
 
+  try {
+    // Map self-assessment scores to PDI dimensions (normalize 1-3 to 1-5 scale)
+    const mapScore = (v: number) => Math.max(1, Math.min(5, Math.round((v / 3) * 5)))
+    const mapAvg = (a: number, b: number) => Math.max(1, Math.min(5, Math.round(((a + b) / 6) * 5)))
+
+    const pdiData = {
+      user_id: json.userId,
+      cargo: '',
+      tempo_funcao: '',
+      departamento: '',
+      dim_facilitador: mapScore(respostas.gestao),
+      dim_orientador: mapScore(respostas.comunicacao),
+      dim_garantidor: mapScore(respostas.etica),
+      dim_estrategista: mapScore(respostas.percepcao),
+      dim_mentor: mapAvg(respostas.gestao, respostas.comunicacao),
+      hs_execucao: mapScore(respostas.percepcao),
+      hs_processos: mapScore(respostas.gestao),
+      hs_ferramentas: mapScore(respostas.tecnologia),
+      hs_padroes: mapScore(respostas.etica),
+      ss_inteligencia_emocional: mapScore(respostas.comunicacao),
+      ss_feedback: mapScore(respostas.comunicacao),
+      ss_conflitos_geracionais: mapScore(respostas.gestao),
+      ss_visao_futuro: mapScore(respostas.percepcao),
+      fase_atual: perfil === 'reativo' ? 1 : perfil === 'transicao' ? 2 : 3,
+      media_dimensoes: parseFloat(((json.pontuacaoTotal / 18) * 5).toFixed(1)),
+    }
+
+    // Check if PDI already exists for this user, then update or insert
+    const { data: existingPdi } = await admin
+      .from('leadership_pdi')
+      .select('id')
+      .eq('user_id', json.userId)
+      .limit(1)
+      .maybeSingle()
+
+    if (existingPdi) {
+      await admin.from('leadership_pdi').update(pdiData).eq('id', existingPdi.id)
+    } else {
+      await admin.from('leadership_pdi').insert(pdiData)
+    }
+    console.log('[autoavaliacao] PDI auto-generated for user:', json.userId)
+  } catch (pdiErr) {
+    console.error('[autoavaliacao] PDI auto-generation failed:', pdiErr)
+  }
+
+  // Generate partial PDI report and send email (non-blocking — errors are logged, not thrown)
+  if (json.userEmail) {
     const selfAssessment: Record<string, unknown> = {
-      q_percepcao: json.respostas.percepcao ?? null,
-      q_gestao: json.respostas.gestao ?? null,
-      q_comunicacao: json.respostas.comunicacao ?? null,
-      q_tecnologia: json.respostas.tecnologia ?? null,
-      q_etica: json.respostas.etica ?? null,
-      q_dor: json.respostas.dor ?? null,
+      q_percepcao: respostas.percepcao,
+      q_gestao: respostas.gestao,
+      q_comunicacao: respostas.comunicacao,
+      q_tecnologia: respostas.tecnologia,
+      q_etica: respostas.etica,
+      q_dor: respostas.dor,
       pontuacao_total: json.pontuacaoTotal,
       perfil,
     }

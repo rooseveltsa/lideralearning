@@ -150,16 +150,19 @@ function daysSince(dateStr: string): number {
 
 // ── Props ────────────────────────────────────────────────
 
+type AssessmentStatusMap = Record<string, { hasAutoavaliacao: boolean; hasPdi: boolean }>
+
 type Props = {
   leads: EnhancedLead[]
   prospects: CrmProspect[]
   scores: CrmLeadScore[]
   activities: CrmActivity[]
+  assessmentStatus?: AssessmentStatusMap
 }
 
 // ── Main Component ───────────────────────────────────────
 
-export default function ComercialClient({ leads, prospects, scores, activities }: Props) {
+export default function ComercialClient({ leads, prospects, scores, activities, assessmentStatus = {} }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('pipeline')
   const [showNewLead, setShowNewLead] = useState(false)
   const [noteLeadId, setNoteLeadId] = useState<string | null>(null)
@@ -278,7 +281,7 @@ export default function ComercialClient({ leads, prospects, scores, activities }
       )}
 
       {activeTab === 'leads' && (
-        <LeadsTab prospects={prospects} isPending={isPending} />
+        <LeadsTab prospects={prospects} isPending={isPending} assessmentStatus={assessmentStatus} />
       )}
 
       {activeTab === 'propostas' && (
@@ -526,7 +529,7 @@ function PipelineTab({
 // TAB: Leads (SDR table)
 // ══════════════════════════════════════════════════════════
 
-function LeadsTab({ prospects, isPending: parentPending }: { prospects: CrmProspect[]; isPending: boolean }) {
+function LeadsTab({ prospects, isPending: parentPending, assessmentStatus = {} }: { prospects: CrmProspect[]; isPending: boolean; assessmentStatus?: AssessmentStatusMap }) {
   const [showForm, setShowForm] = useState(false)
   const [filterStatus, setFilterStatus] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -677,6 +680,7 @@ function LeadsTab({ prospects, isPending: parentPending }: { prospects: CrmProsp
                 <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Contato</th>
                 <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] md:table-cell">Telefone</th>
                 <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] lg:table-cell">Email</th>
+                <th className="hidden px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b] md:table-cell">Avaliacoes</th>
                 <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Status</th>
                 <th className="px-3 py-2.5 text-[11px] font-bold uppercase tracking-wide text-[#64748b]">Acoes</th>
               </tr>
@@ -714,6 +718,29 @@ function LeadsTab({ prospects, isPending: parentPending }: { prospects: CrmProsp
                       ) : (
                         <span className="text-[11px] text-[#cbd5e1]">--</span>
                       )}
+                    </td>
+                    <td className="hidden px-3 py-2 md:table-cell">
+                      {(() => {
+                        const email = (p.email ?? '').toLowerCase()
+                        const st = email ? assessmentStatus[email] : null
+                        if (!st) return <span className="text-[11px] text-[#cbd5e1]">--</span>
+                        return (
+                          <div className="flex flex-wrap gap-1">
+                            {st.hasAutoavaliacao && (
+                              <span className="inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                                <CheckCircle2 className="h-2.5 w-2.5" />
+                                Auto
+                              </span>
+                            )}
+                            {st.hasPdi && (
+                              <span className="inline-flex items-center gap-0.5 rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-bold text-purple-700">
+                                <CheckCircle2 className="h-2.5 w-2.5" />
+                                PDI
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })()}
                     </td>
                     <td className="px-3 py-2">
                       <span className="inline-flex items-center gap-1.5 text-[11px] font-medium">

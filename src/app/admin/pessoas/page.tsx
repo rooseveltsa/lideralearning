@@ -53,9 +53,21 @@ export default async function AdminPessoasPage({
 
   // ── PDIs ──
   let pdiSet = new Set<string>()
+  const pdiDataMap = new Map<string, { media: number | null; fase: number | null }>()
   try {
-    const { data: pdiData } = await admin.from('leadership_pdi').select('user_id')
-    pdiSet = new Set((pdiData ?? []).map((p) => p.user_id))
+    const { data: pdiData } = await admin
+      .from('leadership_pdi')
+      .select('user_id, media_dimensoes, fase_atual')
+      .order('created_at', { ascending: false })
+    for (const p of pdiData ?? []) {
+      pdiSet.add(p.user_id)
+      if (!pdiDataMap.has(p.user_id)) {
+        pdiDataMap.set(p.user_id, {
+          media: p.media_dimensoes,
+          fase: p.fase_atual,
+        })
+      }
+    }
   } catch {
     // Table may not exist
   }
@@ -123,6 +135,8 @@ export default async function AdminPessoasPage({
       selfPerfil: selfData?.perfil ?? null,
       selfScore: selfData?.score ?? null,
       alunosCount: gestorAlunos.get(authUser.id) ?? 0,
+      pdiMedia: pdiDataMap.get(authUser.id)?.media ?? null,
+      pdiFase: pdiDataMap.get(authUser.id)?.fase ?? null,
     })
   }
 

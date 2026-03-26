@@ -61,6 +61,26 @@ const PDI_DIM_LABELS: Record<string, string> = {
   dim_mentor: 'Mentor',
 }
 
+const PDI_HS_LABELS: Record<string, string> = {
+  hs_execucao: 'Execucao',
+  hs_processos: 'Processos',
+  hs_ferramentas: 'Ferramentas',
+  hs_padroes: 'Padroes',
+}
+
+const PDI_SS_LABELS: Record<string, string> = {
+  ss_inteligencia_emocional: 'Inteligencia Emocional',
+  ss_feedback: 'Feedback',
+  ss_conflitos_geracionais: 'Conflitos',
+  ss_visao_futuro: 'Visao de Futuro',
+}
+
+const FASE_LABELS: Record<number, { label: string; bg: string; text: string }> = {
+  1: { label: 'Fase 1 - Comportamental', bg: 'bg-red-50', text: 'text-red-700' },
+  2: { label: 'Fase 2 - Processual', bg: 'bg-amber-50', text: 'text-amber-700' },
+  3: { label: 'Fase 3 - Estrategico', bg: 'bg-emerald-50', text: 'text-emerald-700' },
+}
+
 /* ─────────────────────────────────────────────
    Page
 ───────────────────────────────────────────── */
@@ -647,23 +667,41 @@ export default async function PessoaFichaPage({ params }: Props) {
           <h2 className="mb-4 flex items-center gap-2 text-base font-extrabold text-[#0F172A]">
             <Target className="h-5 w-5 text-[#7B1FA2]" />
             PDIs ({pdis.length})
+            {/* PDI type badge */}
+            {(execAssessments?.length ?? 0) > 0 && (selfAssessments?.length ?? 0) > 0 ? (
+              <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                PDI Completo
+              </span>
+            ) : (selfAssessments?.length ?? 0) > 0 ? (
+              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">
+                PDI Individual
+              </span>
+            ) : null}
           </h2>
           <div className="space-y-4">
             {pdis.map((pdi, idx) => {
               const dimKeys = Object.keys(PDI_DIM_LABELS)
+              const hsKeys = Object.keys(PDI_HS_LABELS)
+              const ssKeys = Object.keys(PDI_SS_LABELS)
+              const fase = FASE_LABELS[(pdi as Record<string, unknown>).fase_atual as number]
               return (
                 <div
                   key={pdi.id}
                   className="rounded-xl border border-[#E5ECF6] bg-[#FAFBFC] p-4"
                 >
-                  <div className="mb-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-bold text-[#94A3B8]">
                         #{idx + 1}
                       </span>
                       <span className="rounded-md bg-[#F3E5F5] px-2 py-0.5 text-[11px] font-bold text-[#7B1FA2]">
                         Media: {pdi.media_dimensoes ?? '--'}/5
                       </span>
+                      {fase && (
+                        <span className={`rounded-md px-2 py-0.5 text-[11px] font-bold ${fase.bg} ${fase.text}`}>
+                          {fase.label}
+                        </span>
+                      )}
                       {pdi.cargo && (
                         <span className="text-xs text-[#64748B]">
                           Cargo: {pdi.cargo}
@@ -679,6 +717,8 @@ export default async function PessoaFichaPage({ params }: Props) {
                       {formatDateTime(pdi.created_at)}
                     </span>
                   </div>
+
+                  {/* Dimensions */}
                   <p className="mb-2 text-[11px] font-bold uppercase text-[#64748B]">
                     Dimensoes de Lideranca
                   </p>
@@ -702,6 +742,58 @@ export default async function PessoaFichaPage({ params }: Props) {
                       </div>
                     ))}
                   </div>
+
+                  {/* Hard Skills */}
+                  <p className="mt-3 mb-2 text-[11px] font-bold uppercase text-[#64748B]">
+                    Hard Skills
+                  </p>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {hsKeys.map((k) => (
+                      <div
+                        key={k}
+                        className="rounded-lg border border-[#DBEAFE] bg-white px-2 py-1.5 text-center"
+                      >
+                        <p className="text-[9px] font-bold text-[#1565C0]">
+                          {PDI_HS_LABELS[k]}
+                        </p>
+                        <p className="text-base font-extrabold text-[#0F172A]">
+                          {(pdi as Record<string, unknown>)[k] != null
+                            ? String((pdi as Record<string, unknown>)[k])
+                            : '--'}
+                          <span className="text-[10px] font-normal text-[#94A3B8]">
+                            /5
+                          </span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Soft Skills */}
+                  <p className="mt-3 mb-2 text-[11px] font-bold uppercase text-[#64748B]">
+                    Soft Skills
+                  </p>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {ssKeys.map((k) => (
+                      <div
+                        key={k}
+                        className="rounded-lg border border-[#E8F5E9] bg-white px-2 py-1.5 text-center"
+                      >
+                        <p className="text-[9px] font-bold text-[#2E7D32]">
+                          {PDI_SS_LABELS[k]}
+                        </p>
+                        <p className="text-base font-extrabold text-[#0F172A]">
+                          {(pdi as Record<string, unknown>)[k] != null
+                            ? String((pdi as Record<string, unknown>)[k])
+                            : '--'}
+                          <span className="text-[10px] font-normal text-[#94A3B8]">
+                            /5
+                          </span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Compromissos */}
                   {(pdi.compromisso_comportamento ||
                     pdi.compromisso_dados ||
                     pdi.compromisso_sucessao) && (
