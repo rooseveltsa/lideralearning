@@ -19,6 +19,7 @@ type CourseCheckoutPayload = {
 }
 
 function isStripeBypassEnabled(stripeKey: string) {
+  if (process.env.NODE_ENV === 'production') return false
   return !stripeKey || stripeKey.includes('dummy') || stripeKey === 'sk_test_...'
 }
 

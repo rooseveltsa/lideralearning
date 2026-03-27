@@ -444,6 +444,63 @@ export default function Modulo1Page() {
           </div>
         </section>
 
+        {/* ── VALUE STACK (HORMOZI GRAND SLAM OFFER) ── */}
+        <section className="border-y border-[#1A2438] bg-[#060D1A] px-6 py-20">
+          <div className="mx-auto w-full max-w-[860px]">
+            <div className="mb-10 text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F57C00]">
+                O que est&aacute; inclu&iacute;do
+              </p>
+              <h2 className="mt-3 font-heading text-3xl font-extrabold text-white sm:text-4xl">
+                Tudo isso em um &uacute;nico workshop
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { item: 'Workshop presencial de meio dia com mentor especializado', valor: 'R$ 497' },
+                { item: 'Autoavaliação das 5 Dimensões da Liderança (ferramenta prática)', valor: 'R$ 197' },
+                { item: 'Diagnóstico personalizado do seu perfil de líder', valor: 'R$ 297' },
+                { item: 'Plano de prioridades de desenvolvimento (leva para casa)', valor: 'R$ 197' },
+                { item: 'Certificado de participação verificável', valor: 'R$ 97' },
+                { item: 'Desconto exclusivo para o programa completo (8 módulos)', valor: 'R$ 200' },
+              ].map(({ item, valor }) => (
+                <div
+                  key={item}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-[#23344E] bg-[#0A1324] px-5 py-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-[#1E88E5]" />
+                    <span className="text-sm font-semibold text-white">{item}</span>
+                  </div>
+                  <span className="shrink-0 text-sm font-bold text-[#64748B] line-through">{valor}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-[#F57C00]/30 bg-[#F57C00]/5 px-6 py-5 text-center">
+              <p className="text-sm font-bold text-[#A9BDD8]">Valor total separado:</p>
+              <p className="mt-1 text-2xl font-extrabold text-[#64748B] line-through">R$ 1.485</p>
+              <p className="mt-2 text-sm font-bold uppercase tracking-[0.14em] text-[#F57C00]">
+                Investimento do workshop
+              </p>
+              <p className="mt-1 font-heading text-5xl font-extrabold text-white">
+                Consulte
+              </p>
+              <p className="mt-2 text-sm text-[#A9BDD8]">
+                Entre em contato pelo WhatsApp para condições especiais e valores para grupos
+              </p>
+              <a
+                href="#inscricao"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/25 transition-all hover:bg-[#E65100]"
+              >
+                Garantir minha vaga
+                <ArrowRight className="h-5 w-5" />
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* ── BLOCO DE URGÊNCIA ── */}
         <section className="border-y border-[#F57C00]/20 bg-gradient-to-r from-[#1A0800] via-[#0F0500] to-[#1A0800] px-6 py-16">
           <div className="mx-auto w-full max-w-[1280px]">

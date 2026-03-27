@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { ArrowRight, CheckCircle2, MessageCircle } from 'lucide-react'
+
+import { useUtmParams } from '@/lib/hooks/useUtmParams'
 
 type FormState = {
   nome: string
@@ -13,7 +15,8 @@ type FormState = {
 
 const WHATSAPP_NUMBER = '5564996099020'
 
-export default function InscricaoForm() {
+function InscricaoFormInner() {
+  const utm = useUtmParams()
   const [form, setForm] = useState<FormState>({
     nome: '',
     email: '',
@@ -52,6 +55,7 @@ export default function InscricaoForm() {
           tempoLideranca: 'a-confirmar',
           treinamento: 'modulo-1-funcao-estrategica',
           sourcePage: 'modulo-1',
+          ...utm,
         }),
       })
 
@@ -190,5 +194,13 @@ export default function InscricaoForm() {
         Seus dados são protegidos. Sem spam.
       </p>
     </form>
+  )
+}
+
+export default function InscricaoForm() {
+  return (
+    <Suspense>
+      <InscricaoFormInner />
+    </Suspense>
   )
 }
