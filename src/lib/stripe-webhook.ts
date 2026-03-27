@@ -171,6 +171,75 @@ async function processCheckoutExpired(
   return 'processed'
 }
 
+async function processSubscriptionChange(
+  admin: ReturnType<typeof createAdminClient>,
+  event: Stripe.Event
+): Promise<WebhookOutcome> {
+  const sub = event.data.object as unknown as Record<string, unknown>
+
+  const statusMap: Record<string, string> = {
+    active: 'active',
+    past_due: 'past_due',
+    canceled: 'canceled',
+    unpaid: 'past_due',
+    incomplete: 'incomplete',
+    incomplete_expired: 'canceled',
+    trialing: 'trialing',
+    paused: 'paused',
+  }
+
+  const stripeStatus = String(sub.status || 'active')
+  const toIso = (ts: unknown) =>
+    typeof ts === 'number' ? new Date(ts * 1000).toISOString() : null
+
+  const { error } = await admin
+    .from('subscriptions')
+    .update({
+      status: statusMap[stripeStatus] || stripeStatus,
+      current_period_start: toIso(sub.current_period_start),
+      current_period_end: toIso(sub.current_period_end),
+      canceled_at: toIso(sub.canceled_at),
+      cancel_at: toIso(sub.cancel_at),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_subscription_id', String(sub.id))
+
+  if (error) {
+    if (getPgCode(error) === '42P01') return 'ignored'
+    await assertNoCriticalDbError(error, 'Failed to update subscription')
+  }
+
+  return 'processed'
+}
+
+async function processInvoicePaymentFailed(
+  admin: ReturnType<typeof createAdminClient>,
+  event: Stripe.Event
+): Promise<WebhookOutcome> {
+  const invoice = event.data.object as unknown as Record<string, unknown>
+  const rawSub = invoice.subscription
+  const subscriptionId = typeof rawSub === 'string'
+    ? rawSub
+    : typeof rawSub === 'object' && rawSub !== null && 'id' in rawSub
+      ? String((rawSub as { id: unknown }).id)
+      : null
+
+  if (!subscriptionId) return 'ignored'
+
+  const { error } = await admin
+    .from('subscriptions')
+    .update({
+      status: 'past_due',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('stripe_subscription_id', subscriptionId)
+
+  if (error && getPgCode(error) === '42P01') return 'ignored'
+  if (error) await assertNoCriticalDbError(error, 'Failed to mark subscription past_due')
+
+  return 'processed'
+}
+
 export async function handleStripeWebhook({ body, signature }: HandleStripeWebhookInput) {
   if (!signature || !process.env.STRIPE_WEBHOOK_SECRET) {
     return new NextResponse('Webhook secret or signature missing', { status: 400 })
@@ -199,6 +268,10 @@ export async function handleStripeWebhook({ body, signature }: HandleStripeWebho
       outcome = await processCheckoutCompleted(admin, event)
     } else if (event.type === 'checkout.session.expired') {
       outcome = await processCheckoutExpired(admin, event)
+    } else if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+      outcome = await processSubscriptionChange(admin, event)
+    } else if (event.type === 'invoice.payment_failed') {
+      outcome = await processInvoicePaymentFailed(admin, event)
     }
 
     await finalizeEvent(admin, event.id, outcome)
