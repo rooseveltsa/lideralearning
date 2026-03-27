@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit'
 import { createAdminClient } from '@/lib/supabase/service'
 
 type InscricaoPayload = {
@@ -21,6 +22,11 @@ function normalize(value: unknown) {
 }
 
 export async function POST(request: Request) {
+  const { allowed } = checkRateLimit(`inscricao:${getRateLimitKey(request)}`, { maxRequests: 5, windowMs: 60_000 })
+  if (!allowed) {
+    return NextResponse.json({ error: 'Muitas tentativas. Aguarde um minuto.' }, { status: 429 })
+  }
+
   let json: InscricaoPayload
 
   try {

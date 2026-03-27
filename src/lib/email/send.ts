@@ -3,9 +3,12 @@ import { WelcomeEmailTemplate } from './templates/welcome'
 import { AssessmentCompleteEmailTemplate } from './templates/assessment-complete'
 import { CertificateReadyEmailTemplate } from './templates/certificate-ready'
 import { PDIEmailTemplate } from './templates/pdi-report'
+import { WorkshopFollowupEmailTemplate } from './templates/workshop-followup'
+import { ReengagementEmailTemplate } from './templates/reengagement'
+import { UpsellFullProgramEmailTemplate } from './templates/upsell-full-program'
 import { generatePartialPDI } from '@/lib/utils/pdi-generator'
 
-type TemplateType = 'welcome' | 'assessment-complete' | 'certificate-ready' | 'pdi-report'
+type TemplateType = 'welcome' | 'assessment-complete' | 'certificate-ready' | 'pdi-report' | 'workshop-followup' | 'reengagement' | 'upsell-full-program'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
 
@@ -52,6 +55,32 @@ function buildEmail(
         react: PDIEmailTemplate({ report, siteUrl: SITE_URL }),
       }
     }
+    case 'workshop-followup':
+      return {
+        subject: `${data.name || 'Participante'}, sua inscrição no workshop foi recebida!`,
+        react: WorkshopFollowupEmailTemplate({
+          name: (data.name as string) || 'Participante',
+          workshopName: (data.workshopName as string) || undefined,
+        }),
+      }
+    case 'reengagement':
+      return {
+        subject: `${data.name || 'Participante'}, seu treinamento está te esperando`,
+        react: ReengagementEmailTemplate({
+          name: (data.name as string) || 'Participante',
+          lastAccessDays: (data.lastAccessDays as number) || 7,
+          courseName: (data.courseName as string) || undefined,
+          progressPercent: (data.progressPercent as number) || 0,
+        }),
+      }
+    case 'upsell-full-program':
+      return {
+        subject: `${data.name || 'Participante'}, desbloqueie os outros 7 módulos`,
+        react: UpsellFullProgramEmailTemplate({
+          name: (data.name as string) || 'Participante',
+          workshopCompleted: (data.workshopCompleted as string) || undefined,
+        }),
+      }
     default: {
       const _exhaustive: never = template
       throw new Error(`Unknown email template: ${_exhaustive}`)

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Sora } from "next/font/google";
+import TrackingPixels from "@/components/analytics/TrackingPixels";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -40,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body className={`${manrope.variable} ${sora.variable} font-sans antialiased bg-[#F7FAFD] text-[#111827] w-full overflow-x-hidden`}>
+        <TrackingPixels />
         {children}
       </body>
     </html>

@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import { ArrowRight, CheckCircle2, MessageCircle } from 'lucide-react'
 
+import { trackLead } from '@/lib/analytics'
 import { useUtmParams } from '@/lib/hooks/useUtmParams'
 
 type FormState = {
@@ -64,6 +65,7 @@ function InscricaoFormInner() {
         throw new Error(data.error || 'Erro ao enviar inscrição.')
       }
 
+      trackLead({ source: 'modulo-1' })
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao enviar. Tente novamente.')
