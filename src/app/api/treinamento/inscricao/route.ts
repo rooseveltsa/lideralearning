@@ -69,5 +69,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Disparar email follow-up (fire-and-forget)
+  const email = normalize(json.email)
+  if (email) {
+    import('@/lib/email/send').then(({ sendEmail }) => {
+      sendEmail(email, 'workshop-followup', {
+        name: nome,
+        workshopName: normalize(json.treinamento) === 'modulo-1-funcao-estrategica'
+          ? 'A Função Estratégica do Supervisor'
+          : 'Treinamento LIDERA',
+      }).catch(() => {})
+    }).catch(() => {})
+  }
+
   return NextResponse.json({ success: true, registrationId: data.id })
 }

@@ -139,6 +139,17 @@ export async function markLessonCompleted(enrollmentId: string, lessonId: string
     return { success: false, error: error.message }
   }
 
+  // Award XP on lesson completion (fire-and-forget, don't block UX)
+  if (isCompleted) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      import('@/lib/gamification').then(({ awardXP, checkAndAwardAchievements }) => {
+        awardXP(user.id, 'lesson_completed', lessonId).catch(() => {})
+        checkAndAwardAchievements(user.id).catch(() => {})
+      }).catch(() => {})
+    }
+  }
+
   return { success: true }
 }
 
@@ -517,6 +528,13 @@ export async function checkAndIssueCertificate(
     console.error('Error issuing certificate:', error)
     return { issued: false, verificationCode: null }
   }
+
+  // Award XP for course completion + certificate
+  import('@/lib/gamification').then(({ awardXP, checkAndAwardAchievements }) => {
+    awardXP(user.id, 'course_completed', courseId).catch(() => {})
+    awardXP(user.id, 'certificate_earned', courseId).catch(() => {})
+    checkAndAwardAchievements(user.id).catch(() => {})
+  }).catch(() => {})
 
   return {
     issued: true,

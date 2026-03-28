@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { CalendarDays, MapPin, Plus, Ticket, Users } from 'lucide-react'
+import { CalendarDays, MapPin, Ticket, Users } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import CreateEventForm from './CreateEventForm'
 
 type EventRow = {
   id: string
@@ -88,12 +89,14 @@ export default async function AdminEventosPage() {
             <CalendarDays className="mx-auto mb-4 h-12 w-12 text-[#94A3B8]" />
             <p className="text-lg font-bold text-[#0F172A]">Nenhum evento cadastrado</p>
             <p className="mt-1 text-sm text-[#64748B]">Crie seu primeiro workshop ou imersão presencial.</p>
-            <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#1E88E5] px-6 py-3 text-sm font-bold text-white hover:bg-[#1565C0]">
-              <Plus className="h-4 w-4" />
-              Criar evento
-            </button>
+            <CreateEventForm />
           </div>
         ) : (
+          <>
+          <div className="mb-6">
+            <CreateEventForm />
+          </div>
+
           <div className="grid gap-4">
             {eventList.map((event) => (
               <div key={event.id} className="rounded-2xl border border-[#D8E2EF] bg-white p-6">
@@ -151,6 +154,7 @@ export default async function AdminEventosPage() {
               </div>
             ))}
           </div>
+          </>
         )}
       </div>
     </div>
