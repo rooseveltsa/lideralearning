@@ -47,7 +47,10 @@ export default function HomePage() {
 
           <div className="relative mx-auto max-w-[1080px] text-center">
             <h1 className="mx-auto max-w-[820px] font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
-              <TypewriterText text="Formamos os líderes que sua operação precisa." speed={50} delay={300} />
+              <TypewriterText text="Formamos os líderes que sua" speed={50} delay={300} />{' '}
+              <span className="text-[#4CAF50]">
+                <TypewriterText text="operação precisa." speed={50} delay={1750} cursorColor="#4CAF50" />
+              </span>
             </h1>
 
             <p className="mx-auto mt-7 max-w-[580px] text-lg leading-relaxed text-[#A9BDD8]">
