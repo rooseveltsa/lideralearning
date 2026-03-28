@@ -1,16 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Manrope, Sora } from "next/font/google";
+import { Inter, DM_Serif_Display } from "next/font/google";
 import TrackingPixels from "@/components/analytics/TrackingPixels";
 import "./globals.css";
 
-const manrope = Manrope({
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const sora = Sora({
+const dmSerif = DM_Serif_Display({
   variable: "--font-heading",
   subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth">
-      <body className={`${manrope.variable} ${sora.variable} font-sans antialiased bg-[#F7FAFD] text-[#111827] w-full overflow-x-hidden`}>
+      <body className={`${inter.variable} ${dmSerif.variable} font-sans antialiased bg-[#F7FAFD] text-[#111827] w-full overflow-x-hidden`}>
         <TrackingPixels />
         {children}
       </body>

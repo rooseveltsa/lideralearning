@@ -40,9 +40,12 @@ export default function SiteHeader() {
           }`}
         >
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="group inline-flex items-center gap-2">
-              <span className="font-heading text-2xl font-extrabold tracking-tight">Lidera</span>
-              <span className="h-2 w-2 rounded-full bg-[#1E88E5] transition-transform duration-300 group-hover:scale-125" />
+            <Link href="/" className="group inline-flex items-center gap-2.5">
+              <span className="font-heading text-[1.65rem] tracking-tight">Lidera</span>
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-[#4CAF50] opacity-60 transition-transform duration-500 group-hover:scale-[2] group-hover:opacity-0" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#4CAF50]" />
+              </span>
             </Link>
 
             <nav className="hidden items-center gap-1 md:flex">

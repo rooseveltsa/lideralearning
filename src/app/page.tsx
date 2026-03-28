@@ -157,36 +157,55 @@ export default async function HomePage() {
       <SiteHeader />
 
       <main className="overflow-hidden">
-        <section className="border-b border-[#1A2438] px-6 pb-24 pt-36">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-            <div className="space-y-7">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#2D4466] bg-[#0D1728] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">
+        <section className="relative border-b border-[#1A2438] px-6 pb-28 pt-40">
+          {/* Premium gradient overlays */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1565C0]/[0.04] via-transparent to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-[#050A14] to-transparent" />
+
+          <div className="relative mx-auto grid w-full max-w-[1280px] gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+            <div className="space-y-8 animate-fade-up">
+              <p className="inline-flex items-center gap-2 rounded-full border border-[#2D4466] bg-[#0D1728]/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#8CB8E7] backdrop-blur-sm">
                 <CalendarClock className="h-3.5 w-3.5" />
-                Lidera Treinamentos
+                Treinamentos, Mentorias e Palestras
               </p>
 
-              <h1 className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Plataforma híbrida para <span className="text-[#8CC1F7]">elevar líderes</span> e acelerar resultado em escala.
+              <h1 className="max-w-3xl font-heading text-4xl leading-[1.1] text-white sm:text-5xl lg:text-[3.75rem]">
+                Plataforma híbrida para{' '}
+                <span className="text-growth-gradient">elevar líderes</span>{' '}
+                e acelerar resultado em escala.
               </h1>
 
               <p className="max-w-2xl text-lg leading-relaxed text-[#A9BDD8]">
-                A Lidera conecta streaming de treinamentos, trilhas com certificação e projetos corporativos em um só sistema. A proposta é transformar desenvolvimento em execução mensurável.
+                A Lidera conecta streaming de treinamentos, trilhas com certificação e projetos corporativos em um só sistema. Transformamos desenvolvimento em{' '}
+                <strong className="text-white">execução mensurável.</strong>
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/cursos"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-7 py-4 text-sm font-bold text-white shadow-lg shadow-[#1E88E5]/20 transition-all hover:bg-[#1565C0] hover:shadow-[#1E88E5]/30"
                 >
                   Explorar Academy
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="#diagnostico"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#335077] px-6 py-3.5 text-sm font-bold text-[#D4E4F6] transition-colors hover:border-[#4F77AA] hover:text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#335077] px-7 py-4 text-sm font-bold text-[#D4E4F6] transition-all hover:border-[#4F77AA] hover:bg-[#0D1728] hover:text-white"
                 >
                   Diagnóstico corporativo
                 </Link>
+              </div>
+
+              {/* Social proof micro */}
+              <div className="flex items-center gap-3 pt-2">
+                <div className="flex -space-x-2">
+                  {['#F57C00', '#4CAF50', '#1E88E5', '#7CB342'].map((color, i) => (
+                    <div key={i} className="h-8 w-8 rounded-full border-2 border-[#050A14]" style={{ backgroundColor: color, opacity: 0.8 }} />
+                  ))}
+                </div>
+                <p className="text-sm text-[#7FA0C2]">
+                  <strong className="text-[#D4E4F6]">500+</strong> supervisores treinados
+                </p>
               </div>
             </div>
 
@@ -227,15 +246,21 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="border-b border-[#1A2438] bg-[#060D1A] px-6 py-14">
+        {/* Brand divider */}
+        <div className="divider-brand" />
+
+        <section className="bg-[#060D1A] px-6 py-14">
           <div className="mx-auto grid w-full max-w-[1280px] gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {indicators.map((item) => (
-              <article key={item.label} className="rounded-2xl border border-[#22314B] bg-[#0A1324] p-5">
-                <p className="text-3xl font-extrabold text-white">{item.value}</p>
-                <p className="mt-1 text-sm font-bold text-[#D8E4F5]">{item.label}</p>
-                <p className="mt-2 text-xs leading-relaxed text-[#8FA8C5]">{item.detail}</p>
-              </article>
-            ))}
+            {indicators.map((item, i) => {
+              const accentColors = ['#1E88E5', '#4CAF50', '#F57C00', '#7CB342']
+              return (
+                <article key={item.label} className="card-dark-premium p-5">
+                  <p className="text-3xl font-extrabold text-white" style={{ color: accentColors[i] }}>{item.value}</p>
+                  <p className="mt-1 text-sm font-bold text-[#D8E4F5]">{item.label}</p>
+                  <p className="mt-2 text-xs leading-relaxed text-[#8FA8C5]">{item.detail}</p>
+                </article>
+              )
+            })}
           </div>
         </section>
 
