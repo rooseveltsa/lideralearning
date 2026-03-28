@@ -6,13 +6,13 @@ import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 const navLinks = [
-  { href: '/cursos', label: 'Academy' },
-  { href: '/empresas', label: 'Corporativo' },
-  { href: '/sobre', label: 'Manifesto' },
-  { href: '/contato', label: 'Diagnóstico' },
+  { href: '/cursos', label: 'Cursos' },
+  { href: '/empresas', label: 'Para Empresas' },
+  { href: '/pricing', label: 'Planos' },
+  { href: '/contato', label: 'Contato' },
 ]
 
-const darkHeroRoutes = ['/', '/empresas', '/cursos', '/treinamento']
+const darkHeroRoutes = ['/empresas', '/cursos', '/treinamento']
 
 export default function SiteHeader() {
   const pathname = usePathname()

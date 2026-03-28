@@ -1,536 +1,263 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import {
   ArrowRight,
   BadgeCheck,
-  BriefcaseBusiness,
-  Building2,
-  CalendarClock,
-  ChartNoAxesCombined,
-  CheckCircle2,
-  PlayCircle,
-  Sparkles,
-  Users2,
+  BookOpen,
+  MessageCircle,
+  Target,
+  Users,
 } from 'lucide-react'
 
 import SiteFooter from '@/components/site/Footer'
 import SiteHeader from '@/components/site/Header'
-import LeadFormB2B from '@/components/site/LeadFormB2B'
-import { createClient } from '@/lib/supabase/server'
-
-type Course = {
-  id: string
-  title: string
-  description: string | null
-  price: number
-  thumbnail_url: string | null
-}
-
-const ecosystem = [
-  {
-    icon: Sparkles,
-    title: 'Lidera Academy',
-    description: 'Biblioteca digital com cursos curtos, trilhas extensas e continuidade por progresso individual.',
-    bullets: ['Aulas on-demand', 'Trilhas com certificação', 'Masterclasses ao vivo'],
-  },
-  {
-    icon: Users2,
-    title: 'Imersões Presenciais',
-    description: 'Eventos de alta intensidade para consolidar comportamento de liderança e execução em grupo.',
-    bullets: ['Experiências de 1 ou 2 dias', 'Turmas abertas e in-company', 'Material pós-evento'],
-  },
-  {
-    icon: BriefcaseBusiness,
-    title: 'Corporativo B2B',
-    description: 'Diagnóstico, desenho de programa e acompanhamento de resultados para RH e diretoria.',
-    bullets: ['Pipeline comercial interno', 'Propostas estruturadas', 'Governança por etapas'],
-  },
-]
-
-const executionSteps = [
-  {
-    title: 'Diagnóstico',
-    detail: 'Mapeamento de cenário, maturidade de liderança e prioridade do negócio.',
-  },
-  {
-    title: 'Arquitetura da Jornada',
-    detail: 'Composição de trilhas digitais, workshops e rituais de aplicação.',
-  },
-  {
-    title: 'Operação Assistida',
-    detail: 'Execução com checkpoints, engajamento e acompanhamento da adesão.',
-  },
-  {
-    title: 'Medição de Resultado',
-    detail: 'Leitura de indicadores de evolução individual e impacto operacional.',
-  },
-]
-
-const testimonials = [
-  {
-    name: 'Carlos Mendes',
-    role: 'Diretor de RH • Grupo Industrial Alfa',
-    quote: 'Em 90 dias o treinamento deixou de ser ação isolada e virou sistema de execução gerencial.',
-    result: '43% de redução de turnover',
-  },
-  {
-    name: 'Fernanda Pacheco',
-    role: 'CEO • TechBR Soluções',
-    quote: 'A operação ganhou clareza de liderança e os times passaram a executar com mais consistência.',
-    result: 'Meta subiu de 62% para 91%',
-  },
-  {
-    name: 'Ricardo Albuquerque',
-    role: 'COO • Rede Varejista Nacional',
-    quote: 'Conseguimos ligar formação e performance com dados de aplicação, não apenas presença em aula.',
-    result: 'T&D integrado ao painel executivo',
-  },
-]
 
 const faqs = [
   {
     q: 'A Lidera é somente plataforma digital?',
-    a: 'Não. O modelo é híbrido: academy digital, eventos presenciais e projetos corporativos no mesmo ecossistema.',
+    a: 'Não. O modelo é híbrido: academy digital, imersões presenciais e projetos corporativos no mesmo ecossistema.',
   },
   {
     q: 'A empresa consegue contratar algo personalizado?',
     a: 'Sim. O diagnóstico inicial define trilhas, formatos e metas de implementação para cada contexto.',
   },
   {
-    q: 'Existe certificação para os alunos?',
-    a: 'Sim. Trilhas elegíveis liberam certificado conforme critérios de conclusão definidos pela jornada.',
+    q: 'Existe certificação?',
+    a: 'Sim. Trilhas elegíveis liberam certificado verificável conforme critérios de conclusão.',
   },
   {
     q: 'Quanto tempo leva para começar um projeto B2B?',
-    a: 'Após o diagnóstico comercial, a proposta inicial costuma ser enviada rapidamente para início da implantação.',
+    a: 'Após o diagnóstico, a proposta é enviada em até 48h para início da implantação.',
   },
 ]
 
-const priceFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-
-export default async function HomePage() {
-  const supabase = await createClient()
-
-  const [featuredCoursesRes, publishedCountRes, enrollmentsCountRes, leadsCountRes] = await Promise.all([
-    supabase
-      .from('courses')
-      .select('id, title, description, price, thumbnail_url')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false })
-      .limit(4),
-    supabase.from('courses').select('id', { count: 'exact', head: true }).eq('is_published', true),
-    supabase.from('enrollments').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-    supabase.from('b2b_leads').select('id', { count: 'exact', head: true }),
-  ])
-
-  const featuredCourses = (Array.isArray(featuredCoursesRes.data) ? featuredCoursesRes.data : []) as Course[]
-
-  const publishedPrograms = publishedCountRes.count ?? 0
-  const activeEnrollments = enrollmentsCountRes.count ?? 0
-  const registeredLeads = leadsCountRes.count ?? 0
-
-  const indicators = [
-    {
-      value: `${publishedPrograms}`,
-      label: 'Programas publicados',
-      detail: 'Catálogo ativo de formações na Academy.',
-    },
-    {
-      value: `${activeEnrollments}`,
-      label: 'Matrículas em andamento',
-      detail: 'Jornadas ativas dentro da plataforma.',
-    },
-    {
-      value: `${registeredLeads}`,
-      label: 'Leads corporativos',
-      detail: 'Empresas registradas no funil B2B.',
-    },
-    {
-      value: '4h úteis',
-      label: 'SLA comercial',
-      detail: 'Prazo médio para resposta de diagnóstico.',
-    },
-  ]
-
+export default function HomePage() {
   return (
-    <div className="bg-[#050A14] text-[#E5ECF8] selection:bg-[#1E88E5]/30">
+    <div className="bg-white text-[#111827] selection:bg-[#1E88E5]/20">
       <SiteHeader />
 
-      <main className="overflow-hidden">
-        <section className="relative border-b border-[#1A2438] px-6 pb-28 pt-40">
-          {/* Premium gradient overlays */}
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#1565C0]/[0.04] via-transparent to-transparent" />
-          <div className="pointer-events-none absolute bottom-0 left-0 h-40 w-full bg-gradient-to-t from-[#050A14] to-transparent" />
-
-          <div className="relative mx-auto grid w-full max-w-[1280px] gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
-            <div className="space-y-8 animate-fade-up">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#2D4466] bg-[#0D1728]/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#8CB8E7] backdrop-blur-sm">
-                <CalendarClock className="h-3.5 w-3.5" />
-                Treinamentos, Mentorias e Palestras
-              </p>
-
-              <h1 className="max-w-3xl font-heading text-4xl leading-[1.1] text-white sm:text-5xl lg:text-[3.75rem]">
-                Plataforma híbrida para{' '}
-                <span className="text-growth-gradient">elevar líderes</span>{' '}
-                e acelerar resultado em escala.
-              </h1>
-
-              <p className="max-w-2xl text-lg leading-relaxed text-[#A9BDD8]">
-                A Lidera conecta streaming de treinamentos, trilhas com certificação e projetos corporativos em um só sistema. Transformamos desenvolvimento em{' '}
-                <strong className="text-white">execução mensurável.</strong>
-              </p>
-
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/cursos"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-7 py-4 text-sm font-bold text-white shadow-lg shadow-[#1E88E5]/20 transition-all hover:bg-[#1565C0] hover:shadow-[#1E88E5]/30"
-                >
-                  Explorar Academy
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="#diagnostico"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#335077] px-7 py-4 text-sm font-bold text-[#D4E4F6] transition-all hover:border-[#4F77AA] hover:bg-[#0D1728] hover:text-white"
-                >
-                  Diagnóstico corporativo
-                </Link>
-              </div>
-
-              {/* Social proof micro */}
-              <div className="flex items-center gap-3 pt-2">
-                <div className="flex -space-x-2">
-                  {['#F57C00', '#4CAF50', '#1E88E5', '#7CB342'].map((color, i) => (
-                    <div key={i} className="h-8 w-8 rounded-full border-2 border-[#050A14]" style={{ backgroundColor: color, opacity: 0.8 }} />
-                  ))}
-                </div>
-                <p className="text-sm text-[#7FA0C2]">
-                  <strong className="text-[#D4E4F6]">500+</strong> supervisores treinados
-                </p>
-              </div>
-            </div>
-
-            <article className="rounded-3xl border border-[#243A59] bg-[#0A1324] p-6 shadow-[0_24px_52px_rgba(2,6,23,0.5)]">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#87A6C8]">Sistema Lidera</p>
-              <h2 className="mt-2 text-2xl font-extrabold text-white">Arquitetura de entrega híbrida</h2>
-
-              <div className="mt-6 space-y-3">
-                {[
-                  {
-                    label: 'Digital',
-                    value: 'Academy com progressão por trilha',
-                    icon: PlayCircle,
-                  },
-                  {
-                    label: 'Presencial',
-                    value: 'Imersões e workshops de aprofundamento',
-                    icon: Users2,
-                  },
-                  {
-                    label: 'Corporativo',
-                    value: 'Pipeline B2B com proposta estruturada',
-                    icon: Building2,
-                  },
-                ].map(({ label, value, icon: Icon }) => (
-                  <div key={label} className="flex items-start gap-3 rounded-xl border border-[#253B5A] bg-[#0F1B30] px-4 py-3">
-                    <span className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#162845] text-[#9EC6F1]">
-                      <Icon className="h-4 w-4" />
-                    </span>
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#9CB4CF]">{label}</p>
-                      <p className="mt-1 text-sm font-semibold text-white">{value}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </article>
-          </div>
-        </section>
-
-        {/* Brand divider */}
-        <div className="divider-brand" />
-
-        <section className="bg-[#060D1A] px-6 py-14">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {indicators.map((item, i) => {
-              const accentColors = ['#1E88E5', '#4CAF50', '#F57C00', '#7CB342']
-              return (
-                <article key={item.label} className="card-dark-premium p-5">
-                  <p className="text-3xl font-extrabold text-white" style={{ color: accentColors[i] }}>{item.value}</p>
-                  <p className="mt-1 text-sm font-bold text-[#D8E4F5]">{item.label}</p>
-                  <p className="mt-2 text-xs leading-relaxed text-[#8FA8C5]">{item.detail}</p>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-
-        <section className="bg-[#F4F8FC] px-6 py-24 text-[#0F172A]">
-          <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Ecossistema</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">
-                Três módulos integrados para desenvolvimento individual e performance corporativa.
-              </h2>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              {ecosystem.map(({ icon: Icon, title, description, bullets }) => (
-                <article key={title} className="rounded-2xl border border-[#D8E2EF] bg-white p-7 shadow-[0_10px_28px_rgba(15,23,42,0.08)]">
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#ECF3FC] text-[#0B4A8F]">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#0F172A]">{title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#475569]">{description}</p>
-                  <ul className="mt-5 space-y-2">
-                    {bullets.map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-[#334155]">
-                        <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {featuredCourses.length > 0 ? (
-          <section className="border-y border-[#1A2438] bg-[#060D1A] px-6 py-24">
-            <div className="mx-auto w-full max-w-[1280px]">
-              <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-                <div className="max-w-3xl">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Academy</p>
-                  <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight text-white">
-                    Stream de treinamentos com foco em aplicação prática.
-                  </h2>
-                </div>
-                <Link href="/cursos" className="inline-flex items-center gap-2 text-sm font-bold text-[#A9C7E8] hover:text-white">
-                  Ver catálogo completo
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-                {featuredCourses.map((course) => (
-                  <Link
-                    key={course.id}
-                    href={`/curso/${course.id}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#2A3E5D] bg-[#0A1324] transition-all hover:border-[#1E88E5] hover:shadow-[0_18px_38px_rgba(16,42,84,0.45)]"
-                  >
-                    <div className="relative h-48 w-full overflow-hidden bg-[#0F1B30]">
-                      {course.thumbnail_url ? (
-                        <Image
-                          src={course.thumbnail_url}
-                          alt={course.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 25vw"
-                          unoptimized
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center px-6 text-center text-sm font-semibold text-[#9AB2CE]">{course.title}</div>
-                      )}
-                    </div>
-
-                    <div className="flex flex-1 flex-col p-5">
-                      <h3 className="line-clamp-2 text-lg font-bold text-white">{course.title}</h3>
-                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[#9AB2CE]">
-                        {course.description || 'Formação estruturada para evolução prática de liderança e comunicação.'}
-                      </p>
-                      <div className="mt-5 flex items-end justify-between border-t border-[#20314B] pt-4">
-                        <div>
-                          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#7FA0C2]">Acesso</p>
-                          <p className="text-base font-extrabold text-white">{priceFormatter.format(course.price)}</p>
-                        </div>
-                        <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-[#D6E6F8]">
-                          Abrir
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        ) : null}
-
-        <section className="bg-[#F4F8FC] px-6 py-24 text-[#0F172A]">
-          <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Operação B2B</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">Fluxo estruturado para empresas que precisam de escala.</h2>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              {executionSteps.map((step, index) => (
-                <article key={step.title} className="rounded-2xl border border-[#D8E2EF] bg-white p-5">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Etapa {index + 1}</p>
-                  <h3 className="mt-2 text-lg font-extrabold text-[#0F172A]">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#475569]">{step.detail}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y border-[#1A2438] bg-[#060D1A] px-6 py-24">
-          <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Resultados aplicados</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold text-white">Organizações que implementaram a jornada Lidera.</h2>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              {testimonials.map((item) => (
-                <article key={item.name} className="rounded-2xl border border-[#23344E] bg-[#0A1324] p-7">
-                  <p className="text-base leading-relaxed text-[#D6E3F5]">&ldquo;{item.quote}&rdquo;</p>
-                  <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#15223A] px-3 py-1 text-xs font-bold text-[#9EC6F1]">
-                    <BadgeCheck className="h-3.5 w-3.5" />
-                    {item.result}
-                  </p>
-                  <div className="mt-5 border-t border-[#1E2F49] pt-4">
-                    <p className="text-sm font-bold text-white">{item.name}</p>
-                    <p className="text-xs text-[#9FB2CB]">{item.role}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="diagnostico" className="bg-[#050A14] px-6 py-24">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div className="space-y-6">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Diagnóstico corporativo</p>
-              <h2 className="font-heading text-4xl font-extrabold leading-tight text-white">
-                Estruture uma trilha robusta para liderança com plano de implantação.
-              </h2>
-              <p className="text-lg leading-relaxed text-[#A9BDD8]">
-                Envie o cenário da sua empresa e retornamos com uma proposta inicial de arquitetura de treinamento e execução.
-              </p>
-              <div className="space-y-2 text-sm text-[#9AB2CE]">
-                <p className="flex items-center gap-2">
-                  <ChartNoAxesCombined className="h-4 w-4 text-[#1E88E5]" />
-                  Modelo híbrido digital + presencial.
-                </p>
-                <p className="flex items-center gap-2">
-                  <Users2 className="h-4 w-4 text-[#1E88E5]" />
-                  Foco em RH, líderes e business partners.
-                </p>
-                <p className="flex items-center gap-2">
-                  <BadgeCheck className="h-4 w-4 text-[#1E88E5]" />
-                  Pipeline comercial com histórico auditável.
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-[#22314B] bg-[#0A1324] p-7 shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
-              <LeadFormB2B />
-            </div>
-          </div>
-        </section>
-
-        {/* Prova Social */}
-        <section className="border-t border-[#1A2438] bg-[#0A1324] px-6 py-16">
-          <div className="mx-auto w-full max-w-[980px]">
-            <p className="text-center text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">
-              Resultados comprovados
+      <main>
+        {/* ── HERO — limpo, direto, respirável ── */}
+        <section className="px-6 pb-20 pt-36">
+          <div className="mx-auto max-w-[1080px] text-center">
+            <p className="inline-flex items-center gap-2 rounded-full border border-[#E0E7EF] bg-[#F4F8FC] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#1565C0]">
+              Treinamentos, Mentorias e Palestras
             </p>
-            <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-4">
-              {[
-                { value: '+500', label: 'Supervisores formados' },
-                { value: '+79%', label: 'Aumento no engajamento' },
-                { value: '16h', label: 'Imersao presencial' },
-                { value: '98%', label: 'Recomendam o programa' },
-              ].map((item, i) => (
-                <div key={i} className="text-center">
-                  <p className="font-heading text-3xl font-extrabold text-white sm:text-4xl">
-                    {item.value}
-                  </p>
-                  <p className="mt-2 text-sm text-[#A9BDD8]">{item.label}</p>
-                </div>
-              ))}
-            </div>
 
-            <div className="mt-12 grid gap-6 sm:grid-cols-3">
-              {[
-                {
-                  quote: 'O treinamento mudou a forma como lidero minha equipe. Hoje tomo decisoes baseadas em dados.',
-                  name: 'Supervisor de Producao',
-                  company: 'Industria Alimenticia',
-                },
-                {
-                  quote: 'O PDI individual me mostrou exatamente onde preciso evoluir. Recebi promocao em 4 meses.',
-                  name: 'Lider de Logistica',
-                  company: 'Distribuidora Nacional',
-                },
-                {
-                  quote: 'Investir no programa da Lidera foi a melhor decisao de desenvolvimento do ano.',
-                  name: 'Gerente de RH',
-                  company: 'Grupo Industrial',
-                },
-              ].map((t, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl border border-[#1A2B46] bg-[#0D1B30] p-6"
-                >
-                  <p className="text-sm leading-relaxed text-[#A9BDD8]">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-4 border-t border-[#1A2B46] pt-4">
-                    <p className="text-sm font-bold text-white">{t.name}</p>
-                    <p className="text-xs text-[#7FA0C2]">{t.company}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+            <h1 className="mx-auto mt-8 max-w-[800px] font-heading text-4xl leading-[1.15] text-[#0F172A] sm:text-5xl lg:text-[3.5rem]">
+              Formamos os líderes que sua operação precisa.
+            </h1>
 
-        {/* CTA — Diagnostico Gratuito */}
-        <section className="border-t border-[#1A2438] bg-gradient-to-b from-[#0A1324] to-[#0F1B30] px-6 py-20">
-          <div className="mx-auto w-full max-w-[800px] text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F57C00]">Gratuito e confidencial</p>
-            <h2 className="mt-3 font-heading text-3xl font-extrabold text-white sm:text-4xl">
-              Descubra seu perfil de lideranca em 5 minutos
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#A9BDD8]">
-              Faca a autoavaliacao e receba um diagnostico personalizado com seu Plano de Desenvolvimento Individual (PDI) gerado automaticamente.
+            <p className="mx-auto mt-6 max-w-[600px] text-lg leading-relaxed text-[#64748B]">
+              Diagnóstico, treinamento direcionado e acompanhamento de 60 dias.
+              Resultado real, não certificado de gaveta.
             </p>
-            <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="/treinamento/autoavaliacao"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/25 transition-all hover:bg-[#E65100] hover:shadow-xl hover:shadow-[#F57C00]/30"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#1565C0] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#1565C0]/20 transition-all hover:bg-[#0B4A8F] hover:shadow-[#1565C0]/30"
               >
-                Fazer meu diagnostico gratuito
+                Fazer diagnóstico gratuito
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
-                href="/treinamento/modulos"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#335077] px-6 py-4 text-sm font-bold text-[#D4E4F6] transition-colors hover:border-[#4F77AA] hover:text-white"
+                href="/empresas"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] px-8 py-4 text-base font-bold text-[#475569] transition-all hover:border-[#1565C0] hover:text-[#1565C0]"
               >
-                Ver programa completo
+                Soluções para empresas
               </Link>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-[#94A3B8]">
+              <span className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-[#F57C00]" />
+                <strong className="text-[#0F172A]">500+</strong> supervisores treinados
+              </span>
+              <span className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-[#4CAF50]" />
+                <strong className="text-[#0F172A]">79%</strong> aumento em engajamento
+              </span>
+              <span className="flex items-center gap-2">
+                <BadgeCheck className="h-4 w-4 text-[#1565C0]" />
+                <strong className="text-[#0F172A]">98%</strong> recomendam
+              </span>
             </div>
           </div>
         </section>
 
-        <section className="border-t border-[#1A2438] bg-[#050A14] px-6 py-20">
-          <div className="mx-auto w-full max-w-[980px]">
-            <div className="mb-10 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">FAQ</p>
-              <h2 className="mt-3 font-heading text-3xl font-extrabold text-white sm:text-4xl">Perguntas comuns antes de iniciar</h2>
+        {/* ── NÚMEROS — impacto rápido ── */}
+        <section className="border-y border-[#E5ECF6] bg-[#F8FAFC] px-6 py-16">
+          <div className="mx-auto grid max-w-[1080px] gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { value: '16h', label: 'de imersão presencial', color: '#1565C0' },
+              { value: '60', label: 'dias de acompanhamento', color: '#4CAF50' },
+              { value: '8', label: 'módulos práticos', color: '#F57C00' },
+              { value: 'PDI', label: 'individual por aluno', color: '#1565C0' },
+            ].map((item) => (
+              <div key={item.label} className="text-center">
+                <p className="font-heading text-4xl" style={{ color: item.color }}>
+                  {item.value}
+                </p>
+                <p className="mt-2 text-sm font-medium text-[#64748B]">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── COMO FUNCIONA — 3 cards, sem ruído ── */}
+        <section className="px-6 py-24">
+          <div className="mx-auto max-w-[1080px]">
+            <div className="mb-14 text-center">
+              <h2 className="font-heading text-3xl text-[#0F172A] sm:text-4xl">
+                Como funciona
+              </h2>
+              <p className="mx-auto mt-4 max-w-[500px] text-base text-[#64748B]">
+                Um método que conecta diagnóstico, treinamento e resultado prático.
+              </p>
             </div>
+
+            <div className="grid gap-6 lg:grid-cols-3">
+              {[
+                {
+                  step: '01',
+                  icon: Target,
+                  title: 'Diagnóstico',
+                  desc: 'Autoavaliação de liderança com PDI gerado automaticamente. Você sabe exatamente onde está.',
+                  color: '#F57C00',
+                },
+                {
+                  step: '02',
+                  icon: BookOpen,
+                  title: 'Treinamento Direcionado',
+                  desc: 'Academy digital + imersão presencial. 8 módulos práticos focados no que precisa ser desenvolvido.',
+                  color: '#1565C0',
+                },
+                {
+                  step: '03',
+                  icon: BadgeCheck,
+                  title: 'Acompanhamento',
+                  desc: '60 dias de mentoria pós-treinamento para certificar que o resultado aconteceu na prática.',
+                  color: '#4CAF50',
+                },
+              ].map(({ step, icon: Icon, title, desc, color }) => (
+                <div key={step} className="rounded-2xl border border-[#E5ECF6] bg-white p-8 transition-all hover:shadow-lg hover:shadow-[#1565C0]/5">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white"
+                      style={{ backgroundColor: color }}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
+                      Etapa {step}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 text-xl font-bold text-[#0F172A]">{title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#64748B]">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── DEPOIMENTOS — curtos e com resultado ── */}
+        <section className="bg-[#0F172A] px-6 py-24 text-white">
+          <div className="mx-auto max-w-[1080px]">
+            <h2 className="text-center font-heading text-3xl sm:text-4xl">
+              Quem já passou pelo programa
+            </h2>
+
+            <div className="mt-14 grid gap-6 lg:grid-cols-3">
+              {[
+                {
+                  quote: 'Em 90 dias o treinamento virou sistema de execução gerencial.',
+                  name: 'Carlos Mendes',
+                  role: 'Diretor de RH',
+                  result: '43% menos turnover',
+                },
+                {
+                  quote: 'A operação ganhou clareza e os times passaram a executar com consistência.',
+                  name: 'Fernanda Pacheco',
+                  role: 'CEO',
+                  result: 'Meta de 62% para 91%',
+                },
+                {
+                  quote: 'Conseguimos ligar formação e performance com dados reais.',
+                  name: 'Ricardo Albuquerque',
+                  role: 'COO',
+                  result: 'T&D integrado ao painel',
+                },
+              ].map((t) => (
+                <div key={t.name} className="rounded-2xl border border-white/10 bg-white/5 p-7">
+                  <p className="text-base leading-relaxed text-white/90">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <div className="mt-4 inline-flex rounded-full bg-[#4CAF50]/15 px-3 py-1 text-xs font-bold text-[#4CAF50]">
+                    {t.result}
+                  </div>
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <p className="text-sm font-bold">{t.name}</p>
+                    <p className="text-xs text-white/50">{t.role}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── CTA FINAL — único, claro ── */}
+        <section className="px-6 py-24">
+          <div className="mx-auto max-w-[700px] text-center">
+            <h2 className="font-heading text-3xl text-[#0F172A] sm:text-4xl">
+              Descubra seu perfil de liderança em 5 minutos.
+            </h2>
+            <p className="mx-auto mt-4 max-w-[480px] text-base text-[#64748B]">
+              Faça a autoavaliação gratuita e receba seu diagnóstico com Plano de Desenvolvimento Individual.
+            </p>
+
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+              <Link
+                href="/treinamento/autoavaliacao"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/20 transition-all hover:bg-[#E65100]"
+              >
+                Fazer diagnóstico gratuito
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <a
+                href="https://wa.me/5564996099020"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] px-8 py-4 text-base font-bold text-[#475569] transition-all hover:border-[#25D366] hover:text-[#25D366]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Falar com Claudemir
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ — curto ── */}
+        <section className="border-t border-[#E5ECF6] bg-[#F8FAFC] px-6 py-20">
+          <div className="mx-auto max-w-[700px]">
+            <h2 className="mb-8 text-center font-heading text-2xl text-[#0F172A]">
+              Perguntas frequentes
+            </h2>
             <div className="space-y-3">
               {faqs.map((item) => (
-                <details key={item.q} className="group overflow-hidden rounded-xl border border-[#23334D] bg-[#0A1324]">
-                  <summary className="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-left text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
+                <details
+                  key={item.q}
+                  className="group overflow-hidden rounded-xl border border-[#E5ECF6] bg-white"
+                >
+                  <summary className="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-left text-sm font-bold text-[#0F172A] [&::-webkit-details-marker]:hidden">
                     {item.q}
-                    <span className="text-lg text-[#8FA8C5] transition-transform duration-200 group-open:rotate-45">+</span>
+                    <span className="text-lg text-[#94A3B8] transition-transform duration-200 group-open:rotate-45">
+                      +
+                    </span>
                   </summary>
-                  <p className="border-t border-[#1D2D45] px-5 py-4 text-sm leading-relaxed text-[#A9BDD8]">{item.a}</p>
+                  <p className="border-t border-[#F1F5F9] px-5 py-4 text-sm leading-relaxed text-[#64748B]">
+                    {item.a}
+                  </p>
                 </details>
               ))}
             </div>
