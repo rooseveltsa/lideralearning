@@ -41,37 +41,59 @@ export default function HomePage() {
 
       <main className="overflow-hidden">
 
-        {/* ── HERO — autoridade + clareza ── */}
-        <section className="relative px-6 pb-32 pt-40">
+        {/* ── HERO — autoridade + preview da plataforma ── */}
+        <section className="relative px-6 pb-28 pt-40">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(30,136,229,0.08),transparent)]" />
 
-          <div className="relative mx-auto max-w-[1080px] text-center">
-            <h1 className="mx-auto max-w-[820px] font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
-              <TypewriterText text="Formamos os líderes que sua" speed={50} delay={300} />{' '}
-              <span className="text-[#4CAF50]">
-                <TypewriterText text="operação precisa." speed={50} delay={1750} cursorColor="#4CAF50" />
-              </span>
-            </h1>
+          <div className="relative mx-auto grid max-w-[1280px] gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+            {/* Left: Copy */}
+            <div>
+              <h1 className="max-w-[600px] font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl">
+                <TypewriterText text="Formamos os líderes que sua" speed={50} delay={300} />{' '}
+                <span className="text-[#4CAF50]">
+                  <TypewriterText text="operação precisa." speed={50} delay={1750} cursorColor="#4CAF50" />
+                </span>
+              </h1>
 
-            <p className="mx-auto mt-7 max-w-[580px] text-lg leading-relaxed text-[#A9BDD8]">
-              Diagnóstico individualizado, treinamento presencial de alto impacto
-              e 60 dias de acompanhamento. Resultado real, não certificado de gaveta.
-            </p>
+              <p className="mt-7 max-w-[480px] text-lg leading-relaxed text-[#A9BDD8]">
+                Diagnóstico individualizado, treinamento presencial de alto impacto
+                e 60 dias de acompanhamento.{' '}
+                <strong className="text-white">Resultado real.</strong>
+              </p>
 
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link
-                href="/treinamento/autoavaliacao"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/25 transition-all hover:bg-[#E65100] hover:shadow-[#F57C00]/35"
-              >
-                Fazer diagnóstico gratuito
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-              <Link
-                href="/empresas"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#335077] px-8 py-4 text-base font-bold text-[#D4E4F6] transition-all hover:border-[#4F77AA] hover:text-white"
-              >
-                Soluções para empresas
-              </Link>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <Link
+                  href="/treinamento/autoavaliacao"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#F57C00] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#F57C00]/25 transition-all hover:bg-[#E65100] hover:shadow-[#F57C00]/35"
+                >
+                  Fazer diagnóstico gratuito
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link
+                  href="/empresas"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#335077] px-8 py-4 text-base font-bold text-[#D4E4F6] transition-all hover:border-[#4F77AA] hover:text-white"
+                >
+                  Soluções para empresas
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: Platform Video */}
+            <div className="relative">
+              <div className="overflow-hidden rounded-2xl border border-[#22314B] shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full"
+                  poster="/videos/platform-showcase-poster.jpg"
+                >
+                  <source src="/videos/platform-showcase.mp4" type="video/mp4" />
+                </video>
+              </div>
+              {/* Glow effect behind video */}
+              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-3xl bg-[#1E88E5]/[0.06] blur-2xl" />
             </div>
           </div>
         </section>
