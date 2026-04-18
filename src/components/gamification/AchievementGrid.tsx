@@ -60,20 +60,20 @@ export default function AchievementGrid({ achievements, earned }: Props) {
             className={`relative rounded-2xl border p-5 transition-all ${
               isEarned
                 ? `${colors.border} ${colors.bg}`
-                : 'border-[#1A2E4A] bg-[#0A1324] opacity-50'
+                : 'border-white/5 bg-white/[0.02] opacity-50'
             }`}
           >
             <div className="flex items-start gap-3">
               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl ${
                 isEarned ? '' : 'grayscale'
               }`}>
-                {isEarned ? achievement.icon : <Lock className="h-5 w-5 text-[#4A6B8A]" />}
+                {isEarned ? achievement.icon : <Lock className="h-5 w-5 text-white/30" />}
               </div>
               <div className="min-w-0 flex-1">
-                <p className={`text-sm font-extrabold ${isEarned ? 'text-white' : 'text-[#64748B]'}`}>
+                <p className={`text-sm font-extrabold ${isEarned ? 'text-white' : 'text-white/40'}`}>
                   {achievement.title}
                 </p>
-                <p className={`mt-0.5 text-xs leading-relaxed ${isEarned ? 'text-[#A9BDD8]' : 'text-[#4A6B8A]'}`}>
+                <p className={`mt-0.5 text-xs leading-relaxed ${isEarned ? 'text-white/60' : 'text-white/30'}`}>
                   {achievement.description}
                 </p>
               </div>
@@ -81,18 +81,18 @@ export default function AchievementGrid({ achievements, earned }: Props) {
 
             <div className="mt-3 flex items-center justify-between">
               <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                isEarned ? `${colors.bg} ${colors.text}` : 'bg-[#1A2E4A] text-[#4A6B8A]'
+                isEarned ? `${colors.bg} ${colors.text}` : 'bg-white/5 text-white/30'
               }`}>
                 {categoryLabels[achievement.category] || achievement.category}
               </span>
               <div className="text-right">
                 {achievement.xp_reward > 0 && (
-                  <span className={`text-xs font-bold ${isEarned ? 'text-[#1E88E5]' : 'text-[#4A6B8A]'}`}>
+                  <span className={`text-xs font-bold ${isEarned ? 'text-indigo-400' : 'text-white/30'}`}>
                     +{achievement.xp_reward} XP
                   </span>
                 )}
                 {isEarned && earnedAt && (
-                  <p className="text-[10px] text-[#64748B]">
+                  <p className="text-[10px] text-white/40">
                     {new Date(earnedAt).toLocaleDateString('pt-BR')}
                   </p>
                 )}

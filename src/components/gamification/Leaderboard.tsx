@@ -22,24 +22,24 @@ const podiumColors = [
 export default function Leaderboard({ entries, currentUserId }: Props) {
   if (entries.length === 0) {
     return (
-      <div className="rounded-2xl border border-[#22314B] bg-[#0A1324] p-8 text-center">
-        <TrendingUp className="mx-auto mb-3 h-10 w-10 text-[#4A6B8A]" />
-        <p className="text-sm font-bold text-[#64748B]">Ranking será exibido quando houver atividade.</p>
+      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 text-center">
+        <TrendingUp className="mx-auto mb-3 h-10 w-10 text-white/20" />
+        <p className="text-sm font-bold text-white/40">Ranking será exibido quando houver atividade.</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-[#22314B] bg-[#0A1324] overflow-hidden">
-      <div className="border-b border-[#1A2E4A] px-5 py-4">
+    <div className="overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02]">
+      <div className="border-b border-white/5 px-5 py-4">
         <div className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-yellow-400" />
           <h3 className="text-base font-extrabold text-white">Ranking de Líderes</h3>
         </div>
-        <p className="mt-1 text-xs text-[#7FA0C2]">Baseado em XP acumulado</p>
+        <p className="mt-1 text-xs text-white/40">Baseado em XP acumulado</p>
       </div>
 
-      <div className="divide-y divide-[#1A2E4A]">
+      <div className="divide-y divide-white/5">
         {entries.map((entry, index) => {
           const isCurrentUser = entry.user_id === currentUserId
           const isTopThree = index < 3
@@ -49,14 +49,14 @@ export default function Leaderboard({ entries, currentUserId }: Props) {
             <div
               key={entry.user_id}
               className={`flex items-center gap-4 px-5 py-3.5 transition-colors ${
-                isCurrentUser ? 'bg-[#1565C0]/10' : 'hover:bg-[#0D1B30]'
+                isCurrentUser ? 'bg-indigo-500/10' : 'hover:bg-white/[0.02]'
               }`}
             >
               {/* Position */}
               <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-extrabold ${
                 isTopThree && podium
                   ? `${podium.bg} ${podium.border} border ${podium.text}`
-                  : 'bg-[#1A2E4A] text-[#64748B]'
+                  : 'bg-white/5 text-white/40'
               }`}>
                 {isTopThree && podium ? (
                   <podium.icon className="h-4 w-4" />
@@ -67,16 +67,16 @@ export default function Leaderboard({ entries, currentUserId }: Props) {
 
               {/* Avatar + Name */}
               <div className="min-w-0 flex-1">
-                <p className={`truncate text-sm font-bold ${isCurrentUser ? 'text-[#8CC1F7]' : 'text-white'}`}>
+                <p className={`truncate text-sm font-bold ${isCurrentUser ? 'text-indigo-300' : 'text-white'}`}>
                   {entry.full_name || 'Líder Anônimo'}
-                  {isCurrentUser && <span className="ml-2 text-[10px] text-[#1E88E5]">(você)</span>}
+                  {isCurrentUser && <span className="ml-2 text-[10px] text-indigo-400">(você)</span>}
                 </p>
-                <p className="text-[10px] text-[#64748B]">Nível {entry.level}</p>
+                <p className="text-[10px] text-white/40">Nível {entry.level}</p>
               </div>
 
               {/* Streak */}
               {entry.current_streak >= 3 && (
-                <div className="flex items-center gap-1 text-[#F57C00]">
+                <div className="flex items-center gap-1 text-amber-400">
                   <Flame className="h-3.5 w-3.5" />
                   <span className="text-xs font-bold">{entry.current_streak}</span>
                 </div>
@@ -87,7 +87,7 @@ export default function Leaderboard({ entries, currentUserId }: Props) {
                 <p className="text-sm font-extrabold text-white">
                   {entry.total_xp.toLocaleString('pt-BR')}
                 </p>
-                <p className="text-[10px] text-[#64748B]">XP</p>
+                <p className="text-[10px] text-white/40">XP</p>
               </div>
             </div>
           )

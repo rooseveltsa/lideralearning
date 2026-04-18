@@ -58,12 +58,12 @@ export default async function ConquistasPage() {
   }[]
 
   return (
-    <div className="min-h-screen bg-[#050A14] px-6 py-8 text-[#E5ECF8]">
+    <div className="min-h-screen bg-[#030712] px-6 py-8 text-white/70">
       <div className="mx-auto max-w-[1280px]">
 
         <div className="mb-8">
           <h1 className="text-2xl font-extrabold text-white">Conquistas & Progresso</h1>
-          <p className="mt-1 text-sm text-[#7FA0C2]">
+          <p className="mt-1 text-sm text-white/40">
             Acompanhe seu XP, streak e conquistas desbloqueadas
           </p>
         </div>
@@ -93,7 +93,7 @@ export default async function ConquistasPage() {
             <div>
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-extrabold text-white">Conquistas</h2>
-                <p className="text-xs font-bold text-[#7FA0C2]">
+                <p className="text-xs font-bold text-white/40">
                   {earned.length}/{allAchievements.length} desbloqueadas
                 </p>
               </div>
