@@ -1,294 +1,173 @@
 /**
- * LIDERA Design Tokens — Premium Edition
- * "Netflix Education Club" — Comunidade, Imersão, Resultados
+ * LIDERA Design Tokens — Identidade Premium Consultiva
+ * Navy profundo + Laranja ação + Verde sucesso + Azul info
  *
- * Paleta inspirada em plataformas premium (Netflix, Disney+, Linear)
- * com identidade brasileira de treinamento corporativo.
+ * TIPOGRAFIA OFICIAL:
+ * - Display/Editorial: Instrument Serif 400 (+ italic) → hero, h1, h2, citações, números editoriais
+ * - UI/Corpo: Geist 400/500/600/700 → h3-h6, body, botões, labels, navegação
+ * - Mono/Dados: Geist Mono 400/500 → métricas, tabelas, código
  *
- * @usage Importar tokens deste arquivo, nunca valores hardcoded
+ * PROIBIDO: Instrument Serif em h3-h6, body, botões, labels, badges, nav
+ * PROIBIDO: Inter, Roboto, Arial como fonte primária
  */
 
 export const colors = {
-  // ── Primary: Indigo (Modernidade, Tecnologia, Plataforma) ──
-  primary: {
-    DEFAULT: '#6366F1',   // Indigo 500 — CTA principal, links
-    dark: '#4F46E5',      // Indigo 600 — hover
-    deeper: '#4338CA',    // Indigo 700 — headings, active
-    light: '#818CF8',     // Indigo 400 — highlights
-    muted: '#EEF2FF',     // Indigo 50 — badges em bg claro
-    faint: 'rgba(99, 102, 241, 0.08)', // Hover backgrounds
+  navy: {
+    50: '#f1f4f9',
+    100: '#dde4ee',
+    200: '#b8c5d8',
+    300: '#8095b3',
+    400: '#4f6588',
+    500: '#2c4063',
+    600: '#1c2d4d',
+    700: '#122039',
+    800: '#0c1729',
+    900: '#070e1c',
+    950: '#03070f',
   },
 
-  // ── Secondary: Violet (Comunidade, Criatividade, Membership) ──
-  secondary: {
-    DEFAULT: '#8B5CF6',   // Violet 500 — comunidade, badges
-    dark: '#7C3AED',      // Violet 600 — hover
-    light: '#A78BFA',     // Violet 400 — highlights
-    muted: '#F5F3FF',     // Violet 50 — badges
-    faint: 'rgba(139, 92, 246, 0.08)',
+  orange: {
+    50: '#fff3ec',
+    100: '#ffe0cc',
+    200: '#ffbf95',
+    300: '#ff9a5a',
+    400: '#fb7d2e',
+    500: '#ec6411',
+    600: '#cc4f06',
+    700: '#a13d05',
+    800: '#6e2a04',
   },
 
-  // ── Accent: Amber (Energia, Urgência, CTAs de ação) ──
-  accent: {
-    DEFAULT: '#F59E0B',   // Amber 500 — CTAs principais
-    dark: '#D97706',      // Amber 600 — hover
-    light: '#FBBF24',     // Amber 400 — highlights
-    muted: '#FFFBEB',     // Amber 50 — badges
-    faint: 'rgba(245, 158, 11, 0.08)',
-    glow: 'rgba(245, 158, 11, 0.35)',
+  green: {
+    50: '#ecfaef',
+    100: '#d0f3d9',
+    200: '#9ae5ad',
+    300: '#5fd07c',
+    400: '#2eb555',
+    500: '#0f8f3a',
+    600: '#0a722e',
+    700: '#085824',
   },
 
-  // ── Success: Emerald (Progresso, Conclusão, Sucesso) ──
-  success: {
-    DEFAULT: '#10B981',   // Emerald 500
-    dark: '#059669',      // Emerald 600
-    light: '#34D399',     // Emerald 400
-    muted: '#ECFDF5',     // Emerald 50
-    faint: 'rgba(16, 185, 129, 0.08)',
+  blue: {
+    50: '#ecf3ff',
+    100: '#d0e1ff',
+    200: '#99bcff',
+    300: '#5d92f7',
+    400: '#2f6fde',
+    500: '#1855bd',
+    600: '#114495',
   },
 
-  // ── Brand: Mantém Azul corporativo original para contextos de confiança ──
-  brand: {
-    blue: {
-      DEFAULT: '#1E88E5',
-      dark: '#1565C0',
-      deeper: '#0B4A8F',
-      light: '#8CC1F7',
-      muted: '#ECF3FC',
-    },
-    orange: {
-      DEFAULT: '#F57C00',
-      dark: '#E65100',
-      light: '#FFF7ED',
-      muted: '#F57C00',
-    },
-    green: {
-      DEFAULT: '#4CAF50',
-      dark: '#2E7D32',
-      lime: '#7CB342',
-      light: '#E8F5E9',
-    },
+  neutral: {
+    paper: '#f5f1ea',
+    paper2: '#ebe5d9',
+    bone: '#e2dccd',
+    ink50: '#fafafa',
+    ink100: '#f0f0f2',
+    ink200: '#d9dade',
+    ink300: '#adb1bc',
+    ink400: '#6f7585',
+    ink500: '#4a5060',
+    ink600: '#2e3340',
+    ink700: '#1c2029',
+    ink800: '#0f1218',
   },
 
-  // ── Backgrounds — Dark Mode (Netflix-style imersivo) ──
-  bg: {
-    dark: {
-      base: '#030712',       // Slate 950 — fundo raiz imersivo
-      primary: '#0A0F1E',    // Fundo principal das páginas
-      secondary: '#0D1424',  // Seções alternadas
-      card: '#0F1729',       // Cards (quase invisíveis no base)
-      elevated: '#131C30',   // Cards elevados, modais
-      input: '#0B1120',      // Inputs
-      overlay: 'rgba(3, 7, 18, 0.85)', // Overlays
-    },
-    light: {
-      base: '#FAFBFC',
-      primary: '#FFFFFF',
-      secondary: '#F4F7FB',
-      tertiary: '#EEF2F8',
-      card: '#FFFFFF',
-      muted: '#F8FAFC',
-    },
-  },
-
-  // ── Text ──
-  text: {
-    onDark: {
-      primary: '#F8FAFC',    // Títulos, texto principal
-      secondary: '#CBD5E1',  // Subtextos
-      muted: '#94A3B8',      // Labels, captions
-      subtle: '#64748B',     // Placeholders
-      disabled: '#475569',   // Disabled
-      inverse: '#0F172A',    // Texto sobre cores claras
-    },
-    onLight: {
-      primary: '#0F172A',    // Slate 900
-      secondary: '#1E293B',  // Slate 800
-      muted: '#475569',      // Slate 600
-      subtle: '#64748B',     // Slate 500
-      disabled: '#94A3B8',   // Slate 400
-    },
-  },
-
-  // ── Borders ──
-  border: {
-    dark: {
-      DEFAULT: 'rgba(255, 255, 255, 0.06)',  // Bordas quase invisíveis
-      subtle: 'rgba(255, 255, 255, 0.03)',   // Divisores
-      strong: 'rgba(255, 255, 255, 0.12)',   // Hover
-      focus: '#6366F1',                       // Focus rings
-    },
-    light: {
-      DEFAULT: '#E2E8F0',
-      subtle: '#F1F5F9',
-      strong: '#CBD5E1',
-    },
-  },
-
-  // ── Semantic Colors ──
   semantic: {
-    error: '#EF4444',      // Red 500
-    errorMuted: '#FEF2F2',
-    warning: '#F59E0B',    // Amber 500
-    warningMuted: '#FFFBEB',
-    info: '#6366F1',       // Indigo
-    infoMuted: '#EEF2FF',
-    success: '#10B981',    // Emerald
-    successMuted: '#ECFDF5',
+    action: '#ec6411',
+    actionHover: '#cc4f06',
+    success: '#0f8f3a',
+    info: '#2f6fde',
+    warn: '#c98908',
+    danger: '#c5343a',
   },
 
-  // ── Gradients ──
-  gradient: {
-    brand: 'linear-gradient(135deg, #6366F1 0%, #10B981 50%, #F59E0B 100%)',
-    primary: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-    gold: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-    surface: 'linear-gradient(180deg, #0F1729 0%, #0A0F1E 100%)',
-    card: 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
+  bg: {
+    DEFAULT: '#f5f1ea',
+    elevated: '#ffffff',
+    deep: '#070e1c',
+    deep2: '#0c1729',
+  },
+
+  fg: {
+    DEFAULT: '#070e1c',
+    muted: '#4a5060',
+    subtle: '#6f7585',
+    onDeep: '#f5f1ea',
+  },
+
+  border: {
+    DEFAULT: 'rgba(12, 23, 41, 0.10)',
+    strong: 'rgba(12, 23, 41, 0.18)',
+    deep: 'rgba(245, 241, 234, 0.10)',
+    deepStrong: 'rgba(245, 241, 234, 0.18)',
   },
 } as const
 
 export const radius = {
-  sm: 'rounded-lg',     // 8px — inputs, badges pequenos
-  md: 'rounded-xl',     // 12px — buttons, cards
-  lg: 'rounded-2xl',    // 16px — large cards, panels
-  xl: 'rounded-3xl',    // 24px — hero cards, modais
-  full: 'rounded-full', // Pills, avatars
+  xs: '4px',
+  sm: '6px',
+  md: '10px',
+  lg: '14px',
+  xl: '20px',
+  '2xl': '28px',
+  pill: '999px',
 } as const
 
 export const shadow = {
-  sm: 'shadow-sm',
-  card: 'shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
-  cardDark: 'shadow-[0_4px 20px_rgba(0,0,0,0.4)]',
-  elevated: 'shadow-[0_22px_48px_rgba(0,0,0,0.5)]',
-  glow: {
-    indigo: 'shadow-[0_14px_34px_rgba(99,102,241,0.25)]',
-    violet: 'shadow-[0_14px_34px_rgba(139,92,246,0.25)]',
-    amber: 'shadow-[0_14px_34px_rgba(245,158,11,0.3)]',
-    emerald: 'shadow-[0_14px_34px_rgba(16,185,129,0.2)]',
-    card: 'shadow-[0_20px_60px_-15px_rgba(99,102,241,0.15)]',
-  },
+  xs: '0 1px 2px rgba(7, 14, 28, 0.06)',
+  sm: '0 2px 6px rgba(7, 14, 28, 0.08), 0 1px 2px rgba(7, 14, 28, 0.04)',
+  md: '0 8px 24px rgba(7, 14, 28, 0.10), 0 2px 6px rgba(7, 14, 28, 0.06)',
+  lg: '0 24px 60px rgba(7, 14, 28, 0.18), 0 8px 24px rgba(7, 14, 28, 0.10)',
+  xl: '0 40px 100px rgba(7, 14, 28, 0.28), 0 16px 40px rgba(7, 14, 28, 0.14)',
+  glowOrange: '0 12px 40px -12px rgba(236, 100, 17, 0.55)',
+  glowGreen: '0 12px 40px -12px rgba(15, 143, 58, 0.45)',
 } as const
 
 export const motion = {
-  // ── Timing ──
-  duration: {
-    fast: '100ms',
-    normal: '200ms',
-    slow: '400ms',
-    slower: '600ms',
-  },
-  // ── Easing curves ──
-  easing: {
-    DEFAULT: 'cubic-bezier(0.16, 1, 0.3, 1)',     // ease-out-expo — premium feel
-    spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',  // ease-out-back — bounce
-    smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',       // ease-in-out
-    linear: 'linear',
-  },
-  // ── Animation keyframes ──
-  keyframes: {
-    fadeInUp: {
-      from: { opacity: '0', transform: 'translateY(24px)' },
-      to: { opacity: '1', transform: 'translateY(0)' },
-    },
-    fadeIn: {
-      from: { opacity: '0' },
-      to: { opacity: '1' },
-    },
-    shimmer: {
-      from: { backgroundPosition: '-200% 0' },
-      to: { backgroundPosition: '200% 0' },
-    },
-    float: {
-      '0%, 100%': { transform: 'translateY(0)' },
-      '50%': { transform: 'translateY(-8px)' },
-    },
-    slideInRight: {
-      from: { opacity: '0', transform: 'translateX(24px)' },
-      to: { opacity: '1', transform: 'translateX(0)' },
-    },
-    scaleIn: {
-      from: { opacity: '0', transform: 'scale(0.95)' },
-      to: { opacity: '1', transform: 'scale(1)' },
-    },
-    pulse: {
-      '0%, 100%': { opacity: '1' },
-      '50%': { opacity: '0.5' },
-    },
-  },
+  ease: 'cubic-bezier(0.2, 0.7, 0.2, 1)',
+  easeOut: 'cubic-bezier(0.16, 1, 0.3, 1)',
+  dFast: '140ms',
+  dBase: '220ms',
+  dSlow: '420ms',
 } as const
 
 export const typography = {
-  fontHeading: 'var(--font-heading)',
-  fontSans: 'var(--font-sans)',
-  fontMono: 'var(--font-mono)',
+  /** Instrument Serif 400 + italic — hero, h1, h2, citações grandes, números editoriais */
+  fontDisplay: "'Instrument Serif', 'Times New Roman', serif",
+  /** Geist 400/500/600/700 — h3-h6, body, botões, labels, navegação */
+  fontSans: "'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
+  /** Geist Mono 400/500 — métricas, tabelas, código, IDs */
+  fontMono: "'Geist Mono', ui-monospace, 'JetBrains Mono', monospace",
+  cssVars: {
+    display: 'var(--ld-font-display)',
+    sans: 'var(--ld-font-sans)',
+    mono: 'var(--ld-font-mono)',
+  },
+  /** Escala tipográfica modular 1.25 (idêntica ao tokens.css) */
   scale: {
-    xs: '0.75rem',     // 12px
-    sm: '0.875rem',    // 14px
-    base: '1rem',      // 16px
-    lg: '1.125rem',    // 18px
-    xl: '1.25rem',     // 20px
-    '2xl': '1.5rem',   // 24px
-    '3xl': '1.875rem', // 30px
-    '4xl': '2.25rem',  // 36px
-    '5xl': '3rem',     // 48px
-    '6xl': '3.75rem',  // 60px
-    '7xl': '4.5rem',   // 72px
+    '2xs': '11px',
+    xs: '12px',
+    sm: '14px',
+    base: '16px',
+    md: '18px',
+    lg: '22px',
+    xl: '28px',
+    '2xl': '36px',
+    '3xl': '48px',
+    '4xl': '64px',
+    '5xl': '88px',
+    '6xl': '120px',
   },
 } as const
 
 export const spacing = {
   section: {
-    padding: 'px-6 py-24',
+    padding: 'px-6 py-[120px]',
     paddingSmall: 'px-6 py-16',
-    paddingLarge: 'px-6 py-32',
-    gap: 'gap-6',
   },
-  container: 'mx-auto w-full max-w-[1280px]',
-  containerNarrow: 'mx-auto w-full max-w-[960px]',
-  containerWide: 'mx-auto w-full max-w-[1440px]',
-} as const
-
-// ── Semantic component tokens ──
-export const componentTokens = {
-  // Botões
-  button: {
-    primary: {
-      bg: '#6366F1',
-      bgHover: '#4F46E5',
-      text: '#FFFFFF',
-      shadow: 'shadow-[0_4px_14px_rgba(99,102,241,0.35)]',
-    },
-    secondary: {
-      bg: 'rgba(255,255,255,0.06)',
-      bgHover: 'rgba(255,255,255,0.1)',
-      text: '#F8FAFC',
-      border: 'rgba(255,255,255,0.08)',
-    },
-    accent: {
-      bg: '#F59E0B',
-      bgHover: '#D97706',
-      text: '#0F172A',
-      shadow: 'shadow-[0_4px_14px_rgba(245,158,11,0.4)]',
-    },
-    ghost: {
-      bg: 'transparent',
-      bgHover: 'rgba(255,255,255,0.05)',
-      text: '#94A3B8',
-    },
-  },
-  // Cards
-  card: {
-    dark: {
-      bg: '#0F1729',
-      bgHover: '#131C30',
-      border: 'rgba(255,255,255,0.06)',
-      borderHover: 'rgba(255,255,255,0.12)',
-    },
-    light: {
-      bg: '#FFFFFF',
-      bgHover: '#F8FAFC',
-      border: '#E2E8F0',
-      borderHover: '#CBD5E1',
-    },
-  },
+  container: 'mx-auto w-full max-w-[1280px] px-8',
+  containerNarrow: 'mx-auto w-full max-w-[920px] px-8',
+  containerWide: 'mx-auto w-full max-w-[1440px] px-12',
 } as const

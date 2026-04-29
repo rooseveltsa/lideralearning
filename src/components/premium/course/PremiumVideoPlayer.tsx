@@ -42,7 +42,7 @@ function getYouTubeEmbed(url: string): string | null {
 
 function getVimeoEmbed(url: string): string | null {
   const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
-  return match ? `https://player.vimeo.com/video/${match[1]}?color=6366F1&portrait=0&title=0&byline=0` : null
+  return match ? `https://player.vimeo.com/video/${match[1]}?color=EAB308&portrait=0&title=0&byline=0` : null
 }
 
 export function PremiumVideoPlayer({
@@ -98,11 +98,11 @@ export function PremiumVideoPlayer({
 
       {/* Mobile slide-in panel */}
       <aside
-        className={`fixed bottom-0 right-0 top-0 z-40 w-full max-w-sm overflow-y-auto border-l border-white/10 bg-[#0A0F1E] transition-transform duration-300 lg:hidden ${
+        className={`fixed bottom-0 right-0 top-0 z-40 w-full max-w-sm overflow-y-auto border-l border-white/10 bg-[#171717] transition-transform duration-300 lg:hidden ${
           isPanelOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#0A0F1E] p-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#171717] p-4">
           <p className="text-sm font-bold text-white">Conteúdo do curso</p>
           <button
             onClick={() => setIsPanelOpen(false)}
@@ -115,7 +115,7 @@ export function PremiumVideoPlayer({
         <div className="space-y-3 p-4">
           {sortedModules.map((module, moduleIndex) => (
             <div key={module.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-400">
+              <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-yellow-400">
                 Módulo {moduleIndex + 1} • {module.title}
               </p>
               <div className="space-y-1">
@@ -130,13 +130,13 @@ export function PremiumVideoPlayer({
                       onClick={() => setIsPanelOpen(false)}
                       className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-all ${
                         active
-                          ? 'bg-indigo-500/15 text-indigo-200'
+                          ? 'bg-yellow-500/15 text-yellow-200'
                           : 'text-white/60 hover:bg-white/5 hover:text-white'
                       }`}
                     >
                       <CheckCircle2
                         className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          done ? 'text-emerald-400' : started ? 'text-indigo-400' : 'text-white/20'
+                          done ? 'text-emerald-400' : started ? 'text-yellow-400' : 'text-white/20'
                         }`}
                       />
                       <div className="min-w-0 flex-1">
@@ -147,7 +147,7 @@ export function PremiumVideoPlayer({
                           </span>
                         )}
                       </div>
-                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-indigo-400" />}
+                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-yellow-400" />}
                     </Link>
                   )
                 })}
@@ -198,7 +198,7 @@ export function PremiumVideoPlayer({
         </div>
 
         {/* Lesson navigation below video */}
-        <div className="flex items-center justify-between gap-3 border-t border-white/5 bg-[#030712] px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-t border-white/5 bg-[#1F1F1F] px-4 py-3">
           {previousLesson ? (
             <Link
               href={`/dashboard/cursos/${courseId}/aula/${previousLesson.id}`}
@@ -228,9 +228,9 @@ export function PremiumVideoPlayer({
       </div>
 
       {/* Desktop persistent side panel */}
-      <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-white/5 bg-[#0A0F1E] lg:block">
-        <div className="sticky top-0 z-10 border-b border-white/5 bg-[#0A0F1E] p-4">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-400">Episódios da trilha</p>
+      <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-white/5 bg-[#171717] lg:block">
+        <div className="sticky top-0 z-10 border-b border-white/5 bg-[#171717] p-4">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-yellow-400">Episódios da trilha</p>
         </div>
         <div className="space-y-3 p-4">
           {sortedModules.map((module, moduleIndex) => (
@@ -249,13 +249,13 @@ export function PremiumVideoPlayer({
                       href={`/dashboard/cursos/${courseId}/aula/${lesson.id}`}
                       className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-all ${
                         active
-                          ? 'bg-indigo-500/15 text-indigo-200'
+                          ? 'bg-yellow-500/15 text-yellow-200'
                           : 'text-white/60 hover:bg-white/5 hover:text-white'
                       }`}
                     >
                       <CheckCircle2
                         className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          done ? 'text-emerald-400' : started ? 'text-indigo-400' : 'text-white/20'
+                          done ? 'text-emerald-400' : started ? 'text-yellow-400' : 'text-white/20'
                         }`}
                       />
                       <div className="min-w-0 flex-1">
@@ -266,7 +266,7 @@ export function PremiumVideoPlayer({
                           </span>
                         )}
                       </div>
-                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-indigo-400" />}
+                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-yellow-400" />}
                     </Link>
                   )
                 })}

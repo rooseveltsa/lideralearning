@@ -85,6 +85,12 @@ export type PDIReport = {
     session30days: string[]
     session60days: string[]
   }
+
+  // User context (from open-ended text fields)
+  userContext?: {
+    dorAtual: string | null
+    custoFuturo: string | null
+  } | null
 }
 
 export type PDIStatus = 'ready' | 'waiting_self' | 'waiting_exec' | 'waiting_both'
@@ -102,6 +108,8 @@ type SelfFields = {
   q_dor?: number | null
   pontuacao_total?: number | null
   perfil?: string | null
+  texto_dor_atual?: string | null
+  texto_custo_futuro?: string | null
   [key: string]: unknown
 }
 
@@ -526,6 +534,8 @@ export function generatePartialPDI(
   const selfData = selfAssessment as SelfFields
   const perfil = (selfData.perfil as string) || 'transicao'
   const total = (selfData.pontuacao_total as number) || 0
+  const dorAtual = (selfData.texto_dor_atual as string | null) || null
+  const custoFuturo = (selfData.texto_custo_futuro as string | null) || null
 
   // Build dimensions from self-assessment only
   const selfDimensions = ALL_DIMENSIONS.filter((d) => d.selfKey !== null)
@@ -593,16 +603,24 @@ export function generatePartialPDI(
 
     mentoringFocus: {
       session30days: [
+        ...(dorAtual
+          ? [`Endereçar diretamente o desafio relatado: "${dorAtual.length > 120 ? dorAtual.slice(0, 120) + '...' : dorAtual}"`]
+          : []),
         'Validar autopercepção com feedback 360 da equipe.',
         'Identificar top 2 áreas de desenvolvimento prioritário.',
         'Alinhar expectativas com gestor direto.',
       ],
       session60days: [
+        ...(custoFuturo
+          ? [`Avaliar se o custo projetado foi mitigado: "${custoFuturo.length > 120 ? custoFuturo.slice(0, 120) + '...' : custoFuturo}"`]
+          : []),
         'Revisar progresso nas áreas identificadas.',
         'Preparar plano de sustentação pós-treinamento.',
         'Definir metas para os próximos 90 dias.',
       ],
     },
+
+    userContext: { dorAtual, custoFuturo },
   }
 }
 
@@ -733,5 +751,10 @@ export function generatePDI(
     kpisToTrack: generateKPIs(dimensions, perfil),
 
     mentoringFocus: generateMentoringFocus(dimensions, blindSpots, hiddenStrengths),
+
+    userContext: {
+      dorAtual: (selfData.texto_dor_atual as string | null) || null,
+      custoFuturo: (selfData.texto_custo_futuro as string | null) || null,
+    },
   }
 }

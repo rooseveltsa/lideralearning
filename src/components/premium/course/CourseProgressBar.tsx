@@ -2,7 +2,7 @@
 
 interface ProgressBarProps {
   value: number // 0-100
-  variant?: 'indigo' | 'emerald' | 'amber' | 'gradient'
+  variant?: 'yellow' | 'emerald' | 'amber' | 'gradient'
   size?: 'sm' | 'md' | 'lg'
   showLabel?: boolean
   label?: string
@@ -11,10 +11,10 @@ interface ProgressBarProps {
 }
 
 const variantClasses = {
-  indigo: 'bg-indigo-500',
+  yellow: 'bg-yellow-500',
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
-  gradient: 'bg-gradient-to-r from-indigo-500 to-violet-500',
+  gradient: 'bg-gradient-to-r from-yellow-500 to-yellow-500',
 }
 
 const sizeClasses = {
@@ -110,14 +110,14 @@ export function XPBadge({ xp, tier, showTier = true, size = 'md', className = ''
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 rounded-full bg-indigo-500/15 font-bold text-indigo-400 ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full bg-yellow-500/15 font-bold text-yellow-400 ${sizeClasses[size]} ${className}`}
     >
       <span className="text-yellow-400">⚡</span>
       <span>{xp.toLocaleString('pt-BR')}</span>
       {showTier && tier && (
         <>
           <span className="text-white/30">•</span>
-          <span className="text-indigo-300">{tier}</span>
+          <span className="text-yellow-300">{tier}</span>
         </>
       )}
     </div>

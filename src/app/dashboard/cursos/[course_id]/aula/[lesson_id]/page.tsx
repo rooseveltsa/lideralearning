@@ -243,9 +243,9 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
 
    {/* Lesson header */}
    <section className="relative overflow-hidden rounded-3xl border border-white/5 bg-white/[0.02] p-7 text-white shadow-[0_20px_45px_rgba(0,0,0,0.5)]">
-    <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-[80px]" />
+    <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-yellow-500/10 blur-[80px]" />
     <div className="relative">
-     <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-400">
+     <p className="text-xs font-bold uppercase tracking-[0.14em] text-yellow-400">
       Episódio {currentIndex + 1} de {lessons.length} • {currentLesson.moduleTitle}
      </p>
      <h1 className="mt-2 max-w-4xl text-3xl font-extrabold leading-tight">{currentLesson.title}</h1>
@@ -268,7 +268,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
    ) : null}
 
    {certificateCode ? (
-    <section className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 to-indigo-500/10 p-5 shadow-sm">
+    <section className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 to-yellow-500/10 p-5 shadow-sm">
      <div className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-3">
        <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
@@ -321,7 +321,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
        <div>
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-white/40">Status da aula</p>
-        <p className={`mt-1 text-sm font-bold ${isCompleted ? 'text-emerald-400' : 'text-indigo-400'}`}>
+        <p className={`mt-1 text-sm font-bold ${isCompleted ? 'text-emerald-400' : 'text-yellow-400'}`}>
          {isCompleted ? 'Aula marcada como concluída' : 'Aula em andamento'}
         </p>
        </div>
@@ -333,7 +333,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
          className={`inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-70 ${
           isCompleted
            ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-           : 'bg-indigo-500 text-white hover:bg-indigo-600'
+           : 'bg-yellow-500 text-white hover:bg-yellow-600'
          }`}
         >
          {marking ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
@@ -370,7 +370,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
      {/* Compact progress stats */}
      <div className="grid grid-cols-3 gap-3">
       {[
-       { label: 'Módulos', value: `${moduleCompletedCount}/${sortedModules.length}`, color: 'text-indigo-400' },
+       { label: 'Módulos', value: `${moduleCompletedCount}/${sortedModules.length}`, color: 'text-yellow-400' },
        { label: 'Concluídas', value: `${completedLessons}/${lessons.length}`, color: 'text-emerald-400' },
        { label: 'Iniciadas', value: `${startedLessons}/${lessons.length}`, color: 'text-amber-400' },
       ].map((item) => (
@@ -385,7 +385,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
     {/* Right column: sticky progress card only */}
     <aside className="space-y-5 xl:sticky xl:top-6">
      <article className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-      <p className="text-xs font-bold uppercase tracking-[0.16em] text-indigo-400">Painel de progresso</p>
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-yellow-400">Painel de progresso</p>
       <p className="mt-2 text-2xl font-extrabold text-white">{progressPercent}% concluído</p>
       <p className="mt-1 text-xs text-white/40">
        {completedLessons} de {lessons.length} aulas concluídas • {startedLessons} iniciadas
@@ -393,7 +393,7 @@ export default function AulaPage({ params }: { params: Promise<{ course_id: stri
 
       <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/5">
        <div
-        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
+        className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-yellow-500 transition-all duration-700"
         style={{ width: `${progressPercent}%` }}
        />
       </div>

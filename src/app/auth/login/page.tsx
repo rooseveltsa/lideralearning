@@ -6,23 +6,11 @@ import { login } from "@/app/auth/actions"
 import { useState, useTransition, Suspense } from "react"
 import { Loader2 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen w-full items-center justify-center p-4 bg-[#F8FAFC]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#1565C0]" />
+            <div className="flex min-h-screen w-full items-center justify-center p-4" style={{ background: '#f5f1ea' }}>
+                <Loader2 className="h-8 w-8 animate-spin" style={{ color: '#ec6411' }} />
             </div>
         }>
             <LoginForm />
@@ -45,95 +33,146 @@ function LoginForm() {
             if (result?.error) {
                 setError(result.error)
             }
-            // On success, the server action calls redirect('/dashboard')
-            // which Next.js handles as a navigation automatically
         })
     }
 
     return (
-        <div className="flex min-h-screen w-full items-center justify-center p-4 bg-[#F8FAFC] selection:bg-[#1565C0]/20">
-            <div className="w-full max-w-[400px]">
-                {/* Logo Top */}
-                <div className="flex justify-center mb-8">
-                    <Link href="/" className="flex items-center gap-1.5 group select-none">
-                        <span className="font-heading font-extrabold text-2xl tracking-tight text-[#111827]">
-                            Lidera
-                        </span>
-                        <span className="font-extrabold text-2xl text-[#1565C0]">.</span>
-                    </Link>
+        <div className="flex min-h-screen w-full" style={{ color: '#070e1c' }}>
+            {/* Left — branding panel */}
+            <div className="hidden lg:flex lg:w-[45%] flex-col justify-between p-10" style={{ background: '#070e1c', color: '#f5f1ea' }}>
+                <Link href="/" className="flex items-center gap-2.5">
+                    <svg width={26} height={26} viewBox="0 0 64 64" fill="none" aria-hidden>
+                        <path d="M10 50 L22 18 L26 30 L18 50 Z" fill="#ec6411" />
+                        <path d="M22 50 L34 14 L38 26 L30 50 Z" fill="#0f8f3a" />
+                        <path d="M34 50 L46 18 L54 30 L42 50 Z" fill="#1855bd" />
+                    </svg>
+                    <span className="font-sans text-xl font-bold" style={{ letterSpacing: '-0.02em' }}>Lidera</span>
+                </Link>
+
+                <div>
+                    <h2 className="font-heading text-4xl" style={{ lineHeight: 1.05 }}>
+                        A liderança que a sua operação
+                        <br />
+                        <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>precisa.</em>
+                    </h2>
+                    <p className="mt-5 max-w-sm text-sm leading-relaxed" style={{ color: 'rgba(245,241,234,0.65)' }}>
+                        Acesse sua conta para continuar sua jornada de desenvolvimento na plataforma Lidera.
+                    </p>
                 </div>
 
-                <Card className="w-full border-[#E5E7EB] shadow-xl shadow-[#111827]/[0.02] rounded-2xl bg-white">
-                    <CardHeader className="space-y-3 pb-6">
-                        <CardTitle className="text-2xl font-heading font-extrabold text-center text-[#111827]">
-                            Entrar na Plataforma
-                        </CardTitle>
-                        <CardDescription className="text-center text-[#64748B] text-base">
-                            Acesse sua conta para continuar.
-                        </CardDescription>
-                    </CardHeader>
-                    <form onSubmit={handleSubmit}>
-                        {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
-                        <CardContent className="grid gap-5">
+                <p className="text-xs" style={{ color: 'rgba(245,241,234,0.4)' }}>
+                    &copy; {new Date().getFullYear()} Lidera Treinamentos
+                </p>
+            </div>
+
+            {/* Right — form */}
+            <div className="flex flex-1 items-center justify-center p-6" style={{ background: '#f5f1ea' }}>
+                <div className="w-full max-w-[400px]">
+                    {/* Mobile logo */}
+                    <div className="mb-8 flex justify-center lg:hidden">
+                        <Link href="/" className="flex items-center gap-2">
+                            <svg width={24} height={24} viewBox="0 0 64 64" fill="none">
+                                <path d="M10 50 L22 18 L26 30 L18 50 Z" fill="#ec6411" />
+                                <path d="M22 50 L34 14 L38 26 L30 50 Z" fill="#0f8f3a" />
+                                <path d="M34 50 L46 18 L54 30 L42 50 Z" fill="#1855bd" />
+                            </svg>
+                            <span className="font-sans text-xl font-bold" style={{ color: '#070e1c' }}>Lidera</span>
+                        </Link>
+                    </div>
+
+                    {/* Card */}
+                    <div className="rounded-2xl p-8" style={{ background: '#ffffff', border: '1px solid rgba(12,23,41,0.10)', boxShadow: '0 8px 24px rgba(7,14,28,0.08)' }}>
+                        <div className="mb-6 text-center">
+                            <h1 className="font-heading text-2xl" style={{ color: '#070e1c' }}>
+                                Entrar na Plataforma
+                            </h1>
+                            <p className="mt-2 text-sm" style={{ color: '#6f7585' }}>
+                                Acesse sua conta para continuar.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+
                             {error && (
-                                <div className="bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444] text-sm p-3 rounded-xl font-medium text-center">
+                                <div className="rounded-xl p-3 text-center text-sm font-medium" style={{ background: 'rgba(197,52,58,0.08)', border: '1px solid rgba(197,52,58,0.2)', color: '#c5343a' }}>
                                     {error}
                                 </div>
                             )}
-                            <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">E-mail</Label>
-                                <Input
+
+                            <div>
+                                <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider" style={{ color: '#6f7585' }}>
+                                    E-mail
+                                </label>
+                                <input
                                     id="email"
                                     name="email"
                                     type="email"
                                     placeholder="seu@email.com"
                                     required
-                                    className="h-12 px-4 rounded-xl border-[#E5E7EB] bg-[#F8FAFC] text-base focus-visible:ring-[#1E88E5]/50 focus-visible:ring-2 focus-visible:border-[#1E88E5] transition-all"
+                                    className="block w-full rounded-xl px-4 text-sm outline-none transition-all"
+                                    style={{
+                                        height: 48,
+                                        background: '#f5f1ea',
+                                        border: '1px solid rgba(12,23,41,0.15)',
+                                        color: '#070e1c',
+                                    }}
                                 />
                             </div>
-                            <div className="grid gap-2">
-                                <div className="flex items-center justify-between">
-                                    <Label htmlFor="password" className="text-xs font-bold text-[#64748B] uppercase tracking-wider">Senha</Label>
-                                    <Link
-                                        href="/auth/forgot-password"
-                                        className="text-sm font-medium text-[#1565C0] hover:text-[#1E88E5] transition-colors"
-                                    >
+
+                            <div>
+                                <div className="mb-1.5 flex items-center justify-between">
+                                    <label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#6f7585' }}>
+                                        Senha
+                                    </label>
+                                    <Link href="/auth/forgot-password" className="text-xs font-medium" style={{ color: '#ec6411' }}>
                                         Esqueceu sua senha?
                                     </Link>
                                 </div>
-                                <Input
+                                <input
                                     id="password"
                                     name="password"
                                     type="password"
                                     required
-                                    className="h-12 px-4 rounded-xl border-[#E5E7EB] bg-[#F8FAFC] text-base focus-visible:ring-[#1E88E5]/50 focus-visible:ring-2 focus-visible:border-[#1E88E5] transition-all"
+                                    className="block w-full rounded-xl px-4 text-sm outline-none transition-all"
+                                    style={{
+                                        height: 48,
+                                        background: '#f5f1ea',
+                                        border: '1px solid rgba(12,23,41,0.15)',
+                                        color: '#070e1c',
+                                    }}
                                 />
                             </div>
-                        </CardContent>
-                        <CardFooter className="flex-col gap-6 pt-2 pb-8">
-                            <Button
-                                className="w-full h-12 bg-[#111827] hover:bg-[#1565C0] text-white text-base font-bold rounded-xl shadow-md shadow-[#111827]/10 transition-all duration-300 relative"
+
+                            <button
                                 type="submit"
                                 disabled={isPending}
+                                className="ld-btn-primary w-full justify-center disabled:opacity-50"
+                                style={{ height: 48, borderRadius: 12 }}
                             >
                                 {isPending ? (
                                     <>
-                                        <Loader2 className="h-5 w-5 animate-spin absolute left-4" />
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Entrando...
                                     </>
                                 ) : (
                                     "Entrar"
                                 )}
-                            </Button>
-                            <div className="text-center text-sm text-[#64748B]">
-                                Ainda nao tem conta?{" "}
-                                <Link href={`/auth/register${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`} className="text-[#1565C0] font-bold hover:text-[#1E88E5] transition-colors">
+                            </button>
+
+                            <p className="text-center text-sm" style={{ color: '#6f7585' }}>
+                                Ainda não tem conta?{" "}
+                                <Link
+                                    href={`/auth/register${redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : ''}`}
+                                    className="font-semibold"
+                                    style={{ color: '#ec6411' }}
+                                >
                                     Criar Conta
                                 </Link>
-                            </div>
-                        </CardFooter>
-                    </form>
-                </Card>
+                            </p>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     )

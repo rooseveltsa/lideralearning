@@ -52,7 +52,7 @@ export default async function TurmaDetailPage({
       {/* Dark Hero Header */}
       <section className="relative overflow-hidden rounded-3xl border border-[#1A2B46] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
         <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#1E88E5]/20 blur-[90px]" />
-        <div className="pointer-events-none absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-violet-600/10 blur-[90px]" />
+        <div className="pointer-events-none absolute -bottom-32 -left-32 h-64 w-64 rounded-full bg-yellow-600/10 blur-[90px]" />
         <div className="relative">
           <Link
             href="/admin/turmas"
@@ -138,7 +138,7 @@ export default async function TurmaDetailPage({
       <section className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-yellow-50 text-yellow-600">
               <Users className="h-4.5 w-4.5" />
             </span>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Participantes</p>

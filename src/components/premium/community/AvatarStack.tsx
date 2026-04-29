@@ -60,7 +60,7 @@ export function AvatarStack({
         {displayed.map((avatar, index) => (
           <div
             key={avatar.id}
-            className={`relative overflow-hidden rounded-full border-2 border-[#0F1729] ${sizeClasses.avatar} ${index > 0 ? sizeClasses.overlap : ''} ${sizeClasses.container} shrink-0`}
+            className={`relative overflow-hidden rounded-full border-2 border-[#262626] ${sizeClasses.avatar} ${index > 0 ? sizeClasses.overlap : ''} ${sizeClasses.container} shrink-0`}
             style={{ zIndex: displayed.length - index }}
             title={avatar.name}
           >
@@ -73,7 +73,7 @@ export function AvatarStack({
                 unoptimized
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-indigo-500/40 to-violet-500/40 text-white/80">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-yellow-500/40 to-yellow-500/40 text-white/80">
                 <span className={`font-bold ${sizeClasses.text}`}>
                   {avatar.name.charAt(0).toUpperCase()}
                 </span>
@@ -82,7 +82,7 @@ export function AvatarStack({
 
             {/* Online indicator */}
             {avatar.href === undefined && (
-              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[#0F1729] bg-emerald-500" />
+              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-[#262626] bg-emerald-500" />
             )}
           </div>
         ))}
@@ -90,7 +90,7 @@ export function AvatarStack({
         {/* "+N" indicator */}
         {remaining > 0 && showMore && (
           <div
-            className={`relative flex items-center justify-center rounded-full border-2 border-[#0F1729] bg-white/10 ${sizeClasses.avatar} ${sizeClasses.overlap} ${sizeClasses.container} shrink-0`}
+            className={`relative flex items-center justify-center rounded-full border-2 border-[#262626] bg-white/10 ${sizeClasses.avatar} ${sizeClasses.overlap} ${sizeClasses.container} shrink-0`}
             style={{ zIndex: 0 }}
           >
             <span className={`font-semibold text-white/70 ${sizeClasses.text}`}>
@@ -162,7 +162,7 @@ export function SingleAvatar({
   return (
     <div className={`flex flex-col items-center gap-2 ${className}`}>
       <div className="relative">
-        <div className={`overflow-hidden rounded-full bg-gradient-to-br from-indigo-500/30 to-violet-500/30 ${sizeClasses[size]}`}>
+        <div className={`overflow-hidden rounded-full bg-gradient-to-br from-yellow-500/30 to-yellow-500/30 ${sizeClasses[size]}`}>
           {avatar.avatarUrl ? (
             <Image
               src={avatar.avatarUrl}
@@ -173,7 +173,7 @@ export function SingleAvatar({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center">
-              <span className={`font-bold text-indigo-300 ${textSizes[size]}`}>
+              <span className={`font-bold text-yellow-300 ${textSizes[size]}`}>
                 {avatar.name.charAt(0).toUpperCase()}
               </span>
             </div>
@@ -181,7 +181,7 @@ export function SingleAvatar({
         </div>
 
         {isOnline && (
-          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#0F1729] bg-emerald-500" />
+          <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#262626] bg-emerald-500" />
         )}
       </div>
 
@@ -189,7 +189,7 @@ export function SingleAvatar({
         <div className="text-center">
           <p className="text-sm font-medium text-white">{avatar.name}</p>
           {avatar.href && (
-            <a href={avatar.href} className="text-xs text-indigo-400 hover:text-indigo-300">
+            <a href={avatar.href} className="text-xs text-yellow-400 hover:text-yellow-300">
               Ver perfil
             </a>
           )}

@@ -49,7 +49,7 @@ export default function Leaderboard({ entries, currentUserId }: Props) {
             <div
               key={entry.user_id}
               className={`flex items-center gap-4 px-5 py-3.5 transition-colors ${
-                isCurrentUser ? 'bg-indigo-500/10' : 'hover:bg-white/[0.02]'
+                isCurrentUser ? 'bg-yellow-500/10' : 'hover:bg-white/[0.02]'
               }`}
             >
               {/* Position */}
@@ -67,9 +67,9 @@ export default function Leaderboard({ entries, currentUserId }: Props) {
 
               {/* Avatar + Name */}
               <div className="min-w-0 flex-1">
-                <p className={`truncate text-sm font-bold ${isCurrentUser ? 'text-indigo-300' : 'text-white'}`}>
+                <p className={`truncate text-sm font-bold ${isCurrentUser ? 'text-yellow-300' : 'text-white'}`}>
                   {entry.full_name || 'Líder Anônimo'}
-                  {isCurrentUser && <span className="ml-2 text-[10px] text-indigo-400">(você)</span>}
+                  {isCurrentUser && <span className="ml-2 text-[10px] text-yellow-400">(você)</span>}
                 </p>
                 <p className="text-[10px] text-white/40">Nível {entry.level}</p>
               </div>

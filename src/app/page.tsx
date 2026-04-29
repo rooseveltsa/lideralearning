@@ -1,669 +1,503 @@
 import Link from 'next/link'
-import {
-  ArrowRight,
-  BadgeCheck,
-  BookOpen,
-  CheckCircle2,
-  Flame,
-  MessageCircle,
-  PlayCircle,
-  Target,
-  TrendingUp,
-  Users,
-} from 'lucide-react'
-
 import SiteFooter from '@/components/site/Footer'
 import SiteHeader from '@/components/site/Header'
-import TypewriterText from '@/components/site/TypewriterText'
-import { CourseShelf } from '@/components/premium/course/CourseShelf'
-import { ActivityFeed, CommunityStats } from '@/components/premium/community/ActivityFeed'
-import { Streak, XPBadge } from '@/components/premium/course/CourseProgressBar'
-import { AvatarStack } from '@/components/premium/community/AvatarStack'
-
-// ── Mock data for premium components ─────────────────────────────────────────
-
-const mockCourses = [
-  {
-    id: '1',
-    title: 'Liderança de Alta Performance',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=640&q=80',
-    instructor: { name: 'Claudemir Ferreira', avatarUrl: null },
-    category: 'Liderança',
-    duration: '18h 30min',
-    totalLessons: 24,
-    rating: 4.9,
-    studentsCount: 3847,
-    badge: 'bestseller' as const,
-    price: { current: 497 },
-    href: '/cursos/lideranca-alta-performance',
-  },
-  {
-    id: '2',
-    title: 'Gestão de Equipes Remotas',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=640&q=80',
-    instructor: { name: 'Ana Paula Santos', avatarUrl: null },
-    category: 'Gestão',
-    duration: '12h 15min',
-    totalLessons: 18,
-    rating: 4.8,
-    studentsCount: 2103,
-    badge: 'new' as const,
-    price: { current: 347 },
-    href: '/cursos/gestao-equipes-remotas',
-  },
-  {
-    id: '3',
-    title: 'Comunicação Assertiva para Líderes',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=640&q=80',
-    instructor: { name: 'Roberto Mendes', avatarUrl: null },
-    category: 'Comunicação',
-    duration: '8h 45min',
-    totalLessons: 12,
-    rating: 4.7,
-    studentsCount: 1542,
-    price: { current: 297 },
-    href: '/cursos/comunicacao-assertiva',
-  },
-  {
-    id: '4',
-    title: 'Tomada de Decisão sob Pressão',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=640&q=80',
-    instructor: { name: 'Fernanda Pacheco', avatarUrl: null },
-    category: 'Estratégia',
-    duration: '6h 20min',
-    totalLessons: 10,
-    rating: 4.9,
-    studentsCount: 987,
-    badge: 'updated' as const,
-    price: { current: 247 },
-    href: '/cursos/decisao-pressao',
-  },
-  {
-    id: '5',
-    title: 'Feedback que Transforma',
-    thumbnailUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=640&q=80',
-    instructor: { name: 'Marcos Vinícius', avatarUrl: null },
-    category: 'Liderança',
-    duration: '5h 10min',
-    totalLessons: 8,
-    rating: 4.8,
-    studentsCount: 2311,
-    price: { current: 197 },
-    href: '/cursos/feedback-transforma',
-  },
-]
-
-const mockActivities = [
-  {
-    id: '1',
-    type: 'course_completed' as const,
-    user: { id: '1', name: 'Renata Oliveira', avatarUrl: null },
-    target: { type: 'course' as const, id: '1', title: 'Liderança de Alta Performance' },
-    meta: {},
-    timestamp: new Date(Date.now() - 12 * 60000),
-    reactions: { count: 14, userReacted: false },
-    comments: { count: 3 },
-  },
-  {
-    id: '2',
-    type: 'xp_milestone' as const,
-    user: { id: '2', name: 'Gabriel Santos', avatarUrl: null },
-    meta: { xpGained: 5000, tier: 'Diamante' },
-    timestamp: new Date(Date.now() - 45 * 60000),
-    reactions: { count: 28, userReacted: true },
-  },
-  {
-    id: '3',
-    type: 'course_started' as const,
-    user: { id: '3', name: 'Carla Rodrigues', avatarUrl: null },
-    target: { type: 'course' as const, id: '2', title: 'Gestão de Equipes Remotas' },
-    meta: {},
-    timestamp: new Date(Date.now() - 2 * 3600000),
-    reactions: { count: 7, userReacted: false },
-  },
-  {
-    id: '4',
-    type: 'badge_earned' as const,
-    user: { id: '4', name: 'Bruno Lima', avatarUrl: null },
-    target: { type: 'badge' as const, id: '1', title: 'Super Mentoring' },
-    meta: {},
-    timestamp: new Date(Date.now() - 4 * 3600000),
-    reactions: { count: 42, userReacted: false },
-    comments: { count: 8 },
-  },
-  {
-    id: '5',
-    type: 'course_completed' as const,
-    user: { id: '5', name: 'Patrícia Alves', avatarUrl: null },
-    target: { type: 'course' as const, id: '3', title: 'Comunicação Assertiva' },
-    meta: {},
-    timestamp: new Date(Date.now() - 6 * 3600000),
-    reactions: { count: 19, userReacted: true },
-    comments: { count: 2 },
-  },
-]
-
-const mockAvatars = [
-  { id: '1', name: 'Renata Oliveira' },
-  { id: '2', name: 'Gabriel Santos' },
-  { id: '3', name: 'Carla Rodrigues' },
-  { id: '4', name: 'Bruno Lima' },
-  { id: '5', name: 'Patrícia Alves' },
-]
-
-const faqs = [
-  {
-    q: 'A Lidera é somente plataforma digital?',
-    a: 'Não. O modelo é híbrido: academy digital, imersões presenciais e projetos corporativos no mesmo ecossistema.',
-  },
-  {
-    q: 'A empresa consegue contratar algo personalizado?',
-    a: 'Sim. O diagnóstico inicial define trilhas, formatos e metas de implementação para cada contexto.',
-  },
-  {
-    q: 'Existe certificação?',
-    a: 'Sim. Trilhas elegíveis liberam certificado verificável conforme critérios de conclusão.',
-  },
-  {
-    q: 'Quanto tempo leva para começar?',
-    a: 'Após o diagnóstico, a proposta é enviada em até 48h para início da implantação.',
-  },
-]
 
 export default function HomePage() {
   return (
-    <div className="bg-[#030712] text-[#E5ECF8] selection:bg-indigo-500/30">
+    <div className="ld-deep">
       <SiteHeader />
 
-      {/* ── Premium Header Bar — gamificação + status ── */}
-      <div className="border-b border-white/5 bg-[#0A0F1E]/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-2.5">
-          <div className="flex items-center gap-4">
-            <Streak days={7} />
-            <XPBadge xp={2450} tier="Ouro" size="sm" />
+      {/* ═══ HERO ═══ */}
+      <section className="relative overflow-hidden px-0 py-16 md:py-20 lg:py-[120px]">
+        {/* Background: setas ascendentes decorativas */}
+        <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.16 }}>
+          <svg width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="h-orange" x1="0" x2="0" y1="1" y2="0">
+                <stop offset="0" stopColor="#ec6411" stopOpacity="0" />
+                <stop offset="1" stopColor="#ec6411" stopOpacity="1" />
+              </linearGradient>
+              <linearGradient id="h-green" x1="0" x2="0" y1="1" y2="0">
+                <stop offset="0" stopColor="#0f8f3a" stopOpacity="0" />
+                <stop offset="1" stopColor="#0f8f3a" stopOpacity="1" />
+              </linearGradient>
+              <linearGradient id="h-blue" x1="0" x2="0" y1="1" y2="0">
+                <stop offset="0" stopColor="#1855bd" stopOpacity="0" />
+                <stop offset="1" stopColor="#1855bd" stopOpacity="1" />
+              </linearGradient>
+            </defs>
+            <path d="M-100 900 L600 200 L680 320 L20 900 Z" fill="url(#h-orange)" />
+            <path d="M200 900 L900 100 L980 240 L320 900 Z" fill="url(#h-green)" />
+            <path d="M500 900 L1300 180 L1500 320 L760 900 Z" fill="url(#h-blue)" />
+          </svg>
+        </div>
+
+        <div className="ld-mw-xl relative">
+          {/* Badge */}
+          <span className="ld-badge-deep-line ld-badge">
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 4v6M12 14v6M4 12h6M14 12h6" />
+              <path d="M18 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" fill="currentColor" stroke="none" />
+            </svg>
+            Formação de líderes &middot; Presencial + Digital
+          </span>
+
+          {/* Headline */}
+          <h1
+            className="ld-display mt-8"
+            style={{ fontSize: 'clamp(3rem, 8vw, 7.5rem)', maxWidth: 1200, color: '#f5f1ea' }}
+          >
+            Formamos os líderes que a sua <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>operação precisa.</em>
+          </h1>
+
+          {/* Subheadline */}
+          <p
+            className="mt-9"
+            style={{ color: 'rgba(245,241,234,0.78)', fontSize: 21, maxWidth: 640, lineHeight: 1.55 }}
+          >
+            Diagnóstico individualizado, imersão presencial de alto impacto e 60 dias de
+            acompanhamento. Supervisores que saem da operação e assumem a{' '}
+            <strong style={{ color: '#f5f1ea' }}>liderança de verdade.</strong>
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link href="/treinamento/autoavaliacao" className="ld-btn-primary ld-btn-primary-xl">
+              Fazer diagnóstico gratuito
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link href="/empresas" className="ld-btn-outline-light ld-btn-primary-xl">
+              Soluções para empresas
+            </Link>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-xs text-white/40">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              <span className="hidden sm:inline">247 pessoas online</span>
-            </span>
+
+          {/* Prova social inline */}
+          <div className="mt-14 flex flex-wrap items-center gap-5">
+            <div className="flex -space-x-2.5">
+              {['#ec6411', '#0f8f3a', '#1855bd', '#122039', '#cc4f06'].map((c, i) => (
+                <div
+                  key={i}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white"
+                  style={{ background: c, border: '2px solid #070e1c' }}
+                >
+                  {['CM', 'FP', 'RA', 'JP', 'AC'][i]}
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="flex gap-0.5" style={{ color: '#fb7d2e' }}>
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <svg key={i} width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
+                    <path d="m12 3 2.7 5.7 6.3.9-4.5 4.4 1 6.3L12 17.4 6.5 20.3l1-6.3L3 9.6l6.3-.9L12 3Z" />
+                  </svg>
+                ))}
+              </div>
+              <div className="mt-1 text-[13px]" style={{ color: 'rgba(245,241,234,0.78)' }}>
+                <span style={{ color: '#f5f1ea', fontWeight: 600 }}>4.9</span> &middot; +500 supervisores formados &middot; NPS 72
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <main className="overflow-hidden">
-        {/* ── HERO — autoridade + preview da plataforma ── */}
-        <section className="relative px-6 pb-28 pt-36">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(99,102,241,0.12),transparent)]" />
+      {/* ═══ BARRA DE LOGOS ═══ */}
+      <section
+        className="hidden sm:block"
+        style={{
+          borderTop: '1px solid rgba(245,241,234,0.10)',
+          borderBottom: '1px solid rgba(245,241,234,0.10)',
+          background: 'rgba(255,255,255,0.02)',
+        }}
+      >
+        <div className="ld-mw-xl flex flex-wrap items-center justify-center gap-4 py-8 sm:justify-between sm:gap-6">
+          <span
+            className="w-full text-center text-xs uppercase tracking-[0.14em] sm:w-auto sm:text-left"
+            style={{ color: 'rgba(245,241,234,0.55)' }}
+          >
+            Empresas que formam líderes conosco
+          </span>
+          {['GRUPO ALFA', 'MERIDIAN', 'VOLTARE', 'NORTHCAP', 'PRISMO', 'ORION'].map((n) => (
+            <span
+              key={n}
+              className="font-heading text-lg tracking-[0.08em] sm:text-2xl"
+              style={{ color: 'rgba(245,241,234,0.45)' }}
+            >
+              {n}
+            </span>
+          ))}
+        </div>
+      </section>
 
-          <div className="relative mx-auto grid max-w-[1280px] gap-14 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-            {/* Left: Copy */}
+      {/* ═══ MÉTRICAS — impacto na formação ═══ */}
+      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
+        <div className="ld-mw-xl">
+          <div className="mb-10 grid items-end gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-16">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1.5 text-xs font-medium text-indigo-400">
-                <Flame className="h-3 w-3" />
-                500+ supervisores certificados
-              </div>
-
-              <h1 className="max-w-[600px] font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl">
-                <TypewriterText text="Formamos os líderes que sua" speed={50} delay={300} />{' '}
-                <span className="text-indigo-400">
-                  <TypewriterText text="operação precisa." speed={50} delay={1750} cursorColor="#6366F1" />
-                </span>
-              </h1>
-
-              <p className="mt-7 max-w-[480px] text-lg leading-relaxed text-white/60">
-                Diagnóstico individualizado, treinamento presencial de alto impacto
-                e 60 dias de acompanhamento.{' '}
-                <strong className="text-white">Resultado real.</strong>
-              </p>
-
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/treinamento/autoavaliacao"
-                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-400 hover:shadow-indigo-400/35"
-                >
-                  Fazer diagnóstico gratuito
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-                <Link
-                  href="/empresas"
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-8 py-4 text-base font-bold text-white/70 transition-all hover:border-white/20 hover:text-white"
-                >
-                  Soluções para empresas
-                </Link>
-              </div>
+              <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Impacto mensurável</div>
+              <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)', color: '#f5f1ea' }}>
+                Formação que vira <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>resultado</em>.
+              </h2>
             </div>
-
-            {/* Right: Platform Preview Card */}
-            <div className="relative">
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
-                {/* Fake platform UI */}
-                <div className="flex items-center gap-3 border-b border-white/5 bg-white/[0.02] px-5 py-3">
-                  <div className="h-3 w-3 rounded-full bg-white/10" />
-                  <div className="h-3 w-3 rounded-full bg-white/10" />
-                  <div className="h-3 w-3 rounded-full bg-white/10" />
-                  <div className="ml-2 h-2 w-24 rounded-full bg-white/5" />
-                </div>
-                <div className="aspect-video bg-gradient-to-br from-indigo-500/10 to-violet-500/10 p-6">
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { label: 'Aulas', value: '128', color: 'indigo' },
-                      { label: 'Horas', value: '64h', color: 'violet' },
-                      { label: 'Alunos', value: '2.4k', color: 'emerald' },
-                    ].map((stat) => (
-                      <div key={stat.label} className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.03] p-3 text-center">
-                        <span className="text-lg font-bold text-white">{stat.value}</span>
-                        <span className="text-[10px] uppercase tracking-wide text-white/40">{stat.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center gap-3">
-                    <AvatarStack avatars={mockAvatars} max={3} size="sm" />
-                    <span className="text-xs text-white/50">estão aprendendo agora</span>
-                  </div>
-                </div>
-              </div>
-              {/* Glow behind card */}
-              <div className="pointer-events-none absolute -inset-4 -z-10 rounded-3xl bg-indigo-500/[0.06] blur-2xl" />
-            </div>
+            <p className="ld-body-lg" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 480 }}>
+              Medimos o antes e o depois. Engajamento do time, retenção de talentos, execução gerencial — indicadores reais que mostram a transformação do líder.
+            </p>
           </div>
-        </section>
 
-        {/* ── PROVA SOCIAL — números que importam ── */}
-        <section className="border-y border-white/5 bg-[#050A12] px-6 py-14">
-          <div className="mx-auto flex max-w-[1080px] flex-wrap items-center justify-center gap-12 sm:gap-16">
+          <div
+            className="grid grid-cols-2 lg:grid-cols-4"
+            style={{ borderTop: '1px solid rgba(245,241,234,0.10)', borderBottom: '1px solid rgba(245,241,234,0.10)' }}
+          >
             {[
-              { value: '500+', label: 'Supervisores treinados', icon: Users, color: '#6366F1' },
-              { value: '79%', label: 'Aumento em engajamento', icon: TrendingUp, color: '#10B981' },
-              { value: '98%', label: 'Recomendam o programa', icon: BadgeCheck, color: '#F59E0B' },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center gap-4">
-                <span
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-xl"
-                  style={{ backgroundColor: `${item.color}15` }}
-                >
-                  <item.icon className="h-5 w-5" style={{ color: item.color }} />
-                </span>
-                <div>
-                  <p className="text-2xl font-extrabold text-white">{item.value}</p>
-                  <p className="text-xs font-medium text-white/40">{item.label}</p>
+              { v: '+79%', l: 'Engajamento da equipe após formação' },
+              { v: '−43%', l: 'Turnover nos primeiros 6 meses' },
+              { v: '98%', l: 'Recomendam o programa' },
+              { v: '91%', l: 'Aplicam na rotina após 60 dias' },
+            ].map((s, i, a) => (
+              <div
+                key={s.l}
+                className="p-8 lg:p-10"
+                style={{ borderRight: i < a.length - 1 ? '1px solid rgba(245,241,234,0.10)' : 'none' }}
+              >
+                <div className="font-heading" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea', lineHeight: 1, letterSpacing: '-0.025em' }}>
+                  {s.v}
+                </div>
+                <div className="mt-3 text-sm" style={{ color: 'rgba(245,241,234,0.65)', maxWidth: 220 }}>
+                  {s.l}
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── CATÁLOGO — prateleiras Netflix-style ── */}
-        <section className="px-0 py-20">
-          <CourseShelf
-            title="Continue aprendendo"
-            subtitle="Sua jornada de desenvolvimento"
-            variant="continue"
-            courses={mockCourses.slice(0, 3).map((c) => ({ ...c, progressPercent: 35 }))}
-            showLiveCount
-            liveCount={247}
-            seeAllHref="/cursos/meu-aprendizado"
-            seeAllLabel="Ver progresso"
-          />
-
-          <div className="mt-8">
-            <CourseShelf
-              title="Em alta na comunidade"
-              subtitle="Os cursos mais feitos pelos líderes"
-              variant="trending"
-              courses={mockCourses}
-              showLiveCount
-              liveCount={189}
-              seeAllHref="/cursos"
-              seeAllLabel="Ver todos"
-            />
+      {/* ═══ COMO FUNCIONA — 3 passos ═══ */}
+      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
+        <div className="ld-mw-xl">
+          <div className="mb-10 lg:mb-16" style={{ maxWidth: 720 }}>
+            <div className="ld-eyebrow">Como funciona</div>
+            <h2 className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+              Do <em style={{ fontStyle: 'italic', color: '#ec6411' }}>diagnóstico</em> à transformação real.
+            </h2>
           </div>
-        </section>
 
-        {/* ── COMUNIDADE — activity feed + stats ── */}
-        <section className="border-y border-white/5 bg-[#050A12] px-6 py-20">
-          <div className="mx-auto max-w-[1280px]">
-            <div className="mb-10 flex items-end justify-between">
-              <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1.5 text-xs font-medium text-violet-400">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-400" />
-                  </span>
-                  Tempo real
-                </div>
-                <h2 className="font-heading text-2xl font-bold text-white sm:text-3xl">
-                  O que está acontecendo
-                </h2>
-                <p className="mt-2 text-sm text-white/50">Atividade da comunidade de líderes</p>
-              </div>
-              <Link
-                href="/comunidade"
-                className="hidden items-center gap-1 text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 sm:flex"
+          <div className="grid gap-6 lg:grid-cols-3">
+            {[
+              { n: '01', t: 'Diagnóstico de liderança', d: 'Autoavaliação das 5 dimensões de liderança. Você recebe o mapa completo de competências do seu time — onde estão os gaps e o que desenvolver.', c: '#ec6411' },
+              { n: '02', t: 'Imersão presencial + Academy', d: 'Workshop intensivo de 2 dias com turmas de até 10 pessoas. Depois, acesso contínuo à plataforma digital com trilhas personalizadas por papel.', c: '#0f8f3a' },
+              { n: '03', t: 'Acompanhamento de 60 dias', d: 'Mentoria pós-treinamento para garantir que o aprendizado vire prática. Sem isso, é teoria. Com isso, é transformação.', c: '#1855bd' },
+            ].map((s) => (
+              <div
+                key={s.n}
+                className="ld-card relative overflow-hidden p-9"
               >
-                Ver toda comunidade
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-              {/* Activity Feed */}
-              <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-                <ActivityFeed
-                  activities={mockActivities}
-                  variant="full"
-                  showTime
-                  maxItems={5}
-                />
-              </div>
-
-              {/* Sidebar: Stats + Top learners */}
-              <div className="space-y-6">
-                <CommunityStats
-                  totalStudents={2847}
-                  activeNow={247}
-                  coursesCompleted={892}
-                />
-
-                {/* Top learners this week */}
-                <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Flame className="h-4 w-4 text-amber-400" />
-                    <h3 className="text-sm font-bold text-white">Top líderes da semana</h3>
+                <div className="mb-8 flex items-start justify-between">
+                  <div className="font-heading" style={{ fontSize: 'clamp(36px, 5vw, 56px)', color: s.c, lineHeight: 1, letterSpacing: '-0.025em' }}>
+                    {s.n}
                   </div>
-                  <div className="space-y-3">
-                    {[
-                      { rank: 1, name: 'Gabriel Santos', xp: 2450, avatar: null },
-                      { rank: 2, name: 'Renata Oliveira', xp: 1890, avatar: null },
-                      { rank: 3, name: 'Bruno Lima', xp: 1640, avatar: null },
-                    ].map((user) => (
-                      <div key={user.rank} className="flex items-center gap-3">
-                        <span className="w-5 text-center text-sm font-bold text-white/40">#{user.rank}</span>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/30 to-violet-500/30 text-xs font-bold text-indigo-300">
-                          {user.name.charAt(0)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-white">{user.name}</p>
-                          <p className="text-[10px] text-amber-400">{user.xp.toLocaleString('pt-BR')} XP</p>
-                        </div>
-                      </div>
-                    ))}
+                  <div
+                    className="flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{ background: '#f1f4f9', color: s.c }}
+                  >
+                    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                      {s.n === '01' && <><circle cx="12" cy="12" r="9" /><path d="m15 9-2 6-6 2 2-6 6-2Z" /></>}
+                      {s.n === '02' && <><rect x="4" y="3" width="16" height="18" rx="1" /><path d="M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2M10 21v-3h4v3" /></>}
+                      {s.n === '03' && <><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" /><path d="M8 6H5a3 3 0 0 0 3 3M16 6h3a3 3 0 0 1-3 3M9 18h6M10 14v4M14 14v4" /></>}
+                    </svg>
                   </div>
                 </div>
+                <h4 className="ld-h5" style={{ margin: '0 0 10px', color: '#070e1c' }}>{s.t}</h4>
+                <p className="ld-body" style={{ margin: 0 }}>{s.d}</p>
               </div>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── MÉTODO — 3 etapas, visual limpo ── */}
-        <section className="px-6 py-28">
-          <div className="mx-auto max-w-[1080px]">
-            <div className="mb-16 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-400">
-                Nosso método
-              </p>
-              <h2 className="mt-4 font-heading text-3xl font-extrabold text-white sm:text-4xl">
-                Diagnóstico, treinamento e resultado.
+      {/* ═══ O QUE ESTÁ INCLUSO ═══ */}
+      <section className="relative overflow-hidden py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
+        <div className="ld-mw-xl">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+            <div>
+              <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Programa completo</div>
+              <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea' }}>
+                Tudo que o seu líder precisa para <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>crescer.</em>
               </h2>
-            </div>
+              <p className="ld-body-lg mt-7" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 18, maxWidth: 480 }}>
+                Um programa completo que combina presencial e digital.
+                Não é só conteúdo — é formação estruturada com acompanhamento e resultado mensurável.
+              </p>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-              {[
-                {
-                  step: '01',
-                  icon: Target,
-                  title: 'Diagnóstico',
-                  desc: 'Autoavaliação de liderança com PDI gerado automaticamente. Você sabe exatamente onde está e o que desenvolver.',
-                  color: '#F59E0B',
-                },
-                {
-                  step: '02',
-                  icon: BookOpen,
-                  title: 'Treinamento Direcionado',
-                  desc: 'Academy digital + imersão presencial. 8 módulos focados no que realmente precisa ser desenvolvido.',
-                  color: '#6366F1',
-                },
-                {
-                  step: '03',
-                  icon: BadgeCheck,
-                  title: 'Acompanhamento 60 dias',
-                  desc: 'Mentoria pós-treinamento para certificar que o resultado aconteceu na prática. Sem isso, é só teoria.',
-                  color: '#10B981',
-                },
-              ].map(({ step, icon: Icon, title, desc, color }) => (
-                <div
-                  key={step}
-                  className="group rounded-2xl border border-white/5 bg-white/[0.02] p-8 transition-all hover:border-white/10 hover:bg-white/[0.04]"
-                >
-                  <div className="flex items-center gap-4">
-                    <span
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-white"
-                      style={{ backgroundColor: color }}
+              <div className="mt-9 flex flex-col gap-3.5">
+                {[
+                  'Diagnóstico individualizado de liderança',
+                  'PDI — Plano de Desenvolvimento Individual',
+                  'Imersão presencial de 2 dias (turmas de até 10)',
+                  'Acesso à Academy digital com 120+ cursos',
+                  'Mentoria de acompanhamento 30 e 60 dias',
+                  'Certificado verificável ao final da trilha',
+                ].map((b) => (
+                  <div key={b} className="flex items-center gap-3" style={{ color: '#f5f1ea' }}>
+                    <div
+                      className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full"
+                      style={{ background: '#ec6411' }}
                     >
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <span className="font-heading text-4xl font-extrabold text-white/5">
-                      {step}
-                    </span>
+                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12.5l4.5 4.5L20 7" />
+                      </svg>
+                    </div>
+                    <span className="text-[15px]">{b}</span>
                   </div>
-                  <h3 className="mt-6 text-xl font-extrabold text-white">{title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/50">{desc}</p>
+                ))}
+              </div>
+
+              <div className="mt-10 flex gap-3">
+                <Link href="/treinamento/autoavaliacao" className="ld-btn-primary">
+                  Começar pelo diagnóstico
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M13 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Platform preview card — hidden on mobile */}
+            <div className="relative hidden lg:block">
+              <div
+                className="rounded-2xl p-6"
+                style={{
+                  background: 'linear-gradient(180deg, #0c1729 0%, #070e1c 100%)',
+                  border: '1px solid rgba(245,241,234,0.10)',
+                  boxShadow: '0 40px 100px rgba(7, 14, 28, 0.28), 0 16px 40px rgba(7, 14, 28, 0.14)',
+                }}
+              >
+                {/* Mini nav dots */}
+                <div className="mb-6 flex items-center gap-2.5">
+                  <div className="flex gap-1.5">
+                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#fb7d2e' }} />
+                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#2eb555' }} />
+                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#2f6fde' }} />
+                  </div>
+                  <div
+                    className="flex flex-1 items-center gap-1.5 rounded-md px-2.5"
+                    style={{ height: 28, background: 'rgba(245,241,234,0.06)' }}
+                  >
+                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(245,241,234,0.5)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.3-4.3" />
+                    </svg>
+                    <span className="text-[11px]" style={{ color: 'rgba(245,241,234,0.5)' }}>liderança situacional</span>
+                  </div>
                 </div>
-              ))}
+
+                {/* Row: Trilha em andamento */}
+                <div className="mb-3.5 flex items-baseline justify-between">
+                  <h5 className="text-base font-semibold" style={{ color: '#f5f1ea' }}>Sua trilha de liderança</h5>
+                  <span className="text-[11px]" style={{ color: '#fb7d2e' }}>Ver tudo →</span>
+                </div>
+                <div className="mb-6 grid grid-cols-3 gap-3">
+                  {[
+                    { t: 'Gestão de pessoas', a: 'Módulo 3', p: 72, c: 'linear-gradient(135deg,#1855bd,#070e1c)' },
+                    { t: 'Feedback eficaz', a: 'Módulo 1', p: 38, c: 'linear-gradient(135deg,#0f8f3a,#122039)' },
+                    { t: 'Tomada de decisão', a: 'Módulo 5', p: 88, c: 'linear-gradient(135deg,#ec6411,#070e1c)' },
+                  ].map((c, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col justify-end overflow-hidden rounded-[10px] p-3"
+                      style={{ background: c.c, height: 110 }}
+                    >
+                      <div className="text-xs font-semibold" style={{ color: '#f5f1ea' }}>{c.t}</div>
+                      <div className="mb-2 text-[10px]" style={{ color: 'rgba(245,241,234,0.7)' }}>{c.a}</div>
+                      <div className="h-[3px] w-full overflow-hidden rounded-full" style={{ background: 'rgba(245,241,234,0.18)' }}>
+                        <div className="h-full rounded-full" style={{ width: `${c.p}%`, background: '#fb7d2e' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Row: Recomendado */}
+                <div className="mb-3.5">
+                  <h5 className="text-base font-semibold" style={{ color: '#f5f1ea' }}>Para supervisores em transição</h5>
+                </div>
+                <div className="grid grid-cols-4 gap-2.5">
+                  {[
+                    { c: 'linear-gradient(135deg,#0f8f3a,#070e1c)', t: 'Delegação' },
+                    { c: 'linear-gradient(135deg,#1855bd,#070e1c)', t: 'Comunicação' },
+                    { c: 'linear-gradient(135deg,#ec6411,#122039)', t: '1:1 eficaz' },
+                    { c: 'linear-gradient(135deg,#5d92f7,#070e1c)', t: 'Conflitos' },
+                  ].map((c, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col justify-end rounded-lg p-2.5"
+                      style={{ height: 92, background: c.c }}
+                    >
+                      <div className="text-[11px] font-medium" style={{ color: '#f5f1ea' }}>{c.t}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Floating chip */}
+              <div
+                className="absolute -right-2.5 -top-4 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white"
+                style={{ background: '#0f8f3a', boxShadow: '0 12px 40px -12px rgba(15, 143, 58, 0.45)' }}
+              >
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12.5l4.5 4.5L20 7" />
+                </svg>
+                +500 líderes formados
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── O QUE VOCÊ RECEBE — lista de valor ── */}
-        <section className="border-y border-white/5 bg-[#050A12] px-6 py-24">
-          <div className="mx-auto max-w-[860px]">
-            <div className="mb-12 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-400">
-                Programa completo
-              </p>
-              <h2 className="mt-4 font-heading text-3xl font-extrabold text-white sm:text-4xl">
-                Tudo incluso no treinamento
-              </h2>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                'Diagnóstico individualizado de liderança',
-                'PDI — Plano de Desenvolvimento Individual',
-                '8 módulos presenciais (16h de imersão)',
-                'Autoavaliação das 5 Dimensões',
-                'Ferramentas práticas para aplicar no dia seguinte',
-                'Certificado verificável',
-                'Mentoria de acompanhamento 30 e 60 dias',
-                'Acesso à Academy digital',
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-5 py-4"
-                >
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
-                  <span className="text-sm font-semibold text-white">{item}</span>
-                </div>
-              ))}
-            </div>
+      {/* ═══ DEPOIMENTOS ═══ */}
+      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
+        <div className="ld-mw-xl">
+          <div className="mb-10 lg:mb-14" style={{ maxWidth: 720 }}>
+            <div className="ld-eyebrow">Resultados reais</div>
+            <h2 className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+              Quem já passou pelo programa.
+            </h2>
           </div>
-        </section>
 
-        {/* ── DEPOIMENTOS — curtos, com resultado ── */}
-        <section className="px-6 py-28">
-          <div className="mx-auto max-w-[1080px]">
-            <div className="mb-14 text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/40">
-                Resultados reais
-              </p>
-              <h2 className="mt-4 font-heading text-3xl font-extrabold text-white sm:text-4xl">
-                Quem já passou pelo programa
-              </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+            {/* Featured testimonial */}
+            <div
+              className="flex flex-col justify-between rounded-2xl p-8 md:col-span-2 md:p-10 lg:col-span-1"
+              style={{ background: '#070e1c', color: '#f5f1ea', minHeight: 320 }}
+            >
+              <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(245,241,234,0.3)' }}>
+                <path d="M6 9c0-2 2-4 4-4M6 9v5h5v-5H6ZM14 9c0-2 2-4 4-4M14 9v5h5v-5h-5Z" />
+              </svg>
+              <div className="font-heading mt-6" style={{ fontSize: 32, lineHeight: 1.15, letterSpacing: '-0.018em' }}>
+                Em 90 dias o treinamento virou sistema de execução gerencial. Os supervisores assumiram a liderança de verdade.
+              </div>
+              <div className="mt-8 flex items-center gap-3.5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold text-white" style={{ background: '#ec6411' }}>
+                  CM
+                </div>
+                <div>
+                  <div className="text-sm font-semibold">Carlos Mendes</div>
+                  <div className="text-xs" style={{ color: 'rgba(245,241,234,0.6)' }}>Diretor de RH &middot; Grupo Industrial Alfa</div>
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-              {[
-                {
-                  quote: 'Em 90 dias o treinamento virou sistema de execução gerencial.',
-                  name: 'Carlos Mendes',
-                  role: 'Diretor de RH · Grupo Industrial Alfa',
-                  result: '43% menos turnover',
-                  initial: 'C',
-                },
-                {
-                  quote: 'A operação ganhou clareza e os times passaram a executar com consistência.',
-                  name: 'Fernanda Pacheco',
-                  role: 'CEO · TechBR Soluções',
-                  result: 'Meta de 62% para 91%',
-                  initial: 'F',
-                },
-                {
-                  quote: 'Conseguimos ligar formação e performance com dados reais de aplicação.',
-                  name: 'Ricardo Albuquerque',
-                  role: 'COO · Rede Varejista Nacional',
-                  result: 'T&D integrado ao painel',
-                  initial: 'R',
-                },
-              ].map((t) => (
-                <div key={t.name} className="rounded-2xl border border-white/5 bg-white/[0.02] p-7">
-                  <p className="text-base leading-relaxed text-white/70">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
-                    <TrendingUp className="h-3 w-3" />
+            {/* Other testimonials */}
+            {[
+              { q: 'A operação ganhou clareza. Os times passaram a executar com consistência — sem depender do dono.', n: 'Fernanda Pacheco', r: 'CEO · TechBR Soluções', result: 'Meta de 62% para 91%' },
+              { q: 'Conseguimos ligar formação e performance com dados reais de aplicação no dia a dia.', n: 'Ricardo Albuquerque', r: 'COO · Rede Varejista Nacional', result: '43% menos turnover' },
+            ].map((t) => (
+              <div
+                key={t.n}
+                className="ld-card flex flex-col justify-between p-8"
+                style={{ minHeight: 380 }}
+              >
+                <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(7,14,28,0.2)' }}>
+                  <path d="M6 9c0-2 2-4 4-4M6 9v5h5v-5H6ZM14 9c0-2 2-4 4-4M14 9v5h5v-5h-5Z" />
+                </svg>
+                <div>
+                  <div className="font-heading mt-5" style={{ fontSize: 22, lineHeight: 1.25, color: '#070e1c' }}>
+                    &ldquo;{t.q}&rdquo;
+                  </div>
+                  <div className="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold" style={{ background: '#ecfaef', color: '#085824' }}>
+                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 17 9 11l4 4 8-9M14 4h7v7" />
+                    </svg>
                     {t.result}
                   </div>
-                  <div className="mt-5 flex items-center gap-3 border-t border-white/5 pt-4">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/30 to-violet-500/30 text-sm font-bold text-indigo-300">
-                      {t.initial}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-white">{t.name}</p>
-                      <p className="text-xs text-white/40">{t.role}</p>
-                    </div>
-                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="mt-7">
+                  <div className="text-sm font-semibold" style={{ color: '#070e1c' }}>{t.n}</div>
+                  <div className="text-xs" style={{ color: '#4a5060' }}>{t.r}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ── DOIS CAMINHOS — B2C e B2B lado a lado ── */}
-        <section className="border-y border-white/5 bg-[#050A12] px-6 py-24">
-          <div className="mx-auto grid max-w-[1080px] gap-6 lg:grid-cols-2">
-            {/* Para você */}
-            <div className="rounded-2xl border border-amber-500/10 bg-gradient-to-br from-amber-500/5 to-transparent p-8 transition-all hover:border-amber-500/20">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400">
-                  <PlayCircle className="h-5 w-5" />
-                </span>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-400">Para você</p>
-              </div>
-              <h3 className="mt-5 text-2xl font-extrabold text-white">
-                Treinamento Individual
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/50">
-                Workshop presencial, autoavaliação, PDI personalizado e acesso à Academy digital.
-              </p>
-              <Link
-                href="/treinamento/modulo-1"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-amber-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-500/20 transition-all hover:bg-amber-400"
-              >
-                Ver próxima turma
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            {/* Para sua empresa */}
-            <div className="rounded-2xl border border-indigo-500/10 bg-gradient-to-br from-indigo-500/5 to-transparent p-8 transition-all hover:border-indigo-500/20">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-400">
-                  <Users className="h-5 w-5" />
-                </span>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-indigo-400">Para empresas</p>
-              </div>
-              <h3 className="mt-5 text-2xl font-extrabold text-white">
-                Programa Corporativo
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/50">
-                Diagnóstico, trilha personalizada, dashboard de acompanhamento e mentoria dedicada.
-              </p>
-              <Link
-                href="/empresas"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-indigo-500/20 transition-all hover:bg-indigo-400"
-              >
-                Solicitar proposta
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── CTA FINAL ── */}
-        <section className="px-6 py-24">
-          <div className="mx-auto max-w-[700px] text-center">
-            <div className="mb-6 inline-flex items-center justify-center rounded-full bg-indigo-500/10 p-4">
-              <div className="rounded-full bg-indigo-500/20 p-3">
-                <Flame className="h-8 w-8 text-indigo-400" />
-              </div>
-            </div>
-            <h2 className="font-heading text-3xl font-extrabold text-white sm:text-4xl">
-              Descubra seu perfil de liderança em 5 minutos.
-            </h2>
-            <p className="mx-auto mt-5 max-w-[500px] text-base leading-relaxed text-white/50">
-              Autoavaliação gratuita com diagnóstico e Plano de Desenvolvimento Individual gerado na hora.
+      {/* ═══ DOIS CAMINHOS — Individual + Corporativo ═══ */}
+      <section className="py-16 md:py-20 lg:py-[100px]" style={{ background: '#070e1c' }}>
+        <div className="ld-mw-xl grid gap-6 md:grid-cols-2">
+          {/* Para você */}
+          <div
+            className="rounded-2xl p-10 transition-all"
+            style={{ border: '1px solid rgba(236,100,17,0.2)', background: 'linear-gradient(135deg, rgba(236,100,17,0.06), transparent)' }}
+          >
+            <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Para você</div>
+            <h3 className="mt-5 font-sans text-2xl font-bold" style={{ color: '#f5f1ea' }}>
+              Treinamento Individual
+            </h3>
+            <p className="mt-3 text-[15px]" style={{ color: 'rgba(245,241,234,0.65)', lineHeight: 1.55 }}>
+              Workshop presencial, autoavaliação, PDI personalizado e acesso à Academy digital.
+              Para quem quer dar o próximo passo na carreira de liderança.
             </p>
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link
-                href="/treinamento/autoavaliacao"
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-400 hover:shadow-indigo-400/35"
-              >
-                Fazer diagnóstico gratuito
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-              <a
-                href="https://wa.me/5564996099020"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-8 py-4 text-base font-bold text-white/70 transition-all hover:border-white/20 hover:text-white"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Falar com Claudemir
-              </a>
-            </div>
+            <Link href="/treinamento/modulo-1" className="ld-btn-primary mt-8">
+              Ver próxima turma
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
-        </section>
 
-        {/* ── FAQ ── */}
-        <section className="border-t border-white/5 bg-[#050A12] px-6 py-20">
-          <div className="mx-auto max-w-[700px]">
-            <h2 className="mb-8 text-center font-heading text-2xl font-extrabold text-white">
-              Perguntas frequentes
-            </h2>
-            <div className="space-y-3">
-              {faqs.map((item) => (
-                <details
-                  key={item.q}
-                  className="group overflow-hidden rounded-xl border border-white/5 bg-white/[0.02]"
-                >
-                  <summary className="flex cursor-pointer items-center justify-between gap-3 px-5 py-4 text-left text-sm font-bold text-white [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <span className="text-lg text-white/40 transition-transform duration-200 group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="border-t border-white/5 px-5 py-4 text-sm leading-relaxed text-white/50">
-                    {item.a}
-                  </p>
-                </details>
-              ))}
-            </div>
+          {/* Para empresas */}
+          <div
+            className="rounded-2xl p-10 transition-all"
+            style={{ border: '1px solid rgba(245,241,234,0.10)', background: 'linear-gradient(135deg, rgba(245,241,234,0.03), transparent)' }}
+          >
+            <div className="ld-eyebrow" style={{ color: 'rgba(245,241,234,0.55)' }}>Para empresas</div>
+            <h3 className="mt-5 font-sans text-2xl font-bold" style={{ color: '#f5f1ea' }}>
+              Programa Corporativo
+            </h3>
+            <p className="mt-3 text-[15px]" style={{ color: 'rgba(245,241,234,0.65)', lineHeight: 1.55 }}>
+              Diagnóstico organizacional, trilhas por papel, dashboard de acompanhamento e mentoria dedicada.
+              Para empresas que querem formar seus líderes em escala.
+            </p>
+            <Link href="/empresas" className="ld-btn-outline-light mt-8">
+              Solicitar proposta
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* ═══ CTA FINAL ═══ */}
+      <section className="relative overflow-hidden py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 80% 50%, rgba(236,100,17,0.18), transparent 50%)' }} />
+        <div className="ld-mw relative text-center">
+          <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Comece sua jornada</div>
+          <h2 className="ld-display mx-auto mt-5" style={{ fontSize: 'clamp(2.5rem, 7vw, 6.875rem)', color: '#f5f1ea', maxWidth: 1100 }}>
+            Descubra seu perfil de<br /><em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>liderança.</em>
+          </h2>
+          <p className="mx-auto mt-8" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 580 }}>
+            Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
+          </p>
+          <div className="mt-11 flex flex-wrap justify-center gap-3">
+            <Link href="/treinamento/autoavaliacao" className="ld-btn-primary ld-btn-primary-xl">
+              Fazer diagnóstico gratuito
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M13 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <a
+              href="https://wa.me/5564996099020"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ld-btn-outline-light ld-btn-primary-xl"
+            >
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
+              </svg>
+              Falar com Claudemir
+            </a>
+          </div>
+        </div>
+      </section>
 
       <SiteFooter />
     </div>

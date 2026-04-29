@@ -56,10 +56,10 @@ interface ActivityFeedProps {
 // ── Config de ícones por tipo ──
 const activityConfig: Record<ActivityType, { icon: typeof CheckCircle2; color: string; bgColor: string }> = {
   course_completed: { icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/15' },
-  course_started: { icon: BookOpen, color: 'text-indigo-400', bgColor: 'bg-indigo-500/15' },
+  course_started: { icon: BookOpen, color: 'text-yellow-400', bgColor: 'bg-yellow-500/15' },
   xp_milestone: { icon: Trophy, color: 'text-amber-400', bgColor: 'bg-amber-500/15' },
   badge_earned: { icon: Flame, color: 'text-orange-400', bgColor: 'bg-orange-500/15' },
-  comment: { icon: MessageCircle, color: 'text-violet-400', bgColor: 'bg-violet-500/15' },
+  comment: { icon: MessageCircle, color: 'text-yellow-400', bgColor: 'bg-yellow-500/15' },
   reaction: { icon: Heart, color: 'text-pink-400', bgColor: 'bg-pink-500/15' },
 }
 
@@ -117,11 +117,11 @@ function Avatar({ user, size = 'md' }: { user: Activity['user']; size?: 'sm' | '
   }
 
   return (
-    <div className={`relative overflow-hidden rounded-full bg-gradient-to-br from-indigo-500/30 to-violet-500/30 ${sizeClasses[size]}`}>
+    <div className={`relative overflow-hidden rounded-full bg-gradient-to-br from-yellow-500/30 to-yellow-500/30 ${sizeClasses[size]}`}>
       {user.avatarUrl ? (
         <Image src={user.avatarUrl} alt={user.name} fill className="object-cover" unoptimized />
       ) : (
-        <span className="flex h-full w-full items-center justify-center font-bold text-indigo-300">
+        <span className="flex h-full w-full items-center justify-center font-bold text-yellow-300">
           {user.name.charAt(0).toUpperCase()}
         </span>
       )}
@@ -147,7 +147,7 @@ function ActivityItem({
       {/* Avatar com badge do tipo */}
       <div className="relative shrink-0">
         <Avatar user={activity.user} size={variant === 'compact' ? 'sm' : 'md'} />
-        <span className={`absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#0F1729] ${config.bgColor}`}>
+        <span className={`absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#262626] ${config.bgColor}`}>
           <Icon className={`h-2.5 w-2.5 ${config.color}`} />
         </span>
       </div>
@@ -190,7 +190,7 @@ function ActivityItem({
           )}
 
           {activity.comments && activity.comments.count > 0 && (
-            <button className="flex items-center gap-1 text-[11px] text-white/40 hover:text-violet-400">
+            <button className="flex items-center gap-1 text-[11px] text-white/40 hover:text-yellow-400">
               <MessageCircle className="h-3 w-3" />
               {activity.comments.count}
             </button>
@@ -269,7 +269,7 @@ export function ActivityFeed({
         <div className="mt-4 border-t border-white/5 pt-4 text-center">
           <Link
             href={seeAllHref}
-            className="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+            className="text-sm font-medium text-yellow-400 transition-colors hover:text-yellow-300"
           >
             Ver toda a atividade
           </Link>
@@ -309,8 +309,8 @@ export function CommunityStats({
       label: 'Alunos',
       value: totalStudents.toLocaleString('pt-BR'),
       icon: Users,
-      color: 'text-indigo-400',
-      bgColor: 'bg-indigo-500/10',
+      color: 'text-yellow-400',
+      bgColor: 'bg-yellow-500/10',
     },
     {
       label: 'Online agora',

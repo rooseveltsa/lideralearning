@@ -58,7 +58,7 @@ export default async function ConquistasPage() {
   }[]
 
   return (
-    <div className="min-h-screen bg-[#030712] px-6 py-8 text-white/70">
+    <div className="min-h-screen bg-[#1F1F1F] px-6 py-8 text-white/70">
       <div className="mx-auto max-w-[1280px]">
 
         <div className="mb-8">

@@ -36,8 +36,8 @@ function BadgePill({ type }: { type: NonNullable<CourseCardProps['badge']> }) {
   const config = {
     'new': { label: 'Novo', className: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
     'bestseller': { label: 'Mais vendido', className: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-    'updated': { label: 'Atualizado', className: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30' },
-    'coming-soon': { label: 'Em breve', className: 'bg-violet-500/20 text-violet-400 border-violet-500/30' },
+    'updated': { label: 'Atualizado', className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+    'coming-soon': { label: 'Em breve', className: 'bg-white/10 text-white/60 border-white/20' },
   }
   const { label, className } = config[type]
   return (
@@ -89,9 +89,9 @@ export function CourseCard({
           {isInProgress && (
             <div className="mt-2 flex items-center gap-2">
               <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-indigo-500" style={{ width: `${progressPercent}%` }} />
+                <div className="h-full rounded-full bg-yellow-500" style={{ width: `${progressPercent}%` }} />
               </div>
-              <span className="text-[10px] font-medium text-indigo-400">{progressPercent}%</span>
+              <span className="text-[10px] font-medium text-yellow-400">{progressPercent}%</span>
             </div>
           )}
         </div>
@@ -123,8 +123,8 @@ export function CourseCard({
         </div>
         <div className="flex flex-col justify-between py-1">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-indigo-400">{category}</p>
-            <h3 className="mt-1.5 text-xl font-bold text-white group-hover:text-indigo-200">{title}</h3>
+            <p className="text-xs font-medium uppercase tracking-wide text-yellow-400">{category}</p>
+            <h3 className="mt-1.5 text-xl font-bold text-white group-hover:text-yellow-200">{title}</h3>
             <p className="mt-1 text-sm text-white/50">{instructor.name}</p>
           </div>
           <div className="flex items-center gap-4 text-xs text-white/40">
@@ -157,7 +157,7 @@ export function CourseCard({
   return (
     <Link
       href={href}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-400 hover:border-white/15 hover:shadow-[0_24px_80px_-20px_rgba(99,102,241,0.25)] hover:scale-[1.02] ${className}`}
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-400 hover:border-white/15 hover:shadow-[0_24px_80px_-20px_rgba(0,0,0,0.5)] hover:scale-[1.02] ${className}`}
     >
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden bg-white/5">
@@ -203,7 +203,7 @@ export function CourseCard({
         {isInProgress && (
           <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-violet-500"
+              className="h-full bg-gradient-to-r from-yellow-500 to-yellow-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -214,11 +214,11 @@ export function CourseCard({
       <div className="flex flex-1 flex-col p-4">
         {/* Instructor */}
         <div className="mb-2 flex items-center gap-2">
-          <div className="relative h-5 w-5 overflow-hidden rounded-full bg-indigo-500/20">
+          <div className="relative h-5 w-5 overflow-hidden rounded-full bg-yellow-500/20">
             {instructor.avatarUrl ? (
               <Image src={instructor.avatarUrl} alt={instructor.name} fill className="object-cover" unoptimized />
             ) : (
-              <span className="flex h-full w-full items-center justify-center text-[8px] font-bold text-indigo-400">
+              <span className="flex h-full w-full items-center justify-center text-[8px] font-bold text-yellow-400">
                 {instructor.name.charAt(0)}
               </span>
             )}
@@ -227,7 +227,7 @@ export function CourseCard({
         </div>
 
         {/* Title */}
-        <h3 className="line-clamp-2 text-base font-bold leading-tight text-white transition-colors group-hover:text-indigo-200">
+        <h3 className="line-clamp-2 text-base font-bold leading-tight text-white transition-colors group-hover:text-yellow-200">
           {title}
         </h3>
 
@@ -252,11 +252,11 @@ export function CourseCard({
           <div className="mt-3 flex items-center gap-2">
             <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
+                className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-yellow-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <span className="text-xs font-medium text-indigo-400">{progressPercent}%</span>
+            <span className="text-xs font-medium text-yellow-400">{progressPercent}%</span>
           </div>
         )}
 

@@ -28,7 +28,7 @@ export default function XPCard({ totalXp, level, currentStreak, longestStreak, w
       {/* Level + XP Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500">
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-500">
             <span className="font-heading text-2xl font-extrabold text-white">{level}</span>
             <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-400 text-[10px] font-bold text-black">
               <Star className="h-3 w-3" />
@@ -64,7 +64,7 @@ export default function XPCard({ totalXp, level, currentStreak, longestStreak, w
         </div>
         <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-700"
+            className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-yellow-500 transition-all duration-700"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -76,7 +76,7 @@ export default function XPCard({ totalXp, level, currentStreak, longestStreak, w
       {/* Stats Row */}
       <div className="mt-5 grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-white/5 bg-white/5 px-3 py-3 text-center">
-          <Zap className="mx-auto h-4 w-4 text-indigo-400" />
+          <Zap className="mx-auto h-4 w-4 text-yellow-400" />
           <p className="mt-1 text-sm font-extrabold text-white">{weeklyXp}</p>
           <p className="text-[10px] text-white/40">XP esta semana</p>
         </div>

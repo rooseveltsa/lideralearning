@@ -90,14 +90,14 @@ export function CourseShelf({
       label: 'Em alta',
     },
     community: {
-      accentColor: 'text-violet-400',
-      bgAccent: 'bg-violet-500/10',
+      accentColor: 'text-yellow-400',
+      bgAccent: 'bg-yellow-500/10',
       icon: Users,
       label: 'Comunidade',
     },
     recommended: {
-      accentColor: 'text-indigo-400',
-      bgAccent: 'bg-indigo-500/10',
+      accentColor: 'text-yellow-400',
+      bgAccent: 'bg-yellow-500/10',
       icon: null,
       label: '',
     },
@@ -226,10 +226,10 @@ export function CourseShelf({
           >
             <a
               href={seeAllHref}
-              className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] text-center transition-all hover:border-indigo-500/30 hover:bg-indigo-500/5"
+              className="flex h-full min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.02] text-center transition-all hover:border-yellow-500/30 hover:bg-yellow-500/5"
             >
-              <div className="rounded-full bg-indigo-500/10 p-4">
-                <ChevronRight className="h-8 w-8 text-indigo-400" />
+              <div className="rounded-full bg-yellow-500/10 p-4">
+                <ChevronRight className="h-8 w-8 text-yellow-400" />
               </div>
               <p className="mt-4 font-semibold text-white/80">Ver mais</p>
               <p className="mt-1 text-sm text-white/40">{courses.length} cursos disponíveis</p>
@@ -239,8 +239,8 @@ export function CourseShelf({
       </div>
 
       {/* Fade indicators (edges) */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#030712] to-transparent lg:w-16" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#030712] to-transparent lg:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-[#1F1F1F] to-transparent lg:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-[#1F1F1F] to-transparent lg:w-16" />
 
       <style jsx>{`
         @media (min-width: 640px) {

@@ -283,6 +283,41 @@ export default function PDIReportView({ report, hidePrint }: Props) {
         </div>
       </section>
 
+      {/* ── 2b. User Context (from open-ended responses) ── */}
+      {report.userContext && (report.userContext.dorAtual || report.userContext.custoFuturo) && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-sm">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">
+            <AlertTriangle className="h-5 w-5 text-amber-600" />
+            Contexto Relatado pelo Líder
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {report.userContext.dorAtual && (
+              <div className="rounded-xl border border-amber-200 bg-white p-5">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
+                  Principal desafio atual
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-[#374151]">
+                  &ldquo;{report.userContext.dorAtual}&rdquo;
+                </p>
+              </div>
+            )}
+            {report.userContext.custoFuturo && (
+              <div className="rounded-xl border border-amber-200 bg-white p-5">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
+                  Custo projetado se persistir (90 dias)
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-[#374151]">
+                  &ldquo;{report.userContext.custoFuturo}&rdquo;
+                </p>
+              </div>
+            )}
+          </div>
+          <p className="mt-3 text-xs text-amber-700/70">
+            Estas respostas foram fornecidas pelo próprio líder durante a autoavaliação e devem ser consideradas no plano de desenvolvimento.
+          </p>
+        </section>
+      )}
+
       {/* ── 3. Dimension Comparison ── */}
       <section className="rounded-2xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
         <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">

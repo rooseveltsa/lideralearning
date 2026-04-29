@@ -87,7 +87,7 @@ export default function AchievementGrid({ achievements, earned }: Props) {
               </span>
               <div className="text-right">
                 {achievement.xp_reward > 0 && (
-                  <span className={`text-xs font-bold ${isEarned ? 'text-indigo-400' : 'text-white/30'}`}>
+                  <span className={`text-xs font-bold ${isEarned ? 'text-yellow-400' : 'text-white/30'}`}>
                     +{achievement.xp_reward} XP
                   </span>
                 )}

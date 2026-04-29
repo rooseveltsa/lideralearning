@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-heading);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,138 +46,183 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
 
-  /* ─── Premium Brand Palette ─── */
-  --color-premium-indigo: #6366F1;
-  --color-premium-violet: #8B5CF6;
-  --color-premium-amber: #F59E0B;
-  --color-premium-emerald: #10B981;
-  --color-premium-surface: #0F1729;
-  --color-premium-base: #030712;
+  /* ─── Lidera Brand Palette — Navy + Orange + Green ─── */
+  --color-ld-navy-50: #f1f4f9;
+  --color-ld-navy-100: #dde4ee;
+  --color-ld-navy-200: #b8c5d8;
+  --color-ld-navy-300: #8095b3;
+  --color-ld-navy-400: #4f6588;
+  --color-ld-navy-500: #2c4063;
+  --color-ld-navy-600: #1c2d4d;
+  --color-ld-navy-700: #122039;
+  --color-ld-navy-800: #0c1729;
+  --color-ld-navy-900: #070e1c;
+  --color-ld-navy-950: #03070f;
 
-  /* ─── Backward compat ─── */
-  --color-brand-blue: #1E88E5;
-  --color-brand-blue-light: #1E88E5;
-  --color-brand-green: #4CAF50;
-  --color-brand-orange: #F57C00;
+  --color-ld-orange-50: #fff3ec;
+  --color-ld-orange-100: #ffe0cc;
+  --color-ld-orange-200: #ffbf95;
+  --color-ld-orange-300: #ff9a5a;
+  --color-ld-orange-400: #fb7d2e;
+  --color-ld-orange-500: #ec6411;
+  --color-ld-orange-600: #cc4f06;
+  --color-ld-orange-700: #a13d05;
+  --color-ld-orange-800: #6e2a04;
+
+  --color-ld-green-50: #ecfaef;
+  --color-ld-green-100: #d0f3d9;
+  --color-ld-green-200: #9ae5ad;
+  --color-ld-green-300: #5fd07c;
+  --color-ld-green-400: #2eb555;
+  --color-ld-green-500: #0f8f3a;
+  --color-ld-green-600: #0a722e;
+  --color-ld-green-700: #085824;
+
+  --color-ld-blue-50: #ecf3ff;
+  --color-ld-blue-100: #d0e1ff;
+  --color-ld-blue-200: #99bcff;
+  --color-ld-blue-300: #5d92f7;
+  --color-ld-blue-400: #2f6fde;
+  --color-ld-blue-500: #1855bd;
+  --color-ld-blue-600: #114495;
+
+  --color-ld-paper: #f5f1ea;
+  --color-ld-paper-2: #ebe5d9;
+  --color-ld-bone: #e2dccd;
+
+  --color-surface-dark: #070e1c;
+  --color-base-dark: #0c1729;
 }
 
 /* ════════════════════════════════════════════════════════════════
-   DARK MODE — Premium Netflix Education Club
-   Imersivo, Comunitário, Premium
+   DARK MODE — Lidera: Navy Profundo + Laranja Ação
+   Premium, sofisticado, consultivo.
 ═══════════════════════════════════════════════════════════════ */
 .dark,
 :root[class~="dark"] {
   --radius: 0.625rem;
 
-  /* Base backgrounds */
-  --background: #030712;
-  --foreground: #F8FAFC;
+  --background: #070e1c;
+  --foreground: #f5f1ea;
 
-  /* Cards */
-  --card: #0F1729;
-  --card-foreground: #F8FAFC;
+  --card: #0c1729;
+  --card-foreground: #f5f1ea;
 
-  /* Popovers */
-  --popover: #0F1729;
-  --popover-foreground: #F8FAFC;
+  --popover: #0c1729;
+  --popover-foreground: #f5f1ea;
 
-  /* Primary — Indigo premium */
-  --primary: #6366F1;
-  --primary-foreground: #FFFFFF;
+  --primary: #ec6411;
+  --primary-foreground: #ffffff;
 
-  /* Secondary */
-  --secondary: rgba(255, 255, 255, 0.06);
-  --secondary-foreground: #E2E8F0;
+  --secondary: rgba(245, 241, 234, 0.06);
+  --secondary-foreground: #f5f1ea;
 
-  /* Muted */
-  --muted: rgba(255, 255, 255, 0.04);
-  --muted-foreground: #94A3B8;
+  --muted: rgba(245, 241, 234, 0.04);
+  --muted-foreground: #6f7585;
 
-  /* Accent */
-  --accent: rgba(255, 255, 255, 0.08);
-  --accent-foreground: #F8FAFC;
+  --accent: rgba(245, 241, 234, 0.08);
+  --accent-foreground: #f5f1ea;
 
-  /* Destructive */
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
+  --destructive: #c5343a;
+  --destructive-foreground: #ffffff;
 
-  /* Borders */
-  --border: rgba(255, 255, 255, 0.06);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #6366F1;
+  --border: rgba(245, 241, 234, 0.10);
+  --input: rgba(245, 241, 234, 0.06);
+  --ring: #ec6411;
 
-  /* Charts */
-  --chart-1: #6366F1;
-  --chart-2: #8B5CF6;
-  --chart-3: #F59E0B;
-  --chart-4: #10B981;
-  --chart-5: #EC4899;
+  --chart-1: #ec6411;
+  --chart-2: #0f8f3a;
+  --chart-3: #1855bd;
+  --chart-4: #fb7d2e;
+  --chart-5: #2eb555;
 
-  /* Sidebar */
-  --sidebar: #0A0F1E;
-  --sidebar-foreground: #E2E8F0;
-  --sidebar-primary: #6366F1;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: rgba(99, 102, 241, 0.15);
-  --sidebar-accent-foreground: #F8FAFC;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #6366F1;
+  --sidebar: #03070f;
+  --sidebar-foreground: #f5f1ea;
+  --sidebar-primary: #ec6411;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(236, 100, 17, 0.10);
+  --sidebar-accent-foreground: #f5f1ea;
+  --sidebar-border: rgba(245, 241, 234, 0.10);
+  --sidebar-ring: #ec6411;
 }
 
 /* ════════════════════════════════════════════════════════════════
-   LIGHT MODE — Clean Professional
-   Para contextos que requerem clareza máxima
+   LIGHT MODE — Lidera: Paper Editorial + Navy
 ═══════════════════════════════════════════════════════════════ */
 :root {
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 
-  --background: #FAFBFC;
-  --foreground: #0F172A;
+  --background: #f5f1ea;
+  --foreground: #070e1c;
 
-  --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card: #ffffff;
+  --card-foreground: #070e1c;
 
-  --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --popover: #ffffff;
+  --popover-foreground: #070e1c;
 
-  /* Primary — Indigo mais profundo para contraste */
-  --primary: #4F46E5;
-  --primary-foreground: #FFFFFF;
+  --primary: #ec6411;
+  --primary-foreground: #ffffff;
 
-  --secondary: #F1F5F9;
-  --secondary-foreground: #1E293B;
+  --secondary: #f1f4f9;
+  --secondary-foreground: #122039;
 
-  --muted: #F8FAFC;
-  --muted-foreground: #64748B;
+  --muted: rgba(12, 23, 41, 0.06);
+  --muted-foreground: #4a5060;
 
-  --accent: #F1F5F9;
-  --accent-foreground: #1E293B;
+  --accent: #f1f4f9;
+  --accent-foreground: #122039;
 
-  --destructive: #EF4444;
-  --destructive-foreground: #FFFFFF;
+  --destructive: #c5343a;
+  --destructive-foreground: #ffffff;
 
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #4F46E5;
+  --border: rgba(12, 23, 41, 0.10);
+  --input: rgba(12, 23, 41, 0.10);
+  --ring: #ec6411;
 
-  --chart-1: #4F46E5;
-  --chart-2: #8B5CF6;
-  --chart-3: #F59E0B;
-  --chart-4: #10B981;
-  --chart-5: #EC4899;
+  --chart-1: #ec6411;
+  --chart-2: #0f8f3a;
+  --chart-3: #1855bd;
+  --chart-4: #fb7d2e;
+  --chart-5: #2eb555;
 
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #1E293B;
-  --sidebar-primary: #4F46E5;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #1E293B;
-  --sidebar-border: #E2E8F0;
-  --sidebar-ring: #4F46E5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #122039;
+  --sidebar-primary: #ec6411;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff3ec;
+  --sidebar-accent-foreground: #122039;
+  --sidebar-border: rgba(12, 23, 41, 0.10);
+  --sidebar-ring: #ec6411;
 }
 
 /* ════════════════════════════════════════════════════════════════
-   BASE STYLES — Premium defaults
+   LIDERA — Design Tokens (tipografia inline)
+   Fonte de verdade: tokens.css do Design System
+═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Tipografia — 3 fontes obrigatórias */
+  --ld-font-display: var(--font-heading), 'Instrument Serif', 'Times New Roman', serif;
+  --ld-font-sans:    var(--font-sans), 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ld-font-mono:    var(--font-mono), 'Geist Mono', ui-monospace, 'JetBrains Mono', monospace;
+
+  /* Escala tipográfica (modular 1.25) */
+  --ld-text-2xs:  11px;
+  --ld-text-xs:   12px;
+  --ld-text-sm:   14px;
+  --ld-text-base: 16px;
+  --ld-text-md:   18px;
+  --ld-text-lg:   22px;
+  --ld-text-xl:   28px;
+  --ld-text-2xl:  36px;
+  --ld-text-3xl:  48px;
+  --ld-text-4xl:  64px;
+  --ld-text-5xl:  88px;
+  --ld-text-6xl:  120px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BASE STYLES — Lidera Premium
 ═══════════════════════════════════════════════════════════════ */
 @layer base {
   * {
@@ -190,36 +235,307 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "kern" 1, "liga" 1;
+    font-family: var(--ld-font-sans);
+    font-size: var(--ld-text-base);
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Headings */
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+  /* h1, h2 = Instrument Serif 400 — display/editorial */
+  h1, h2 {
+    font-family: var(--ld-font-display);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
   }
 
-  /* Paragraphs */
+  /* h3-h6 = Geist 600 — UI headings */
+  h3 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-2xl); line-height: 1.15; letter-spacing: -0.018em; }
+  h4 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-xl);  line-height: 1.2;  letter-spacing: -0.012em; }
+  h5 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-lg);  line-height: 1.25; letter-spacing: -0.008em; }
+  h6 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-base); line-height: 1.25; letter-spacing: -0.008em; }
+
   p {
-    line-height: 1.75;
+    line-height: 1.6;
   }
 
-  /* Links */
   a {
+    color: inherit;
+    text-decoration: none;
     transition: color 0.2s ease;
   }
 
-  /* Focus visible */
+  button { font-family: inherit; cursor: pointer; }
+  input, textarea, select { font-family: inherit; }
+
   :focus-visible {
     @apply outline-none ring-2 ring-[--ring] ring-offset-2 ring-offset-background;
   }
 }
 
 /* ════════════════════════════════════════════════════════════════
-   ANIMATIONS — Premium motion system
+   LIDERA TYPOGRAPHY — Classes semânticas
+   Copiadas literalmente do tokens.css do Design System
+═══════════════════════════════════════════════════════════════ */
+
+/* Display / Editorial — Instrument Serif 400
+   ✅ USE em: hero, h1, h2, citações >24px, números editoriais grandes (+34%, 12.400)
+   ❌ NÃO USE em: h3-h6, body, botões, labels, nav, badges, breadcrumbs, tooltips, <20px */
+
+.ld-display { font-family: var(--ld-font-display); font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
+.ld-h1      { font-family: var(--ld-font-display); font-weight: 400; font-size: var(--ld-text-5xl); line-height: 0.95; letter-spacing: -0.025em; }
+.ld-h2      { font-family: var(--ld-font-display); font-weight: 400; font-size: var(--ld-text-4xl); line-height: 1.0;  letter-spacing: -0.022em; }
+
+/* UI Headings — Geist 600 */
+.ld-h3      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-2xl); line-height: 1.15; letter-spacing: -0.018em; }
+.ld-h4      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-xl);  line-height: 1.2;  letter-spacing: -0.012em; }
+.ld-h5      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-lg);  line-height: 1.25; letter-spacing: -0.008em; }
+
+/* Eyebrow — Geist 500, uppercase, +0.14em */
+.ld-eyebrow { font-family: var(--ld-font-sans); font-weight: 500; font-size: var(--ld-text-xs); text-transform: uppercase; letter-spacing: 0.14em; color: var(--color-ld-orange-600); }
+
+/* Body — Geist 400 */
+.ld-body    { font-family: var(--ld-font-sans); font-size: var(--ld-text-base); line-height: 1.6;  color: var(--muted-foreground); }
+.ld-body-lg { font-family: var(--ld-font-sans); font-size: var(--ld-text-md);   line-height: 1.55; color: var(--muted-foreground); }
+
+/* Mono / Dados — Geist Mono com tabular figures */
+.ld-mono    { font-family: var(--ld-font-mono); font-feature-settings: "tnum" 1; }
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA BUTTONS — Primary CTA (orange glow)
+═══════════════════════════════════════════════════════════════ */
+
+.ld-btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.75rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #fff;
+  background: var(--color-ld-orange-500);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.2) inset,
+    0 8px 24px -8px rgba(236,100,17,0.5);
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  letter-spacing: -0.005em;
+}
+
+.ld-btn-primary:hover {
+  background: var(--color-ld-orange-600);
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.25) inset,
+    0 12px 32px -8px rgba(236,100,17,0.6);
+}
+
+.ld-btn-primary-xl {
+  padding: 1rem 1.75rem;
+  font-size: 1rem;
+  height: 60px;
+}
+
+.ld-btn-outline-light {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.75rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--color-ld-paper);
+  background: transparent;
+  border: 1px solid rgba(245, 241, 234, 0.18);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  letter-spacing: -0.005em;
+}
+
+.ld-btn-outline-light:hover {
+  border-color: rgba(245, 241, 234, 0.35);
+  transform: translateY(-1px);
+}
+
+.ld-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.375rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--color-ld-navy-900);
+  background: transparent;
+  border: 1px solid rgba(12, 23, 41, 0.18);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ld-btn-outline:hover {
+  border-color: rgba(12, 23, 41, 0.35);
+  transform: translateY(-1px);
+}
+
+.ld-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.75rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--color-ld-paper);
+  background: var(--color-ld-navy-900);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA BADGES
+═══════════════════════════════════════════════════════════════ */
+
+.ld-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 999px;
+  letter-spacing: 0.01em;
+}
+
+.ld-badge-orange {
+  background: var(--color-ld-orange-50);
+  color: var(--color-ld-orange-700);
+}
+
+.ld-badge-green {
+  background: var(--color-ld-green-50);
+  color: var(--color-ld-green-700);
+}
+
+.ld-badge-blue {
+  background: var(--color-ld-blue-50);
+  color: var(--color-ld-blue-600);
+}
+
+.ld-badge-deep {
+  background: var(--color-ld-navy-900);
+  color: var(--color-ld-paper);
+}
+
+.ld-badge-deep-line {
+  background: transparent;
+  color: var(--color-ld-paper);
+  border: 1px solid rgba(245, 241, 234, 0.18);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA CARDS
+═══════════════════════════════════════════════════════════════ */
+
+.ld-card {
+  background: #ffffff;
+  border: 1px solid rgba(12, 23, 41, 0.10);
+  border-radius: 14px;
+  transition: all 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.ld-card:hover {
+  box-shadow: 0 8px 24px rgba(7, 14, 28, 0.10), 0 2px 6px rgba(7, 14, 28, 0.06);
+  transform: translateY(-2px);
+}
+
+.ld-card-dark {
+  background: var(--color-ld-navy-800);
+  border: 1px solid rgba(245, 241, 234, 0.10);
+  border-radius: 14px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA CONTAINER
+═══════════════════════════════════════════════════════════════ */
+
+.ld-mw {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.ld-mw-sm {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.ld-mw-xl {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 3rem;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA DEEP SURFACE (navy dark mode sections)
+═══════════════════════════════════════════════════════════════ */
+
+.ld-deep {
+  background: var(--color-ld-navy-900);
+  color: var(--color-ld-paper);
+}
+
+.ld-deep ::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.ld-deep ::-webkit-scrollbar-thumb {
+  background: rgba(245, 241, 234, 0.18);
+  border-radius: 999px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA GLOWS
+═══════════════════════════════════════════════════════════════ */
+
+.ld-glow-orange {
+  box-shadow: 0 12px 40px -12px rgba(236, 100, 17, 0.55);
+}
+
+.ld-glow-green {
+  box-shadow: 0 12px 40px -12px rgba(15, 143, 58, 0.45);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIDERA PROGRESS BAR
+═══════════════════════════════════════════════════════════════ */
+
+.ld-progress {
+  height: 6px;
+  background: rgba(12, 23, 41, 0.10);
+  border-radius: 999px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.ld-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-ld-green-500);
+  transition: width 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ANIMATIONS
 ═══════════════════════════════════════════════════════════════ */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -241,22 +557,6 @@
   50% { transform: translateY(-8px); }
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(24px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.5); }
-}
-
-/* Animation utility classes */
 .animate-fade-up {
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -265,337 +565,14 @@
 .animate-fade-up-2 { animation-delay: 0.2s; }
 .animate-fade-up-3 { animation-delay: 0.3s; }
 .animate-fade-up-4 { animation-delay: 0.4s; }
-.animate-fade-up-5 { animation-delay: 0.5s; }
-.animate-fade-up-6 { animation-delay: 0.6s; }
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
 
-.animate-slide-in-right {
-  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Shimmer loading effect */
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0.02) 0%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.02) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2.5s ease-in-out infinite;
-}
-
 /* ════════════════════════════════════════════════════════════════
-   GRADIENT UTILITIES — Brand gradients
+   SCROLLBAR
 ═══════════════════════════════════════════════════════════════ */
-
-/* Premium gradient text (Indigo → Violet → Amber) */
-.text-premium-gradient {
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #F59E0B 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Indigo primary gradient */
-.text-indigo-gradient {
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Gold/Amber accent gradient */
-.text-gold-gradient {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Brand gradient (backward compat) */
-.text-brand-gradient {
-  background: linear-gradient(135deg, #1E88E5 0%, #4CAF50 50%, #F57C00 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Background gradients */
-.bg-gradient-premium {
-  background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 50%, rgba(245,158,11,0.05) 100%);
-}
-
-.bg-gradient-surface {
-  background: linear-gradient(180deg, #0F1729 0%, #0A0F1E 100%);
-}
-
-.bg-gradient-card {
-  background: linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-}
-
-/* Shimmer on buttons */
-.shimmer-bg {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255,255,255,0.1) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2.5s ease-in-out infinite;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   CARD STYLES — Premium components
-═══════════════════════════════════════════════════════════════ */
-
-/* Card premium dark (Netflix-style) */
-.card-premium {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 1rem;
-  background: #0F1729;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-premium:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 60px -15px rgba(99, 102, 241, 0.2);
-}
-
-/* Card premium light */
-.card-premium-light {
-  border: 1px solid #E2E8F0;
-  border-radius: 1rem;
-  background: #FFFFFF;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(79, 70, 229, 0.06);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-premium-light:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 8px 32px rgba(79, 70, 229, 0.12);
-  transform: translateY(-3px);
-}
-
-/* Card dark subtle (existing) */
-.card-dark-premium {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 1rem;
-  background: #0F1729;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-dark-premium:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 40px rgba(99, 102, 241, 0.1);
-  transform: translateY(-2px);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   GLOW EFFECTS — Premium shadows
-═══════════════════════════════════════════════════════════════ */
-
-.glow-indigo {
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
-}
-
-.glow-violet {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
-}
-
-.glow-amber {
-  box-shadow: 0 0 30px rgba(245, 158, 11, 0.45);
-}
-
-.glow-emerald {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);
-}
-
-.glow-premium {
-  box-shadow: 0 20px 60px -15px rgba(99, 102, 241, 0.25);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   SECTION UTILITIES
-═══════════════════════════════════════════════════════════════ */
-
-/* Section label com linha decorativa */
-.section-label {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.70rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #6366F1;
-}
-
-.section-label::before {
-  content: '';
-  display: inline-block;
-  width: 2rem;
-  height: 2px;
-  background: linear-gradient(90deg, #6366F1, #8B5CF6);
-  margin-right: 0.6rem;
-  border-radius: 1px;
-}
-
-/* Divider gradiente brand */
-.divider-brand {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #6366F1, #8B5CF6, #F59E0B, transparent);
-  border: none;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   BADGE & STATUS INDICATORS
-═══════════════════════════════════════════════════════════════ */
-
-.badge-premium {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  background: rgba(99, 102, 241, 0.1);
-  color: #818CF8;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-}
-
-.badge-amber {
-  background: rgba(245, 158, 11, 0.1);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.badge-emerald {
-  background: rgba(16, 185, 129, 0.1);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-/* Live/Online indicator */
-.status-live {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.status-live::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #10B981;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   COURSE CARD STYLES — Netflix-inspired
-═══════════════════════════════════════════════════════════════ */
-
-.course-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
-  background: #0F1729;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.course-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: scale(1.02);
-  box-shadow: 0 24px 80px -20px rgba(99, 102, 241, 0.3);
-}
-
-.course-card:hover .course-card-image {
-  transform: scale(1.08);
-}
-
-.course-card:hover .course-card-overlay {
-  opacity: 1;
-}
-
-.course-card-image {
-  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   PROGRESS BAR STYLES
-═══════════════════════════════════════════════════════════════ */
-
-.progress-bar {
-  height: 4px;
-  overflow: hidden;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.progress-bar-fill {
-  height: 100%;
-  border-radius: 9999px;
-  background: linear-gradient(90deg, #6366F1, #8B5CF6);
-  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.progress-bar-fill-emerald {
-  background: linear-gradient(90deg, #10B981, #34D399);
-}
-
-.progress-bar-fill-amber {
-  background: linear-gradient(90deg, #F59E0B, #FBBF24);
-}
-
-/* ════════════════════════════════════════════════════════════════
-   HOVER STATES — Premium interactions
-═══════════════════════════════════════════════════════════════ */
-
-/* Scale + glow on hover */
-.hover-lift {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.25);
-}
-
-/* Link underline animation */
-.link-underline {
-  position: relative;
-}
-
-.link-underline::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #6366F1;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.link-underline:hover::after {
-  width: 100%;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   SCROLLBAR STYLING
-═══════════════════════════════════════════════════════════════ */
-
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -606,41 +583,22 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(12, 23, 41, 0.15);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(12, 23, 41, 0.25);
 }
-
-/* ════════════════════════════════════════════════════════════════
-   SELECTION STYLES
-═══════════════════════════════════════════════════════════════ */
 
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
-  color: #FFFFFF;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   BACKDROP BLUR — Glass morphism
-═══════════════════════════════════════════════════════════════ */
-
-.glass {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-.glass-strong {
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  background: rgba(236, 100, 17, 0.2);
+  color: var(--color-ld-navy-900);
 }
 
 /* ════════════════════════════════════════════════════════════════
    RESPONSIVE UTILITIES
 ═══════════════════════════════════════════════════════════════ */
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
