@@ -11,7 +11,20 @@ export const metadata: Metadata = {
     'Formulário de diagnóstico de liderança estratégica e alinhamento de performance. Avalie suas competências, identifique gaps e construa seu plano de ação de 12 semanas.',
 }
 
-export default function DiagnosticoLiderancaPage() {
+type SearchParams = Promise<{ nome?: string; email?: string; telefone?: string }>
+
+export default async function DiagnosticoLiderancaPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
+  const params = await searchParams
+  const initial = {
+    nome: typeof params.nome === 'string' ? params.nome : '',
+    email: typeof params.email === 'string' ? params.email : '',
+    telefone: typeof params.telefone === 'string' ? params.telefone : '',
+  }
+
   return (
     <>
       <SiteHeader />
@@ -40,7 +53,7 @@ export default function DiagnosticoLiderancaPage() {
         {/* Form */}
         <section className="px-4 py-10 sm:py-14">
           <div className="mx-auto max-w-3xl">
-            <DiagnosticoLiderancaForm />
+            <DiagnosticoLiderancaForm initial={initial} />
           </div>
         </section>
 

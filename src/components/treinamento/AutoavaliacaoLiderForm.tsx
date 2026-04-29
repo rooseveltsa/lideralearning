@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,6 +14,9 @@ import {
   Shield,
   AlertTriangle,
   Trophy,
+  Mail,
+  Phone,
+  User as UserIcon,
 } from 'lucide-react'
 
 /* ─────────────────────────────────────────────
@@ -266,23 +270,35 @@ const textareaClass =
 ───────────────────────────────────────────── */
 
 type Props = {
-  user: UserProfile
+  user: UserProfile | null
 }
 
+type LeadData = {
+  nome: string
+  email: string
+  telefone: string
+}
+
+type Stage = 'questions' | 'result' | 'lead-capture' | 'redirecting'
+
 export default function AutoavaliacaoLiderForm({ user }: Props) {
+  const router = useRouter()
   const [step, setStep] = useState(0)
+  const [stage, setStage] = useState<Stage>('questions')
   const [respostas, setRespostas] = useState<Respostas>({})
   const [textos, setTextos] = useState<TextosAbertos>({})
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
-  const [resultado, setResultado] = useState<{
-    pontos: number
-    diagnosticoId: string
-  } | null>(null)
+  const [lead, setLead] = useState<LeadData>({
+    nome: user?.fullName ?? '',
+    email: user?.email ?? '',
+    telefone: '',
+  })
+  const [resultado, setResultado] = useState<{ pontos: number } | null>(null)
 
   const totalSteps = questoes.length
-  const isResultado = resultado !== null
-  const questaoAtual = !isResultado ? questoes[step] : null
+  const isResultado = stage === 'result' || stage === 'lead-capture' || stage === 'redirecting'
+  const questaoAtual = stage === 'questions' ? questoes[step] : null
   const respostaSelecionada = questaoAtual ? respostas[questaoAtual.id] : undefined
   const progressoVisual = Math.round(((step + 1) / totalSteps) * 100)
   const todasRespondidas = questoes.every((q) => respostas[q.id] !== undefined)
@@ -305,45 +321,212 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
     if (step > 0) setStep((s) => s - 1)
   }
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!todasRespondidas || enviando) return
+    setErro(null)
+    const pontos = Object.values(respostas).reduce((acc, v) => acc + v, 0)
+    setResultado({ pontos })
+    setStage('result')
+  }
+
+  function getPerfilLabel(pontos: number) {
+    if (pontos <= 10) return 'reativo'
+    if (pontos <= 15) return 'transicao'
+    return 'lider_valor'
+  }
+
+  function validarLead(): string | null {
+    const nome = lead.nome.trim()
+    const email = lead.email.trim()
+    const telefone = lead.telefone.replace(/\D/g, '')
+    if (nome.length < 2) return 'Informe seu nome completo.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Informe um e-mail válido.'
+    if (telefone.length < 10) return 'Informe um WhatsApp com DDD (ao menos 10 dígitos).'
+    return null
+  }
+
+  async function enviarLead() {
+    if (enviando || !resultado) return
+    const erroLead = validarLead()
+    if (erroLead) {
+      setErro(erroLead)
+      return
+    }
 
     setEnviando(true)
     setErro(null)
 
-    const pontos = Object.values(respostas).reduce((acc, v) => acc + v, 0)
+    const nome = lead.nome.trim()
+    const email = lead.email.trim()
+    const telefone = lead.telefone.trim()
+    const perfil = getPerfilLabel(resultado.pontos)
 
     try {
-      const response = await fetch('/api/treinamento/autoavaliacao', {
+      const response = await fetch('/api/treinamento/lead-capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
-          userEmail: user.email,
-          userName: user.fullName,
+          nome,
+          email,
+          telefone,
+          origem: 'autoavaliacao',
+          score: resultado.pontos,
+          perfil,
           respostas,
           textos,
-          pontuacaoTotal: pontos,
+          userId: user?.id ?? null,
         }),
       })
 
-      const data = (await response.json()) as { success?: boolean; error?: string; diagnosticoId?: string }
-
+      const data = (await response.json()) as { success?: boolean; error?: string }
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Falha ao enviar autoavaliação.')
+        throw new Error(data.error || 'Falha ao registrar seus dados.')
       }
 
-      setResultado({ pontos, diagnosticoId: data.diagnosticoId || '' })
+      setStage('redirecting')
+      const params = new URLSearchParams({
+        nome,
+        email,
+        telefone,
+      })
+      router.push(`/treinamento/diagnostico-lideranca?${params.toString()}`)
     } catch (error: unknown) {
       setErro(error instanceof Error ? error.message : 'Erro inesperado.')
-    } finally {
       setEnviando(false)
     }
   }
 
+  /* ── Lead Capture ── */
+
+  if (stage === 'lead-capture' && resultado) {
+    const inputClass =
+      'w-full rounded-xl border border-[#E3EBF6] bg-white px-4 py-3 text-sm text-[#111827] placeholder:text-[#94A3B8] transition-all focus:border-[#1565C0] focus:outline-none focus:ring-2 focus:ring-[#1565C0]/20'
+
+    function formatTelefone(raw: string) {
+      const d = raw.replace(/\D/g, '').slice(0, 11)
+      if (d.length <= 2) return d
+      if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`
+      if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`
+      return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="rounded-2xl border border-[#1565C0]/20 bg-gradient-to-br from-[#EFF6FE] to-white p-6 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1565C0]/10">
+            <Trophy className="h-6 w-6 text-[#1565C0]" />
+          </div>
+          <h2 className="text-xl font-extrabold tracking-tight text-[#0F172A]">
+            Falta pouco para liberar seu PDI
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#64748B]">
+            Informe seus dados para liberarmos o segundo formulário, mais profundo, que vai gerar
+            seu Plano de Desenvolvimento Individual completo.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">Nome completo *</label>
+            <div className="relative">
+              <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+              <input
+                type="text"
+                value={lead.nome}
+                onChange={(e) => setLead((p) => ({ ...p, nome: e.target.value }))}
+                placeholder="Como devemos te chamar?"
+                className={`${inputClass} pl-10`}
+                autoComplete="name"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">E-mail *</label>
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+              <input
+                type="email"
+                value={lead.email}
+                onChange={(e) => setLead((p) => ({ ...p, email: e.target.value }))}
+                placeholder="seu@email.com"
+                className={`${inputClass} pl-10`}
+                autoComplete="email"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">WhatsApp *</label>
+            <div className="relative">
+              <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
+              <input
+                type="tel"
+                value={lead.telefone}
+                onChange={(e) =>
+                  setLead((p) => ({ ...p, telefone: formatTelefone(e.target.value) }))
+                }
+                placeholder="(64) 99999-9999"
+                className={`${inputClass} pl-10`}
+                autoComplete="tel"
+                inputMode="tel"
+              />
+            </div>
+          </div>
+        </div>
+
+        <p className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-xs leading-relaxed text-[#64748B]">
+          <Shield className="mr-1.5 inline h-3.5 w-3.5 text-[#1565C0]" />
+          Seus dados são confidenciais. Usamos apenas para liberar seu PDI e enviar conteúdos
+          relacionados ao Treinamento LIDERA. Você pode descadastrar a qualquer momento.
+        </p>
+
+        {erro && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {erro}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E3EBF6] pt-4">
+          <button
+            type="button"
+            onClick={() => {
+              setErro(null)
+              setStage('result')
+            }}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
+            disabled={enviando}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar ao diagnóstico
+          </button>
+
+          <button
+            type="button"
+            onClick={enviarLead}
+            disabled={enviando}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#F57C00] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#F57C00]/20 transition-all hover:bg-[#E65100] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {enviando ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Liberando seu PDI...
+              </>
+            ) : (
+              <>
+                <ArrowRight className="h-4 w-4" />
+                Liberar meu PDI
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   /* ── Resultado Final ── */
 
-  if (isResultado) {
+  if (isResultado && resultado) {
     const perfil = getPerfil(resultado.pontos)
     const beneficios = [
       { label: 'Delegação Estruturada', desc: 'Técnicas para delegar com eficácia, sem perda de controle.' },
@@ -436,23 +619,27 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
           </p>
         </div>
 
-        {/* CTA - Ver PDI */}
+        {/* CTA - Quero meu PDI */}
         <div className="rounded-2xl border border-[#7B1FA2]/20 bg-[#F3E5F5] p-6 text-center">
           <h4 className="text-base font-extrabold text-[#7B1FA2]">
-            Seu PDI foi gerado automaticamente!
+            Pronto para liberar seu PDI completo?
           </h4>
           <p className="mx-auto mt-2 max-w-md text-sm text-[#64748B]">
-            Com base nas suas respostas, geramos seu Plano de Desenvolvimento Individual
-            com recomendações personalizadas e um roteiro de 12 semanas.
+            O próximo passo é um diagnóstico mais profundo. Em poucos minutos, você recebe seu
+            Plano de Desenvolvimento Individual com recomendações práticas e um roteiro de 12 semanas.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="/treinamento/pdi"
+            <button
+              type="button"
+              onClick={() => {
+                setErro(null)
+                setStage('lead-capture')
+              }}
               className="inline-flex items-center gap-2 rounded-xl bg-[#7B1FA2] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#6A1B9A]"
             >
               <Trophy className="h-4 w-4" />
-              Ver meu PDI completo
-            </a>
+              Quero meu PDI
+            </button>
             <a
               href="https://wa.me/5564996099020?text=Ol%C3%A1%2C%20fiz%20a%20autoavalia%C3%A7%C3%A3o%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!"
               className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"

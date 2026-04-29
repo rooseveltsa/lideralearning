@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
 import { ClipboardCheck, Clock, Shield } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
@@ -19,20 +18,20 @@ export default async function AutoavaliacaoPage() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/auth/register?redirect=/treinamento/autoavaliacao')
-  }
+  let userProfile: { id: string; fullName: string; email: string } | null = null
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, role')
-    .eq('id', user.id)
-    .single()
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, role')
+      .eq('id', user.id)
+      .single()
 
-  const userProfile = {
-    id: user.id,
-    fullName: profile?.full_name || user.user_metadata?.full_name || '',
-    email: user.email || '',
+    userProfile = {
+      id: user.id,
+      fullName: profile?.full_name || user.user_metadata?.full_name || '',
+      email: user.email || '',
+    }
   }
 
   return (
@@ -68,7 +67,7 @@ export default async function AutoavaliacaoPage() {
               </span>
             </div>
 
-            {userProfile.fullName && (
+            {userProfile?.fullName && (
               <p className="mt-4 text-sm text-[#64748B]">
                 Respondendo como{' '}
                 <strong className="text-[#0F172A]">{userProfile.fullName}</strong>

@@ -8,7 +8,15 @@ function normalize(value: unknown) {
 }
 
 export async function POST(request: Request) {
-  let json: Record<string, any>
+  let json: Record<string, unknown> & {
+    identificacao?: Record<string, unknown>
+    reflexao?: Record<string, unknown>
+    dimensoes?: Record<string, number>
+    maturidade?: Record<string, unknown>
+    gestao?: Record<string, unknown>
+    plano?: Record<string, unknown>
+    contato?: Record<string, unknown>
+  }
 
   try {
     json = await request.json()
@@ -60,6 +68,50 @@ export async function POST(request: Request) {
   if (error) {
     console.error('Error inserting leadership diagnostic:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Atualiza o lead no CRM (se contato veio do step de captura)
+  const email = normalize(json.contato?.email)
+  const telefone = normalize(json.contato?.telefone)
+
+  if (email) {
+    try {
+      const noteAdd = `Concluiu Diagnóstico de Liderança Estratégica em ${new Date().toLocaleString('pt-BR')}.\nDiagnostic ID: ${data.id}`
+
+      const { data: existing } = await admin
+        .from('crm_prospects')
+        .select('id, notes')
+        .eq('email', email)
+        .limit(1)
+        .maybeSingle()
+
+      if (existing) {
+        await admin
+          .from('crm_prospects')
+          .update({
+            full_name: nomeCompleto,
+            phone: telefone || undefined,
+            outreach_status: 'meeting_scheduled',
+            notes: existing.notes ? `${existing.notes}\n---\n${noteAdd}` : noteAdd,
+            last_outreach_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id)
+      } else {
+        await admin.from('crm_prospects').insert({
+          full_name: nomeCompleto,
+          job_title: cargoAtual || 'Não informado',
+          job_function: 'outro',
+          company_name: 'Não informado',
+          email,
+          phone: telefone || null,
+          outreach_status: 'meeting_scheduled',
+          notes: noteAdd,
+          last_outreach_at: new Date().toISOString(),
+        })
+      }
+    } catch (e) {
+      console.error('[diagnostico] CRM upsert failed:', e)
+    }
   }
 
   return NextResponse.json({ success: true, diagnosticId: data.id })

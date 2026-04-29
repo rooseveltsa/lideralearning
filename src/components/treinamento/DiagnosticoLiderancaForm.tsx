@@ -185,9 +185,23 @@ const sectionDescClass = 'mt-1 text-sm leading-relaxed text-[#64748B]'
    Component
 ───────────────────────────────────────────── */
 
-export default function DiagnosticoLiderancaForm() {
+type Props = {
+  initial?: { nome?: string; email?: string; telefone?: string }
+}
+
+export default function DiagnosticoLiderancaForm({ initial }: Props = {}) {
   const [step, setStep] = useState(0)
-  const [form, setForm] = useState<DiagnosticoFormData>(initialForm)
+  const [form, setForm] = useState<DiagnosticoFormData>(() => ({
+    ...initialForm,
+    identificacao: {
+      ...initialForm.identificacao,
+      nomeCompleto: initial?.nome ?? '',
+    },
+  }))
+  const [contato] = useState({
+    email: initial?.email ?? '',
+    telefone: initial?.telefone ?? '',
+  })
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [sucesso, setSucesso] = useState(false)
@@ -280,7 +294,7 @@ export default function DiagnosticoLiderancaForm() {
       const response = await fetch('/api/treinamento/diagnostico', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, contato }),
       })
 
       const data = (await response.json()) as { success?: boolean; error?: string }
@@ -297,25 +311,149 @@ export default function DiagnosticoLiderancaForm() {
     }
   }
 
-  /* ── Success State ── */
+  /* ── Success State ── ▸ PDI imprimível ── */
 
   if (sucesso) {
+    const mediaDimensoes = (
+      Object.values(form.dimensoes).reduce((a, b) => a + b, 0) / 5
+    ).toFixed(1)
+    const dimensoesLabels: Record<keyof DimensaoNota, string> = {
+      facilitador: 'Facilitador',
+      orientador: 'Orientador',
+      garantidor: 'Garantidor',
+      estrategista: 'Estrategista',
+      mentor: 'Mentor',
+    }
+
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-[#4CAF35]/30 bg-[#4CAF35]/5 p-8 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#4CAF35] text-white">
-          <CheckCircle2 className="h-7 w-7" />
+      <div className="space-y-6">
+        <style jsx global>{`
+          @media print {
+            header, footer, nav, .no-print {
+              display: none !important;
+            }
+            main, body {
+              background: #fff !important;
+            }
+          }
+        `}</style>
+
+        {/* Sucesso topo */}
+        <div className="no-print rounded-2xl border border-[#4CAF35]/30 bg-[#4CAF35]/5 p-6 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#4CAF35] text-white">
+            <CheckCircle2 className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-extrabold text-[#0F172A]">
+            Seu PDI está pronto, {form.identificacao.nomeCompleto.split(' ')[0]}!
+          </h3>
+          <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-[#64748B]">
+            Abaixo está seu Plano de Desenvolvimento Individual com base no diagnóstico que você
+            preencheu. Use o botão para imprimir ou salvar como PDF.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#1565C0] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#0D47A1]"
+            >
+              Imprimir / Salvar como PDF
+            </button>
+            <a
+              href="https://wa.me/5564996099020?text=Ol%C3%A1%2C%20acabei%20de%20gerar%20meu%20PDI%20no%20site%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"
+            >
+              Falar com Claudemir
+            </a>
+          </div>
         </div>
-        <h3 className="text-xl font-bold text-[#0F172A]">Diagnóstico enviado com sucesso!</h3>
-        <p className="mt-3 text-sm leading-relaxed text-[#64748B]">
-          Seu diagnóstico de liderança estratégica foi registrado. O mentor Claudemir entrará em contato
-          para agendar a 1a sessão de mentoria e alinhar os próximos passos do seu plano de desenvolvimento.
-        </p>
-        <a
-          href="https://wa.me/5564996099020"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"
-        >
-          Falar com Claudemir no WhatsApp
-        </a>
+
+        {/* PDI imprimível */}
+        <div className="rounded-2xl border border-[#E3EBF6] bg-white p-8 shadow-sm">
+          <div className="border-b border-[#E5E7EB] pb-4">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#1565C0]">
+              Plano de Desenvolvimento Individual
+            </p>
+            <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-[#0F172A]">
+              {form.identificacao.nomeCompleto || 'Participante'}
+            </h1>
+            <p className="mt-1 text-sm text-[#64748B]">
+              {form.identificacao.cargoAtual}
+              {form.identificacao.departamento ? ` — ${form.identificacao.departamento}` : ''}
+            </p>
+          </div>
+
+          <section className="mt-6">
+            <h2 className="text-base font-extrabold text-[#0F172A]">Diagnóstico — 5 Dimensões</h2>
+            <p className="mt-1 text-sm text-[#64748B]">
+              Média geral: <strong>{mediaDimensoes}/5</strong>
+            </p>
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {(Object.entries(form.dimensoes) as [keyof DimensaoNota, number][]).map(([k, v]) => (
+                <div
+                  key={k}
+                  className="flex items-center justify-between rounded-xl border border-[#E5E7EB] bg-[#F8FAFD] px-4 py-3"
+                >
+                  <span className="text-sm font-bold text-[#111827]">{dimensoesLabels[k]}</span>
+                  <span
+                    className="text-sm font-extrabold"
+                    style={{ color: v >= 4 ? '#4CAF35' : v >= 3 ? '#F59E0B' : '#EF4444' }}
+                  >
+                    {v}/5
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <h2 className="text-base font-extrabold text-[#0F172A]">Reflexão Estratégica</h2>
+            <div className="mt-3 space-y-3 text-sm">
+              {form.reflexao.visaoTempo && (
+                <div>
+                  <p className="font-bold text-[#334155]">Visão e Tempo</p>
+                  <p className="mt-0.5 text-[#64748B]">{form.reflexao.visaoTempo}</p>
+                </div>
+              )}
+              {form.reflexao.tomadaDecisao && (
+                <div>
+                  <p className="font-bold text-[#334155]">Tomada de Decisão</p>
+                  <p className="mt-0.5 text-[#64748B]">{form.reflexao.tomadaDecisao}</p>
+                </div>
+              )}
+              {form.reflexao.autonomiaTime && (
+                <div>
+                  <p className="font-bold text-[#334155]">Autonomia do Time</p>
+                  <p className="mt-0.5 text-[#64748B]">{form.reflexao.autonomiaTime}</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="mt-6">
+            <h2 className="text-base font-extrabold text-[#0F172A]">Plano de Ação — 12 semanas</h2>
+            <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[#334155]">
+              {form.plano.compromisso1 && <li>{form.plano.compromisso1}</li>}
+              {form.plano.compromisso2 && <li>{form.plano.compromisso2}</li>}
+              {form.plano.compromisso3 && <li>{form.plano.compromisso3}</li>}
+            </ol>
+          </section>
+
+          {form.maturidade.soWhat && (
+            <section className="mt-6">
+              <h2 className="text-base font-extrabold text-[#0F172A]">Próximo Passo Crítico</h2>
+              <p className="mt-2 text-sm text-[#334155]">{form.maturidade.soWhat}</p>
+            </section>
+          )}
+
+          <div className="mt-8 border-t border-[#E5E7EB] pt-4 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-[#1565C0]">
+              LIDERA Treinamentos
+            </p>
+            <p className="mt-1 text-xs text-[#94A3B8]">
+              Liderar é inspirar. Transforme dados em decisões e pessoas em talentos.
+            </p>
+          </div>
+        </div>
       </div>
     )
   }
