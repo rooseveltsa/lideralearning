@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   GraduationCap,
   LayoutDashboard,
+  Sparkles,
   TrendingUp,
   Users,
 } from 'lucide-react'
@@ -16,6 +17,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/pessoas', label: 'Pessoas', icon: Users },
   { href: '/admin/avaliacoes', label: 'Avaliacoes', icon: ClipboardCheck },
+  { href: '/admin/diagnosticos', label: 'Diagnósticos', icon: Sparkles },
   { href: '/admin/treinamentos', label: 'Treinamentos', icon: GraduationCap },
   { href: '/admin/conteudo', label: 'Programa', icon: BookOpen },
   { href: '/admin/comercial', label: 'Comercial', icon: TrendingUp },
