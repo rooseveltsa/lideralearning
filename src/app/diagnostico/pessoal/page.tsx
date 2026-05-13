@@ -1,7 +1,10 @@
 import Link from 'next/link'
-import { ArrowLeft, Construction } from 'lucide-react'
+import { ArrowLeft, User, Clock, ShieldCheck } from 'lucide-react'
+
+import { createClient } from '@/lib/supabase/server'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
+import DiagnosticoPessoalForm from '@/components/diagnostico/pessoal/DiagnosticoPessoalForm'
 
 export const metadata = {
   title: 'Autoavaliação de liderança · Lidera Treinamentos',
@@ -9,12 +12,33 @@ export const metadata = {
     'Autoavaliação comportamental, radar de pilares e Plano de Desenvolvimento Individual.',
 }
 
-export default function DiagnosticoPessoalPage() {
+export default async function DiagnosticoPessoalPage() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  let userProfile: { id: string; fullName: string; email: string } | null = null
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single()
+
+    userProfile = {
+      id: user.id,
+      fullName: profile?.full_name || user.user_metadata?.full_name || '',
+      email: user.email || '',
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F4F8FC] text-[#0F172A]">
       <SiteHeader />
 
-      <main className="px-6 pb-20 pt-32">
+      <main className="px-4 pb-20 pt-28 sm:px-6">
         <div className="mx-auto w-full max-w-[860px]">
           <Link
             href="/diagnostico"
@@ -24,29 +48,44 @@ export default function DiagnosticoPessoalPage() {
             Trocar tipo de diagnóstico
           </Link>
 
-          <div className="mt-6 rounded-3xl border border-[#E3EBF6] bg-white p-10 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFF7ED] text-[#F57C00]">
-              <Construction className="h-7 w-7" />
-            </div>
-            <h1 className="font-heading text-3xl font-extrabold tracking-tight text-[#0F172A]">
-              Autoavaliação Profissional
-            </h1>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#64748B]">
-              Formulário em construção — Fase 3 da implementação. Esta rota está pronta para
-              receber o wizard de 8 seções (~100 campos) na próxima sessão de desenvolvimento.
-            </p>
-            <p className="mx-auto mt-4 max-w-xl text-xs text-[#94A3B8]">
-              Componentes UI base, schema Supabase e fluxo de submit já implementados. Aguardando
-              encaixe das seções (Identificação, Autoavaliação, DISC pessoal, Módulos LIDERA,
-              Reflexão, Radar 0-10, PDI, Alinhamento).
-            </p>
+          <div className="mt-6 rounded-3xl border border-[#E3EBF6] bg-white p-7 sm:p-10">
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFF7ED] text-[#F57C00]">
+                <User className="h-7 w-7" />
+              </div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#F57C00]">
+                Autoavaliação profissional
+              </p>
+              <h1 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-[#0F172A] sm:text-4xl">
+                Construa seu PDI
+              </h1>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#64748B]">
+                Autoavaliação comportamental + radar de 10 pilares de vida + plano de ação para
+                os próximos 90 dias. Ao final, o Claudemir analisa pessoalmente e te chama no
+                WhatsApp.
+              </p>
 
-            <Link
-              href="/contato"
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#1565C0] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#0B4A8F]"
-            >
-              Falar diretamente com Claudemir
-            </Link>
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[#64748B]">
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-[#F57C00]" />
+                  25-40 minutos
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[#F57C00]" />
+                  Confidencial e LGPD compliant
+                </span>
+              </div>
+
+              {userProfile?.fullName && (
+                <p className="mt-4 text-sm text-[#64748B]">
+                  Respondendo como <strong className="text-[#0F172A]">{userProfile.fullName}</strong>
+                </p>
+              )}
+            </div>
+
+            <div className="mt-8 border-t border-[#E3EBF6] pt-8">
+              <DiagnosticoPessoalForm user={userProfile} />
+            </div>
           </div>
         </div>
       </main>

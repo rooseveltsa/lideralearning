@@ -7,6 +7,7 @@ import { WorkshopFollowupEmailTemplate } from './templates/workshop-followup'
 import { ReengagementEmailTemplate } from './templates/reengagement'
 import { UpsellFullProgramEmailTemplate } from './templates/upsell-full-program'
 import { DiagnosticoEmpresaRecebidoTemplate } from './templates/diagnostico-empresa-recebido'
+import { DiagnosticoPessoalRecebidoTemplate } from './templates/diagnostico-pessoal-recebido'
 import { generatePartialPDI } from '@/lib/utils/pdi-generator'
 
 type TemplateType =
@@ -18,6 +19,7 @@ type TemplateType =
   | 'reengagement'
   | 'upsell-full-program'
   | 'diagnostico-empresa-recebido'
+  | 'diagnostico-pessoal-recebido'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
 
@@ -108,6 +110,21 @@ function buildEmail(
           empresa: (data.empresa as string) || 'sua empresa',
           supervisorNome: (data.supervisorNome as string) || 'o supervisor avaliado',
           fitScore: (data.fitScore as number) || 0,
+          discScores:
+            (data.discScores as Record<string, number>) || { D: 0, I: 0, S: 0, C: 0 },
+        }),
+      }
+    }
+    case 'diagnostico-pessoal-recebido': {
+      const nomeCompleto = (data.nomeCompleto as string) || 'Líder'
+      const firstName = nomeCompleto.trim().split(' ')[0]
+      return {
+        subject: `${firstName}, seu PDI inicial está pronto — análise em até 24h`,
+        react: DiagnosticoPessoalRecebidoTemplate({
+          nomeCompleto,
+          empresa: (data.empresa as string) || undefined,
+          selfScore: (data.selfScore as number) || 0,
+          radarAverage: (data.radarAverage as number) || 0,
           discScores:
             (data.discScores as Record<string, number>) || { D: 0, I: 0, S: 0, C: 0 },
         }),
