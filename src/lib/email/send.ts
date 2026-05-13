@@ -1,4 +1,4 @@
-import { resend, isEmailEnabled, EMAIL_FROM } from './resend'
+import { resend, isEmailEnabled, EMAIL_FROM, EMAIL_REPLY_TO } from './resend'
 import { WelcomeEmailTemplate } from './templates/welcome'
 import { AssessmentCompleteEmailTemplate } from './templates/assessment-complete'
 import { CertificateReadyEmailTemplate } from './templates/certificate-ready'
@@ -22,15 +22,23 @@ function buildEmail(
         subject: `${data.name || 'Participante'}, bem-vindo a LIDERA Treinamentos!`,
         react: WelcomeEmailTemplate({ name: (data.name as string) || 'Participante' }),
       }
-    case 'assessment-complete':
+    case 'assessment-complete': {
+      const firstName = ((data.name as string) || 'Participante').split(' ')[0]
       return {
-        subject: `${data.name || 'Participante'}, seu diagnostico de lideranca esta pronto!`,
+        subject: `${firstName}, seu diagnóstico de liderança chegou — veja seu perfil e próximos passos`,
         react: AssessmentCompleteEmailTemplate({
           name: (data.name as string) || 'Participante',
           perfil: (data.perfil as string) || 'transicao',
           score: (data.score as number) || 0,
+          dimensoes: data.dimensoes as
+            | Parameters<typeof AssessmentCompleteEmailTemplate>[0]['dimensoes']
+            | undefined,
+          topGaps: data.topGaps as
+            | Parameters<typeof AssessmentCompleteEmailTemplate>[0]['topGaps']
+            | undefined,
         }),
       }
+    }
     case 'certificate-ready':
       return {
         subject: `Parabens ${data.name || 'Participante'}! Seu certificado LIDERA foi emitido`,
@@ -106,6 +114,7 @@ export async function sendEmail(
       to,
       subject,
       react,
+      replyTo: EMAIL_REPLY_TO,
     })
 
     if (error) {

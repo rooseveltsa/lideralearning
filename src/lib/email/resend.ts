@@ -6,4 +6,7 @@ export const resend = apiKey ? new Resend(apiKey) : null
 
 export const isEmailEnabled = !!apiKey
 
-export const EMAIL_FROM = 'LIDERA Treinamentos <noreply@lideralearning.vercel.app>'
+export const EMAIL_FROM =
+  process.env.EMAIL_FROM || 'LIDERA Treinamentos <noreply@lideralearning.vercel.app>'
+
+export const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || 'claudemir@lideralearning.com.br'

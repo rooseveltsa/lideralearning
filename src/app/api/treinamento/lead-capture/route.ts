@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { sendEmailWithRetry } from '@/lib/email/send-with-retry'
+import { logger, maskEmail } from '@/lib/logger/structured'
+import { computeTopGaps, type Dimensoes } from '@/lib/treinamento/recomendacoes'
 
 type Payload = {
   nome?: string
@@ -58,6 +61,8 @@ export async function POST(request: Request) {
     .filter(Boolean)
     .join('\n')
 
+  let leadId: string | null = null
+
   try {
     const { data: existing } = await admin
       .from('crm_prospects')
@@ -79,23 +84,106 @@ export async function POST(request: Request) {
           last_outreach_at: now,
         })
         .eq('id', existing.id)
+      leadId = existing.id
     } else {
-      await admin.from('crm_prospects').insert({
-        full_name: nome,
-        job_title: 'Não informado',
-        job_function: 'outro',
-        company_name: 'Não informado',
-        email,
-        phone: telefone,
-        outreach_status: 'replied',
-        notes,
-        last_outreach_at: now,
-      })
+      const { data: inserted } = await admin
+        .from('crm_prospects')
+        .insert({
+          full_name: nome,
+          job_title: 'Não informado',
+          job_function: 'outro',
+          company_name: 'Não informado',
+          email,
+          phone: telefone,
+          outreach_status: 'replied',
+          notes,
+          last_outreach_at: now,
+        })
+        .select('id')
+        .single()
+      leadId = inserted?.id ?? null
     }
+
+    logger.info('lead_captured', {
+      leadId,
+      email: maskEmail(email),
+      origem,
+      score: json.score,
+      perfil: json.perfil,
+    })
   } catch (e) {
-    console.error('[lead-capture] CRM upsert failed:', e)
+    logger.error('lead_capture_failed', {
+      email: maskEmail(email),
+      origem,
+      error: e instanceof Error ? e.message : 'unknown',
+    })
     return NextResponse.json({ error: 'Falha ao registrar lead.' }, { status: 500 })
   }
 
-  return NextResponse.json({ success: true })
+  // Send assessment-complete email synchronously when origin is autoavaliacao
+  // Lead is already saved; email failure does not roll back the lead.
+  let emailSent = false
+  let emailError: string | undefined
+
+  const shouldSendAssessmentEmail =
+    origem === 'autoavaliacao' && typeof json.score === 'number' && !!json.perfil
+
+  if (shouldSendAssessmentEmail) {
+    const respostas = json.respostas
+    const hasAllDimensoes =
+      respostas &&
+      typeof respostas.percepcao === 'number' &&
+      typeof respostas.gestao === 'number' &&
+      typeof respostas.comunicacao === 'number' &&
+      typeof respostas.tecnologia === 'number' &&
+      typeof respostas.etica === 'number' &&
+      typeof respostas.dor === 'number'
+
+    const dimensoes: Dimensoes | undefined = hasAllDimensoes
+      ? {
+          percepcao: respostas.percepcao,
+          gestao: respostas.gestao,
+          comunicacao: respostas.comunicacao,
+          tecnologia: respostas.tecnologia,
+          etica: respostas.etica,
+          dor: respostas.dor,
+        }
+      : undefined
+
+    const topGaps = dimensoes ? computeTopGaps(dimensoes, 3) : undefined
+
+    const result = await sendEmailWithRetry(
+      email,
+      'assessment-complete',
+      {
+        name: nome,
+        perfil: json.perfil,
+        score: json.score,
+        dimensoes,
+        topGaps,
+      },
+      { leadId: leadId ?? undefined, origin: origem },
+    )
+
+    emailSent = result.success
+    if (!result.success) {
+      emailError = result.error
+    }
+
+    logger.info('autoavaliacao_email_sent', {
+      leadId,
+      email: maskEmail(email),
+      success: result.success,
+      attempts: result.attempts,
+      latencyMs: result.latencyMs,
+      template: 'assessment-complete',
+    })
+  }
+
+  return NextResponse.json({
+    success: true,
+    leadId,
+    emailSent,
+    ...(emailError ? { emailError } : {}),
+  })
 }

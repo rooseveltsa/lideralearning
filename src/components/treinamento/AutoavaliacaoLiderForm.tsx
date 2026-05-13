@@ -279,7 +279,9 @@ type LeadData = {
   telefone: string
 }
 
-type Stage = 'questions' | 'result' | 'lead-capture' | 'redirecting'
+type Stage = 'questions' | 'result' | 'lead-capture' | 'email-confirmation' | 'redirecting'
+
+type EmailStatus = { sent: boolean; email: string; error?: string }
 
 export default function AutoavaliacaoLiderForm({ user }: Props) {
   const router = useRouter()
@@ -295,6 +297,7 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
     telefone: '',
   })
   const [resultado, setResultado] = useState<{ pontos: number } | null>(null)
+  const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null)
 
   const totalSteps = questoes.length
   const isResultado = stage === 'result' || stage === 'lead-capture' || stage === 'redirecting'
@@ -378,22 +381,85 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
         }),
       })
 
-      const data = (await response.json()) as { success?: boolean; error?: string }
+      const data = (await response.json()) as {
+        success?: boolean
+        error?: string
+        emailSent?: boolean
+        emailError?: string
+      }
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Falha ao registrar seus dados.')
       }
 
-      setStage('redirecting')
-      const params = new URLSearchParams({
-        nome,
-        email,
-        telefone,
-      })
-      router.push(`/treinamento/diagnostico-lideranca?${params.toString()}`)
+      setEmailStatus({ sent: !!data.emailSent, email, error: data.emailError })
+      setStage('email-confirmation')
+
+      const params = new URLSearchParams({ nome, email, telefone })
+      window.setTimeout(() => {
+        setStage('redirecting')
+        router.push(`/treinamento/diagnostico-lideranca?${params.toString()}`)
+      }, 2500)
     } catch (error: unknown) {
       setErro(error instanceof Error ? error.message : 'Erro inesperado.')
       setEnviando(false)
     }
+  }
+
+  /* ── Email Confirmation (transient — 2.5s before redirect) ── */
+
+  if (stage === 'email-confirmation' && emailStatus) {
+    const success = emailStatus.sent
+    return (
+      <div className="space-y-6">
+        <div
+          className={`rounded-2xl border p-6 text-center ${
+            success
+              ? 'border-[#10B981]/30 bg-[#ECFDF5]'
+              : 'border-[#F59E0B]/30 bg-[#FFFBEB]'
+          }`}
+        >
+          <div
+            className={`mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl ${
+              success ? 'bg-[#10B981]/10' : 'bg-[#F59E0B]/10'
+            }`}
+          >
+            {success ? (
+              <CheckCircle2 className="h-7 w-7 text-[#10B981]" />
+            ) : (
+              <AlertTriangle className="h-7 w-7 text-[#F59E0B]" />
+            )}
+          </div>
+          {success ? (
+            <>
+              <h2 className="text-lg font-extrabold text-[#0F172A]">
+                Resultado enviado para o seu email!
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#475569]">
+                Confira a caixa de entrada de{' '}
+                <strong className="text-[#0F172A]">{emailStatus.email}</strong>. Caso não encontre,
+                veja também o spam — alguns provedores demoram alguns minutos.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-extrabold text-[#0F172A]">
+                Salvamos seu resultado!
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#475569]">
+                Houve um problema ao enviar o email automático para{' '}
+                <strong className="text-[#0F172A]">{emailStatus.email}</strong>. Não se preocupe —
+                seu resultado está seguro e o Claudemir vai entrar em contato pelo WhatsApp
+                informado.
+              </p>
+            </>
+          )}
+          <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/60 px-4 py-2 text-xs font-semibold text-[#64748B]">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Redirecionando para o diagnóstico completo...
+          </div>
+        </div>
+      </div>
+    )
   }
 
   /* ── Lead Capture ── */
