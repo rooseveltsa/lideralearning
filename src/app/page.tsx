@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import SiteFooter from '@/components/site/Footer'
 import SiteHeader from '@/components/site/Header'
+import { DiagnosticoCTA } from '@/components/diagnostico/DiagnosticoCTA'
 
 export default function HomePage() {
   return (
@@ -62,12 +63,12 @@ export default function HomePage() {
 
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/diagnostico" className="ld-btn-primary ld-btn-primary-xl">
+            <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
               Fazer diagnóstico gratuito
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
-            </Link>
+            </DiagnosticoCTA>
             <Link href="/empresas" className="ld-btn-outline-light ld-btn-primary-xl">
               Soluções para empresas
             </Link>
@@ -253,12 +254,12 @@ export default function HomePage() {
               </div>
 
               <div className="mt-10 flex gap-3">
-                <Link href="/diagnostico" className="ld-btn-primary">
+                <DiagnosticoCTA className="ld-btn-primary">
                   Começar pelo diagnóstico
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 5l7 7-7 7" />
                   </svg>
-                </Link>
+                </DiagnosticoCTA>
               </div>
             </div>
 
@@ -478,12 +479,12 @@ export default function HomePage() {
             Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
           </p>
           <div className="mt-11 flex flex-wrap justify-center gap-3">
-            <Link href="/diagnostico" className="ld-btn-primary ld-btn-primary-xl">
+            <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
               Fazer diagnóstico gratuito
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
-            </Link>
+            </DiagnosticoCTA>
             <a
               href="https://wa.me/5564996099020"
               target="_blank"
