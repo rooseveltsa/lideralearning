@@ -480,7 +480,7 @@ export default function DiagnosticoPessoalForm({ user }: Props) {
     if (!response.ok || !json.success) {
       throw new Error(json.error || 'Falha ao enviar diagnóstico.')
     }
-    router.push(`/diagnostico/pessoal/sucesso?id=${json.diagnosticoId || ''}`)
+    router.push(`/diagnostico/pessoal/resultado/${json.diagnosticoId || ''}`)
   }
 
   return (
