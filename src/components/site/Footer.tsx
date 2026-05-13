@@ -4,7 +4,7 @@ import { Instagram, Linkedin, Youtube } from 'lucide-react'
 const footerColumns = [
   { title: 'Formação', links: [{ href: '/treinamento/autoavaliacao', label: 'Diagnóstico gratuito' }, { href: '/treinamento/modulo-1', label: 'Próxima turma' }, { href: '/cursos', label: 'Academy digital' }, { href: '/certificado', label: 'Certificados' }] },
   { title: 'Empresas', links: [{ href: '/empresas', label: 'Programa corporativo' }, { href: '/treinamento/autoavaliacao', label: 'Diagnóstico organizacional' }, { href: '/empresas#casos', label: 'Casos de sucesso' }, { href: '/contato', label: 'Falar com comercial' }] },
-  { title: 'Lidera', links: [{ href: '/sobre', label: 'Quem somos' }, { href: '/sobre#claudemir', label: 'Claudemir Ferreira' }, { href: '/blog', label: 'Conteúdo' }, { href: '/contato', label: 'Contato' }] },
+  { title: 'Lidera', links: [{ href: '/sobre', label: 'Quem somos' }, { href: '/sobre#claudemir', label: 'Claudemir Domingos' }, { href: '/blog', label: 'Conteúdo' }, { href: '/contato', label: 'Contato' }] },
 ]
 
 const socialLinks = [

@@ -7,7 +7,7 @@
 **Agente atribuído:** @dev (Dex)
 **Criado por:** @sm (River) — 2026-05-13
 **Validado por:** @po (Pax) — 2026-05-13, score 9/10
-**Reportado por:** Claudemir Ferreira (owner) via briefing 2026-05-13
+**Reportado por:** Claudemir Domingos (owner) via briefing 2026-05-13
 **URL afetada:** https://lideralearning.vercel.app/treinamento/autoavaliacao
 **Deps:** Nenhuma técnica (pode começar imediatamente). Dep externa: @devops disponível para audit `RESEND_API_KEY` em prod (AC-1).
 **Riscos:**

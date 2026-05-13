@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { getDefaultRedirectForUser } from '@/lib/auth/roles'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -36,17 +37,24 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // Protect routes here
+    // Protect dashboard routes — anonymous users go to login
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
         const url = request.nextUrl.clone()
         url.pathname = '/auth/login'
         return NextResponse.redirect(url)
     }
 
-    // If user is logged in, restrict access to login/register pages
+    // Protect admin routes — anonymous users go to login
+    if (!user && request.nextUrl.pathname.startsWith('/admin')) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/auth/login'
+        return NextResponse.redirect(url)
+    }
+
+    // Logged-in user on /auth/login or /auth/register → redirect to role default
     if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/register')) {
         const url = request.nextUrl.clone()
-        url.pathname = '/dashboard'
+        url.pathname = await getDefaultRedirectForUser(supabase, user)
         return NextResponse.redirect(url)
     }
 

@@ -409,7 +409,7 @@ export function AssessmentCompleteEmailTemplate(props: {
           </p>
           <p style={styles.footerText}>Transformando supervisores em líderes de valor</p>
           <p style={styles.footerText}>
-            Claudemir Ferreira | WhatsApp: (64) 9 9609-9020
+            Claudemir Domingos | WhatsApp: (64) 9 9609-9020
           </p>
           <p style={{ ...styles.footerText, marginTop: '12px', fontSize: '11px' }}>
             Você recebeu este email porque concluiu a autoavaliação de liderança em{' '}

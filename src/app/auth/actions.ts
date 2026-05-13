@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/service'
 import { sendEmail } from '@/lib/email/send'
+import { getDefaultRedirectForUser } from '@/lib/auth/roles'
 
 // Returns an error string on failure, or redirects on success
 export async function login(formData: FormData) {
@@ -15,7 +16,7 @@ export async function login(formData: FormData) {
         password: formData.get('password') as string,
     }
 
-    const { error } = await supabase.auth.signInWithPassword(data)
+    const { data: signInData, error } = await supabase.auth.signInWithPassword(data)
 
     if (error) {
         if (error.message.toLowerCase().includes('invalid login')) {
@@ -26,7 +27,13 @@ export async function login(formData: FormData) {
 
     revalidatePath('/', 'layout')
     const redirectTo = formData.get('redirectTo') as string
-    redirect(redirectTo || '/dashboard')
+    if (redirectTo) {
+        redirect(redirectTo)
+    }
+    const fallback = signInData.user
+        ? await getDefaultRedirectForUser(supabase, signInData.user)
+        : '/dashboard'
+    redirect(fallback)
 }
 
 // Returns an error string on failure, or redirects on success

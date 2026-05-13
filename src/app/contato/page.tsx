@@ -2,26 +2,21 @@ import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import LeadFormB2B from '@/components/site/LeadFormB2B'
 import Link from 'next/link'
-import { ArrowRight, Building2, CalendarClock, Mail, MessageCircle, Phone } from 'lucide-react'
+import { ArrowRight, Building2, CalendarClock, Mail, MessageCircle } from 'lucide-react'
+import { CONTACT } from '@/lib/config/contact'
 
 const channels = [
   {
     icon: Mail,
     label: 'E-mail comercial',
-    value: 'comercial@lideratreinamentos.com.br',
-    href: 'mailto:comercial@lideratreinamentos.com.br',
+    value: CONTACT.email.commercial,
+    href: CONTACT.email.commercialMailto,
   },
   {
     icon: MessageCircle,
-    label: 'WhatsApp corporativo',
-    value: '+55 (11) 99999-9999',
-    href: 'https://wa.me/5511999999999',
-  },
-  {
-    icon: Phone,
-    label: 'Telefone',
-    value: '+55 (11) 4000-0000',
-    href: 'tel:+551140000000',
+    label: `Falar com ${CONTACT.owner.name}`,
+    value: CONTACT.whatsapp.display,
+    href: `${CONTACT.whatsapp.url}?text=Ol%C3%A1%2C%20vim%20pelo%20site%20da%20Lidera%20Treinamentos`,
   },
 ]
 
