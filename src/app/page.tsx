@@ -47,7 +47,7 @@ export default function HomePage() {
             className="ld-display mt-8"
             style={{ fontSize: 'clamp(3rem, 8vw, 7.5rem)', maxWidth: 1200, color: '#f5f1ea' }}
           >
-            Formamos os líderes que a sua <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>operação precisa.</em>
+            Formamos os líderes que a sua <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>operação precisa.</em>
           </h1>
 
           {/* Subheadline */}
@@ -62,7 +62,7 @@ export default function HomePage() {
 
           {/* CTAs */}
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link href="/treinamento/autoavaliacao" className="ld-btn-primary ld-btn-primary-xl">
+            <Link href="/diagnostico" className="ld-btn-primary ld-btn-primary-xl">
               Fazer diagnóstico gratuito
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 5l7 7-7 7" />
@@ -137,7 +137,7 @@ export default function HomePage() {
             <div>
               <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Impacto mensurável</div>
               <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)', color: '#f5f1ea' }}>
-                Formação que vira <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>resultado</em>.
+                Formação que vira <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>resultado</em>.
               </h2>
             </div>
             <p className="ld-body-lg" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 480 }}>
@@ -178,7 +178,7 @@ export default function HomePage() {
           <div className="mb-10 lg:mb-16" style={{ maxWidth: 720 }}>
             <div className="ld-eyebrow">Como funciona</div>
             <h2 className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
-              Do <em style={{ fontStyle: 'italic', color: '#ec6411' }}>diagnóstico</em> à transformação real.
+              Do <em style={{ fontStyle: 'normal', color: '#ec6411' }}>diagnóstico</em> à transformação real.
             </h2>
           </div>
 
@@ -222,7 +222,7 @@ export default function HomePage() {
             <div>
               <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Programa completo</div>
               <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea' }}>
-                Tudo que o seu líder precisa para <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>crescer.</em>
+                Tudo que o seu líder precisa para <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>crescer.</em>
               </h2>
               <p className="ld-body-lg mt-7" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 18, maxWidth: 480 }}>
                 Um programa completo que combina presencial e digital.
@@ -253,7 +253,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-10 flex gap-3">
-                <Link href="/treinamento/autoavaliacao" className="ld-btn-primary">
+                <Link href="/diagnostico" className="ld-btn-primary">
                   Começar pelo diagnóstico
                   <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M13 5l7 7-7 7" />
@@ -472,13 +472,13 @@ export default function HomePage() {
         <div className="ld-mw relative text-center">
           <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Comece sua jornada</div>
           <h2 className="ld-display mx-auto mt-5" style={{ fontSize: 'clamp(2.5rem, 7vw, 6.875rem)', color: '#f5f1ea', maxWidth: 1100 }}>
-            Descubra seu perfil de<br /><em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>liderança.</em>
+            Descubra seu perfil de<br /><em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>liderança.</em>
           </h2>
           <p className="mx-auto mt-8" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 580 }}>
             Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
           </p>
           <div className="mt-11 flex flex-wrap justify-center gap-3">
-            <Link href="/treinamento/autoavaliacao" className="ld-btn-primary ld-btn-primary-xl">
+            <Link href="/diagnostico" className="ld-btn-primary ld-btn-primary-xl">
               Fazer diagnóstico gratuito
               <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M13 5l7 7-7 7" />

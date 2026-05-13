@@ -202,9 +202,9 @@
 ═══════════════════════════════════════════════════════════════ */
 :root {
   /* Tipografia — 3 fontes obrigatórias */
-  --ld-font-display: var(--font-heading), 'Instrument Serif', 'Times New Roman', serif;
-  --ld-font-sans:    var(--font-sans), 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --ld-font-mono:    var(--font-mono), 'Geist Mono', ui-monospace, 'JetBrains Mono', monospace;
+  --ld-font-display: var(--font-heading), 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ld-font-sans:    var(--font-sans), 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ld-font-mono:    var(--font-mono), 'JetBrains Mono', ui-monospace, 'Menlo', monospace;
 
   /* Escala tipográfica (modular 1.25) */
   --ld-text-2xs:  11px;
@@ -243,15 +243,15 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* h1, h2 = Instrument Serif 400 — display/editorial */
+  /* h1, h2 = Plus Jakarta Sans 800 — display geometric authority */
   h1, h2 {
     font-family: var(--ld-font-display);
-    font-weight: 400;
-    line-height: 0.95;
+    font-weight: 800;
+    line-height: 1.05;
     letter-spacing: -0.025em;
   }
 
-  /* h3-h6 = Geist 600 — UI headings */
+  /* h3-h6 = Inter 600 — UI headings */
   h3 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-2xl); line-height: 1.15; letter-spacing: -0.018em; }
   h4 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-xl);  line-height: 1.2;  letter-spacing: -0.012em; }
   h5 { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-lg);  line-height: 1.25; letter-spacing: -0.008em; }
@@ -280,23 +280,23 @@
    Copiadas literalmente do tokens.css do Design System
 ═══════════════════════════════════════════════════════════════ */
 
-/* Display / Editorial — Instrument Serif 400
-   ✅ USE em: hero, h1, h2, citações >24px, números editoriais grandes (+34%, 12.400)
+/* Display / Authority — Plus Jakarta Sans 800
+   ✅ USE em: hero, h1, h2, números editoriais grandes (+34%, 12.400)
    ❌ NÃO USE em: h3-h6, body, botões, labels, nav, badges, breadcrumbs, tooltips, <20px */
 
-.ld-display { font-family: var(--ld-font-display); font-weight: 400; line-height: 0.95; letter-spacing: -0.02em; }
-.ld-h1      { font-family: var(--ld-font-display); font-weight: 400; font-size: var(--ld-text-5xl); line-height: 0.95; letter-spacing: -0.025em; }
-.ld-h2      { font-family: var(--ld-font-display); font-weight: 400; font-size: var(--ld-text-4xl); line-height: 1.0;  letter-spacing: -0.022em; }
+.ld-display { font-family: var(--ld-font-display); font-weight: 800; line-height: 1.0;  letter-spacing: -0.025em; }
+.ld-h1      { font-family: var(--ld-font-display); font-weight: 800; font-size: var(--ld-text-5xl); line-height: 1.05; letter-spacing: -0.028em; }
+.ld-h2      { font-family: var(--ld-font-display); font-weight: 800; font-size: var(--ld-text-4xl); line-height: 1.1;  letter-spacing: -0.022em; }
 
-/* UI Headings — Geist 600 */
+/* UI Headings — Inter 600 */
 .ld-h3      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-2xl); line-height: 1.15; letter-spacing: -0.018em; }
 .ld-h4      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-xl);  line-height: 1.2;  letter-spacing: -0.012em; }
 .ld-h5      { font-family: var(--ld-font-sans); font-weight: 600; font-size: var(--ld-text-lg);  line-height: 1.25; letter-spacing: -0.008em; }
 
-/* Eyebrow — Geist 500, uppercase, +0.14em */
+/* Eyebrow — Inter 500, uppercase, +0.14em */
 .ld-eyebrow { font-family: var(--ld-font-sans); font-weight: 500; font-size: var(--ld-text-xs); text-transform: uppercase; letter-spacing: 0.14em; color: var(--color-ld-orange-600); }
 
-/* Body — Geist 400 */
+/* Body — Inter 400 */
 .ld-body    { font-family: var(--ld-font-sans); font-size: var(--ld-text-base); line-height: 1.6;  color: var(--muted-foreground); }
 .ld-body-lg { font-family: var(--ld-font-sans); font-size: var(--ld-text-md);   line-height: 1.55; color: var(--muted-foreground); }
 

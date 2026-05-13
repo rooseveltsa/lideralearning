@@ -25,8 +25,7 @@ Você precisa do email que usa para entrar no sistema. Provavelmente é `claudem
 ```sql
 -- Promover usuário a admin
 UPDATE public.profiles
-SET role = 'admin',
-    updated_at = now()
+SET role = 'admin'
 WHERE id = (
   SELECT id FROM auth.users
   WHERE email = 'claudemir.lidera@gmail.com'

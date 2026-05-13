@@ -2,11 +2,16 @@ import React from 'react'
 
 const SITE_URL = 'https://lideralearning.vercel.app'
 
-const WHATSAPP_URL =
-  'https://wa.me/5564996099020?text=Ol%C3%A1%2C%20fiz%20a%20autoavalia%C3%A7%C3%A3o%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!'
+function buildWhatsappUrl(name: string): string {
+  const firstName = name.trim().split(' ')[0]
+  const text = firstName
+    ? `Olá, sou ${firstName} e acabei de gerar meu PDI no site. Quero saber mais sobre o treinamento LIDERA!`
+    : 'Olá, fiz a autoavaliação no site e quero saber mais sobre o treinamento LIDERA!'
+  return `https://wa.me/5564996099020?text=${encodeURIComponent(text)}`
+}
 
 const UNSUBSCRIBE_URL =
-  'mailto:claudemir@lideralearning.com.br?subject=Remover%20da%20lista%20de%20emails&body=Por%20favor%2C%20remova%20meu%20email%20da%20lista%20da%20LIDERA%20Treinamentos.'
+  'mailto:claudemir.lidera@gmail.com?subject=Remover%20da%20lista%20de%20emails&body=Por%20favor%2C%20remova%20meu%20email%20da%20lista%20da%20LIDERA%20Treinamentos.'
 
 const PERFIL_CONFIG: Record<string, { label: string; color: string; bg: string; description: string }> = {
   reativo: {
@@ -396,7 +401,7 @@ export function AssessmentCompleteEmailTemplate(props: {
             Quer conversar sobre seu resultado?
           </p>
           <div>
-            <a href={WHATSAPP_URL} style={styles.ctaSecondary}>
+            <a href={buildWhatsappUrl(name)} style={styles.ctaSecondary}>
               Falar com Claudemir
             </a>
           </div>

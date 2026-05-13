@@ -594,6 +594,13 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
 
   if (isResultado && resultado) {
     const perfil = getPerfil(resultado.pontos)
+
+    const firstName = (user?.fullName || lead.nome || '').trim().split(' ')[0]
+    const whatsappText = firstName
+      ? `Olá, sou ${firstName} e acabei de gerar meu PDI no site. Quero saber mais sobre o treinamento LIDERA!`
+      : 'Olá, fiz a autoavaliação no site e quero saber mais sobre o treinamento LIDERA!'
+    const whatsappUrl = `https://wa.me/5564996099020?text=${encodeURIComponent(whatsappText)}`
+
     const beneficios = [
       { label: 'Delegação Estruturada', desc: 'Técnicas para delegar com eficácia, sem perda de controle.' },
       { label: 'Feedback Assertivo', desc: 'Estratégias para fornecer feedback construtivo sem gerar resistência.' },
@@ -707,7 +714,7 @@ export default function AutoavaliacaoLiderForm({ user }: Props) {
               Quero meu PDI
             </button>
             <a
-              href="https://wa.me/5564996099020?text=Ol%C3%A1%2C%20fiz%20a%20autoavalia%C3%A7%C3%A3o%20e%20quero%20saber%20mais%20sobre%20o%20treinamento%20LIDERA!"
+              href={whatsappUrl}
               className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1DA851]"
             >
               Falar com Claudemir

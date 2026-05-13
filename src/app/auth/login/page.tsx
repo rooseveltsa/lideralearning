@@ -53,7 +53,7 @@ function LoginForm() {
                     <h2 className="font-heading text-4xl" style={{ lineHeight: 1.05 }}>
                         A liderança que a sua operação
                         <br />
-                        <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>precisa.</em>
+                        <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>precisa.</em>
                     </h2>
                     <p className="mt-5 max-w-sm text-sm leading-relaxed" style={{ color: 'rgba(245,241,234,0.65)' }}>
                         Acesse sua conta para continuar sua jornada de desenvolvimento na plataforma Lidera.

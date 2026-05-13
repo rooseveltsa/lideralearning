@@ -61,7 +61,7 @@ function RegisterForm() {
                         <h2 className="font-heading text-3xl" style={{ lineHeight: 1.1 }}>
                             Transforme sua
                             <br />
-                            <em style={{ fontStyle: 'italic', color: '#fb7d2e' }}>liderança</em> hoje.
+                            <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>liderança</em> hoje.
                         </h2>
                         <p className="mt-4 max-w-sm text-sm leading-relaxed" style={{ color: 'rgba(245,241,234,0.65)' }}>
                             Crie sua conta e descubra seu perfil de liderança com nosso diagnóstico gratuito.
