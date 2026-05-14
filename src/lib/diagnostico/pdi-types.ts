@@ -1,0 +1,55 @@
+// Tipos do PDI gerado e armazenado em personal_diagnostics.pdi.generated (JSONB).
+
+import type { NivelLiderId } from './pdi-knowledge/niveis-lider'
+
+export type PdiConvergenciaPoint = {
+  analise: string
+  percepcaoPessoal: string
+  percepcaoExterna: string
+  convergencia: 'Alta' | 'Média' | 'Baixa'
+  comentario: string
+}
+
+export type PdiAcao = {
+  descricao: string
+  ferramentaId: string
+  comoExecutar: string
+}
+
+export type PdiFase = {
+  numero: number
+  titulo: string
+  periodo: string
+  objetivo: string
+  acoes: PdiAcao[]
+  kpiSucesso: string
+}
+
+export type PdiProximoPasso = {
+  titulo: string
+  descricao: string
+}
+
+export type PdiReport = {
+  convergencia: {
+    resumo: string
+    pontos: PdiConvergenciaPoint[]
+  }
+  fases: PdiFase[]
+  proximosPassos: PdiProximoPasso[]
+  notaCritica: string
+  classificacao: {
+    atual: NivelLiderId
+    alvo90Dias: NivelLiderId
+  }
+  // Metadados de geração
+  meta: {
+    generatedAt: string
+    provider: 'nvidia-nim' | 'rule-based-fallback'
+    model?: string
+    promptTokens?: number
+    completionTokens?: number
+    latencyMs?: number
+    version: string
+  }
+}

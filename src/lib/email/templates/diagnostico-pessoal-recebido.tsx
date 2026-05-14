@@ -75,9 +75,11 @@ export function DiagnosticoPessoalRecebidoTemplate(props: {
   selfScore: number
   radarAverage: number
   discScores: Record<string, number>
+  diagnosticoId?: string | null
 }): React.ReactElement {
-  const { nomeCompleto, empresa, selfScore, radarAverage, discScores } = props
+  const { nomeCompleto, empresa, selfScore, radarAverage, discScores, diagnosticoId } = props
   const firstName = nomeCompleto.trim().split(' ')[0]
+  const pdiUrl = diagnosticoId ? `${SITE_URL}/diagnostico/pessoal/pdi/${diagnosticoId}` : null
 
   return (
     <div style={styles.body}>
@@ -137,12 +139,33 @@ export function DiagnosticoPessoalRecebidoTemplate(props: {
           </p>
         </div>
 
+        {pdiUrl && (
+          <div style={{ ...styles.ctaContainer, backgroundColor: '#FFF7ED' }}>
+            <p style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', margin: '0 0 12px 0' }}>
+              Seu plano de 90 dias está pronto
+            </p>
+            <a
+              href={pdiUrl}
+              style={{
+                ...styles.ctaPrimary,
+                backgroundColor: '#F57C00',
+                marginBottom: '8px',
+              }}
+            >
+              Ver meu PDI completo
+            </a>
+            <p style={{ fontSize: '11px', color: '#9A3412', margin: '8px 0 0 0' }}>
+              Plano detalhado em 3 fases · ferramentas LIDERA · KPIs de sucesso
+            </p>
+          </div>
+        )}
+
         <div style={styles.ctaContainer}>
           <p style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', margin: '0 0 12px 0' }}>
-            Quer adiantar a conversa?
+            Quer apoio para executar o plano?
           </p>
           <a href={buildWhatsappUrl(nomeCompleto)} style={styles.ctaPrimary}>
-            Falar com Claudemir agora
+            Falar com Claudemir
           </a>
         </div>
 

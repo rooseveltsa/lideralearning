@@ -119,7 +119,7 @@ function buildEmail(
       const nomeCompleto = (data.nomeCompleto as string) || 'Líder'
       const firstName = nomeCompleto.trim().split(' ')[0]
       return {
-        subject: `${firstName}, seu PDI inicial está pronto — análise em até 24h`,
+        subject: `${firstName}, seu PDI personalizado de 90 dias está pronto`,
         react: DiagnosticoPessoalRecebidoTemplate({
           nomeCompleto,
           empresa: (data.empresa as string) || undefined,
@@ -127,6 +127,7 @@ function buildEmail(
           radarAverage: (data.radarAverage as number) || 0,
           discScores:
             (data.discScores as Record<string, number>) || { D: 0, I: 0, S: 0, C: 0 },
+          diagnosticoId: (data.diagnosticoId as string | null | undefined) ?? null,
         }),
       }
     }

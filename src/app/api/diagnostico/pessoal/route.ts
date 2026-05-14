@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/service'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmailWithRetry } from '@/lib/email/send-with-retry'
 import { logger, maskEmail } from '@/lib/logger/structured'
+import { generatePdiPessoal } from '@/lib/diagnostico/pdi-generator'
 
 type Payload = {
   nomeCompleto?: string
@@ -241,7 +242,7 @@ export async function POST(request: Request) {
     })
   }
 
-  // Send confirmation email
+  // Send confirmation email (await — bloqueia para garantir entrega)
   const emailResult = await sendEmailWithRetry(
     email,
     'diagnostico-pessoal-recebido',
@@ -251,9 +252,97 @@ export async function POST(request: Request) {
       selfScore,
       radarAverage,
       discScores,
+      diagnosticoId,
     },
     { leadId: diagnosticoId ?? undefined, origin: 'diagnostico_pessoal' },
   )
+
+  // Geração do PDI em background (fire-and-forget — não bloqueia response).
+  // PDI é gravado em personal_diagnostics.pdi.generated quando pronto.
+  if (diagnosticoId) {
+    const diagId = diagnosticoId
+    void (async () => {
+      try {
+        // Recupera dados do diagnóstico (precisa de campos não preservados em variáveis)
+        const { data: full } = await admin
+          .from('personal_diagnostics')
+          .select('autoavaliacao_comportamental, radar_desenvolvimento, reflexao_profissional, pdi, alinhamento_final, linked_b2b_diagnostic_id')
+          .eq('id', diagId)
+          .single()
+
+        if (!full) return
+
+        let comparativoEmpresa = null
+        if (full.linked_b2b_diagnostic_id) {
+          const { data: b2b } = await admin
+            .from('b2b_diagnostics')
+            .select('fit_score, disc_scores, perfil_lideranca_esperado, diagnostico_atual, espaco_aberto')
+            .eq('id', full.linked_b2b_diagnostic_id as string)
+            .maybeSingle()
+          if (b2b) {
+            const espaco = b2b.espaco_aberto as Record<string, string | null> | null
+            comparativoEmpresa = {
+              fitScore: b2b.fit_score as number | undefined,
+              discScores: b2b.disc_scores as Record<string, number> | undefined,
+              perfilEsperado: b2b.perfil_lideranca_esperado as Record<string, number> | undefined,
+              diagnosticoAtual: b2b.diagnostico_atual as Record<string, number> | undefined,
+              espacoAberto: espaco
+                ? {
+                    fortalecer: espaco.fortalecer ?? undefined,
+                    eliminar: espaco.eliminar ?? undefined,
+                    excelente: espaco.excelente ?? undefined,
+                  }
+                : undefined,
+            }
+          }
+        }
+
+        const reflexao = (full.reflexao_profissional as Record<string, unknown>) || {}
+        const desejaDesenvolver =
+          (reflexao.deseja_desenvolver as Record<string, number>) || {}
+
+        const pdiReport = await generatePdiPessoal({
+          nomeCompleto,
+          empresa,
+          cargo: null,
+          tempoNaFuncao: null,
+          qtdLiderados: null,
+          selfScore,
+          radarAverage,
+          discScores,
+          autoavaliacao: (full.autoavaliacao_comportamental as Record<string, number>) || {},
+          modulos: json.modulos || {},
+          pdiForm: (full.pdi as Record<string, string | null>) || {},
+          alinhamento: (full.alinhamento_final as Record<string, string | null>) || {},
+          radar: (full.radar_desenvolvimento as Record<string, number>) || {},
+          desejaDesenvolver,
+          comparativoEmpresa,
+        })
+
+        // Persiste o PDI dentro de pdi.generated (sem migration nova)
+        const currentPdi = (full.pdi as Record<string, unknown>) || {}
+        const updatedPdi = { ...currentPdi, generated: pdiReport }
+
+        await admin
+          .from('personal_diagnostics')
+          .update({ pdi: updatedPdi })
+          .eq('id', diagId)
+
+        logger.info('pdi_persisted', {
+          diagnosticoId: diagId,
+          provider: pdiReport.meta.provider,
+          model: pdiReport.meta.model,
+          tokens:
+            (pdiReport.meta.promptTokens ?? 0) + (pdiReport.meta.completionTokens ?? 0),
+        })
+      } catch (e) {
+        logger.error('pdi_generation_failed', {
+          diagnosticoId: diagId,
+          error: e instanceof Error ? e.message : 'unknown',
+        })
+      }
+    })()
+  }
 
   return NextResponse.json({
     success: true,
