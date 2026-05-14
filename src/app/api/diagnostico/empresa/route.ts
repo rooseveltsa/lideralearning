@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/service'
 import { sendEmailWithRetry } from '@/lib/email/send-with-retry'
 import { logger, maskEmail } from '@/lib/logger/structured'
+import { generatePdiEmpresa } from '@/lib/diagnostico/pdi-empresa-generator'
 
 type Payload = {
   empresa?: string
@@ -203,9 +204,73 @@ export async function POST(request: Request) {
       supervisorNome,
       fitScore,
       discScores,
+      diagnosticoId,
     },
     { leadId: diagnosticoId ?? undefined, origin: 'diagnostico_empresa' },
   )
+
+  // Geração do PDI empresa em background (fire-and-forget).
+  // Grava em b2b_diagnostics.espaco_aberto.pdi_generated (sub-campo do JSONB existente).
+  if (diagnosticoId) {
+    const diagId = diagnosticoId
+    void (async () => {
+      try {
+        const { data: full } = await admin
+          .from('b2b_diagnostics')
+          .select(
+            'empresa, gestor_nome, supervisor_nome, supervisor_cargo, tempo_na_funcao, qtd_liderados, fit_score, disc_scores, perfil_lideranca_esperado, perfil_comportamental_desejado, diagnostico_atual, modulos_lidera, expectativas, espaco_aberto',
+          )
+          .eq('id', diagId)
+          .single()
+
+        if (!full) return
+
+        const espacoAberto = (full.espaco_aberto as Record<string, string | null>) || {}
+
+        const pdiReport = await generatePdiEmpresa({
+          empresa: (full.empresa as string) || empresa,
+          gestorNome: (full.gestor_nome as string) || gestorNome,
+          supervisorNome: (full.supervisor_nome as string) || supervisorNome,
+          supervisorCargo: (full.supervisor_cargo as string) || null,
+          tempoNaFuncao: (full.tempo_na_funcao as string) || null,
+          qtdLiderados: (full.qtd_liderados as number) || null,
+          fitScore: (full.fit_score as number) || fitScore,
+          discScores: (full.disc_scores as Record<string, number>) || discScores,
+          perfilLiderancaEsperado:
+            (full.perfil_lideranca_esperado as Record<string, number>) || {},
+          perfilComportamentalDesejado:
+            (full.perfil_comportamental_desejado as Record<string, Record<string, number>>) || {},
+          diagnosticoAtual: (full.diagnostico_atual as Record<string, number>) || {},
+          modulos: (full.modulos_lidera as Record<string, string>) || {},
+          expectativas: (full.expectativas as Record<string, number>) || {},
+          espacoAberto: {
+            fortalecer: espacoAberto.fortalecer,
+            eliminar: espacoAberto.eliminar,
+            excelente: espacoAberto.excelente,
+          },
+        })
+
+        const updatedEspacoAberto = { ...espacoAberto, pdi_generated: pdiReport }
+        await admin
+          .from('b2b_diagnostics')
+          .update({ espaco_aberto: updatedEspacoAberto })
+          .eq('id', diagId)
+
+        logger.info('pdi_empresa_persisted', {
+          diagnosticoId: diagId,
+          provider: pdiReport.meta.provider,
+          model: pdiReport.meta.model,
+          tokens:
+            (pdiReport.meta.promptTokens ?? 0) + (pdiReport.meta.completionTokens ?? 0),
+        })
+      } catch (e) {
+        logger.error('pdi_empresa_generation_failed', {
+          diagnosticoId: diagId,
+          error: e instanceof Error ? e.message : 'unknown',
+        })
+      }
+    })()
+  }
 
   return NextResponse.json({
     success: true,

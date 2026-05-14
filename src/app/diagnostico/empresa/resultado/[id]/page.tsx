@@ -181,6 +181,13 @@ export default async function DiagnosticoEmpresaResultadoPage({ params }: Params
             </p>
 
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href={`/diagnostico/empresa/pdi/${id}`}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#1565C0] px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-[#0B4A8F]"
+              >
+                <Sparkles className="h-4 w-4" />
+                Ver PDI do supervisor
+              </Link>
               <a
                 href={`https://wa.me/5564996099020?text=${waText}`}
                 target="_blank"

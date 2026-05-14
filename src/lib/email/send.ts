@@ -104,7 +104,7 @@ function buildEmail(
       const gestorNome = (data.gestorNome as string) || 'Gestor'
       const firstName = gestorNome.trim().split(' ')[0]
       return {
-        subject: `${firstName}, recebemos o diagnóstico do supervisor — análise em até 24h`,
+        subject: `${firstName}, o PDI executivo do supervisor está pronto`,
         react: DiagnosticoEmpresaRecebidoTemplate({
           gestorNome,
           empresa: (data.empresa as string) || 'sua empresa',
@@ -112,6 +112,7 @@ function buildEmail(
           fitScore: (data.fitScore as number) || 0,
           discScores:
             (data.discScores as Record<string, number>) || { D: 0, I: 0, S: 0, C: 0 },
+          diagnosticoId: (data.diagnosticoId as string | null | undefined) ?? null,
         }),
       }
     }

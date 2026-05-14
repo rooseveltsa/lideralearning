@@ -92,9 +92,11 @@ export function DiagnosticoEmpresaRecebidoTemplate(props: {
   supervisorNome: string
   fitScore: number
   discScores: Record<string, number>
+  diagnosticoId?: string | null
 }): React.ReactElement {
-  const { gestorNome, empresa, supervisorNome, fitScore, discScores } = props
+  const { gestorNome, empresa, supervisorNome, fitScore, discScores, diagnosticoId } = props
   const firstName = gestorNome.trim().split(' ')[0]
+  const pdiUrl = diagnosticoId ? `${SITE_URL}/diagnostico/empresa/pdi/${diagnosticoId}` : null
 
   return (
     <div style={styles.body}>
@@ -156,12 +158,33 @@ export function DiagnosticoEmpresaRecebidoTemplate(props: {
           </p>
         </div>
 
+        {pdiUrl && (
+          <div style={{ ...styles.ctaContainer, backgroundColor: '#EFF6FE' }}>
+            <p style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', margin: '0 0 12px 0' }}>
+              PDI executivo do {supervisorNome.split(' ')[0]} está pronto
+            </p>
+            <a
+              href={pdiUrl}
+              style={{
+                ...styles.ctaPrimary,
+                backgroundColor: '#1565C0',
+                marginBottom: '8px',
+              }}
+            >
+              Ver PDI do supervisor
+            </a>
+            <p style={{ fontSize: '11px', color: '#0B4A8F', margin: '8px 0 0 0' }}>
+              Insumo para reunião 1:1 · plano detalhado em 3 fases de 30 dias · KPIs operacionais
+            </p>
+          </div>
+        )}
+
         <div style={styles.ctaContainer}>
           <p style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', margin: '0 0 12px 0' }}>
-            Quer adiantar a conversa?
+            Quer apoio executivo na implementação?
           </p>
           <a href={buildWhatsappUrl(gestorNome, empresa)} style={styles.ctaPrimary}>
-            Falar com Claudemir agora
+            Falar com Claudemir
           </a>
         </div>
 
