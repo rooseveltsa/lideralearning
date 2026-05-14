@@ -9,7 +9,7 @@ import {
 } from '@/lib/ai/prompts/pdi-empresa-prompt'
 import { analyzeEmpresa } from './pdi-empresa-analyzer'
 import { buildRuleBasedPdiEmpresa } from './pdi-empresa-rule-fallback'
-import { FERRAMENTAS, NIVEIS_LIDER } from './pdi-knowledge'
+import { FERRAMENTAS, NIVEIS_LIDER, LITERATURAS } from './pdi-knowledge'
 import type { PdiReport } from './pdi-types'
 import { logger } from '@/lib/logger/structured'
 
@@ -17,6 +17,7 @@ const PDI_VERSION = '1.0'
 
 const VALID_FERRAMENTA_IDS = new Set(Object.keys(FERRAMENTAS))
 const VALID_NIVEL_IDS = new Set(Object.keys(NIVEIS_LIDER))
+const VALID_LITERATURA_IDS = new Set(Object.keys(LITERATURAS))
 
 function validatePdiStructure(obj: unknown): obj is PdiReport {
   if (!obj || typeof obj !== 'object') return false
@@ -105,6 +106,12 @@ export async function generatePdiEmpresa(
     }
 
     const pdi = parsed as PdiReport
+    // Filtra referências inválidas (LLM pode inventar literaturaIds)
+    if (pdi.referencias && Array.isArray(pdi.referencias)) {
+      pdi.referencias = pdi.referencias.filter((ref) =>
+        VALID_LITERATURA_IDS.has(ref.literaturaId),
+      )
+    }
     pdi.meta = {
       generatedAt: new Date().toISOString(),
       provider: 'nvidia-nim',

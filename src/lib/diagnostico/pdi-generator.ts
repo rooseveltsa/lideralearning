@@ -12,7 +12,7 @@ import {
 } from '@/lib/ai/prompts/pdi-pessoal-prompt'
 import { analyzePessoal } from './pdi-analyzer'
 import { buildRuleBasedPdi } from './pdi-rule-fallback'
-import { FERRAMENTAS, NIVEIS_LIDER } from './pdi-knowledge'
+import { FERRAMENTAS, NIVEIS_LIDER, LITERATURAS } from './pdi-knowledge'
 import type { PdiReport } from './pdi-types'
 import { logger } from '@/lib/logger/structured'
 
@@ -20,6 +20,7 @@ const PDI_VERSION = '1.0'
 
 const VALID_FERRAMENTA_IDS = new Set(Object.keys(FERRAMENTAS))
 const VALID_NIVEL_IDS = new Set(Object.keys(NIVEIS_LIDER))
+const VALID_LITERATURA_IDS = new Set(Object.keys(LITERATURAS))
 
 function validatePdiStructure(obj: unknown): obj is PdiReport {
   if (!obj || typeof obj !== 'object') return false
@@ -37,6 +38,16 @@ function validatePdiStructure(obj: unknown): obj is PdiReport {
     if (!Array.isArray(fase.acoes) || fase.acoes.length < 1) return false
     for (const acao of fase.acoes) {
       if (!VALID_FERRAMENTA_IDS.has(acao.ferramentaId)) return false
+    }
+  }
+
+  // referencias é opcional — se vier, valida que literaturaIds existem
+  if (r.referencias && Array.isArray(r.referencias)) {
+    for (const ref of r.referencias) {
+      if (!VALID_LITERATURA_IDS.has(ref.literaturaId)) {
+        // Filtra silenciosamente — não invalida o PDI inteiro
+        return true // permite passar, generator filtra inválidas depois
+      }
     }
   }
 
@@ -110,6 +121,12 @@ export async function generatePdiPessoal(
     }
 
     const pdi = parsed as PdiReport
+    // Filtra referências inválidas (LLM pode inventar literaturaIds)
+    if (pdi.referencias && Array.isArray(pdi.referencias)) {
+      pdi.referencias = pdi.referencias.filter((ref) =>
+        VALID_LITERATURA_IDS.has(ref.literaturaId),
+      )
+    }
     pdi.meta = {
       generatedAt: new Date().toISOString(),
       provider: 'nvidia-nim',

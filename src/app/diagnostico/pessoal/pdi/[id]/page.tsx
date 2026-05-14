@@ -14,6 +14,7 @@ import SiteFooter from '@/components/site/Footer'
 import { createAdminClient } from '@/lib/supabase/service'
 import { PdiConvergencia } from '@/components/diagnostico/pdi/PdiConvergencia'
 import { PdiFase } from '@/components/diagnostico/pdi/PdiFase'
+import { PdiReferencias } from '@/components/diagnostico/pdi/PdiReferencias'
 import { PdiPrintButton } from '@/components/diagnostico/pdi/PdiPrintButton'
 import { NIVEIS_LIDER } from '@/lib/diagnostico/pdi-knowledge'
 import type { PdiReport } from '@/lib/diagnostico/pdi-types'
@@ -189,6 +190,11 @@ export default async function PdiPessoalPage({ params }: Params) {
                 ))}
               </div>
             </div>
+          )}
+
+          {/* Referências bibliográficas */}
+          {pdiReport.referencias && pdiReport.referencias.length > 0 && (
+            <PdiReferencias referencias={pdiReport.referencias} />
           )}
 
           {/* Nota crítica */}

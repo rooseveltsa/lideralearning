@@ -3,7 +3,7 @@
 // User prompt monta dados específicos do diagnóstico.
 // Modelo aprende o padrão a partir do template real do doc Fernanda Campos.
 
-import { FERRAMENTAS, NIVEIS_LIDER, DISC_STRATEGIES, type NivelLider } from '@/lib/diagnostico/pdi-knowledge'
+import { FERRAMENTAS, NIVEIS_LIDER, DISC_STRATEGIES, LITERATURAS, type NivelLider } from '@/lib/diagnostico/pdi-knowledge'
 
 export const PDI_PESSOAL_SYSTEM_PROMPT = `Você é o "Consultor LIDERA", especialista em desenvolvimento de líderes operacionais brasileiros (supervisores, encarregados, gestores de linha). Sua linguagem é profissional, direta, em português do Brasil. Você fala como o Claudemir Domingos (fundador da Lidera Treinamentos).
 
@@ -71,6 +71,20 @@ Ferramentas indicadas: ${d.ferramentasRecomendadas.join(', ')}`,
   .join('\n\n')}
 
 ==================
+KNOWLEDGE BASE — FUNDAMENTOS TEÓRICOS LIDERA (14 literaturas)
+==================
+Use estas referências PARA FUNDAMENTAR ações quando relevante (não obrigatório em toda ação, mas pelo menos 3-5 livros devem aparecer nas referências finais do PDI). Cite o autor entre parênteses na descrição da ação (ex: "Implementar 5W2H (princípio reforçado por Atomic Habits, James Clear)") quando o fundamento agregar autoridade.
+
+${Object.values(LITERATURAS)
+  .map(
+    (l) =>
+      `**${l.titulo}** (${l.autor}, ${l.ano ?? 's/d'}) — id: "${l.id}", pilar: ${l.pilar}
+Aplicação LIDERA: ${l.aplicacaoLidera}
+Insight central: ${l.insightCentral}`,
+  )
+  .join('\n\n')}
+
+==================
 ESTRUTURA OBRIGATÓRIA DO OUTPUT
 ==================
 Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) com esta estrutura:
@@ -116,7 +130,14 @@ Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) co
   "classificacao": {
     "atual": "id do nivel atual (ex: lider_facilitador)",
     "alvo90Dias": "id do nivel que o PDI mira em 90 dias"
-  }
+  },
+  "referencias": [
+    {
+      "literaturaId": "id EXATO de uma literatura da knowledge base (ex: maxwell_5levels, clear_atomichabits)",
+      "porQueLer": "1-2 frases conectando este livro especificamente ao caso desta pessoa (não genérico — específico ao perfil/gap dela)"
+    }
+    // 3 a 5 referências no total. Escolha as mais relevantes ao contexto.
+  ]
 }
 
 REGRAS DO JSON:
@@ -124,6 +145,8 @@ REGRAS DO JSON:
 - Cada fase tem 2-4 ações (não 1, não 5+)
 - Cada ação referencia ferramentaId EXATA da knowledge base (caso contrário, retorne erro)
 - KPIs devem ser quantitativos (com número/percentual/meta)
+- 3 a 5 referências bibliográficas no campo "referencias" (use literaturaIds EXATOS da knowledge base)
+- "porQueLer" deve ser específico ao caso desta pessoa, não genérico
 - Tudo em português do Brasil`
 
 export type DiagnosticoPessoalInput = {

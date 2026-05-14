@@ -2,8 +2,13 @@
 // Usado quando NVIDIA NIM falhar (timeout, key inválida, free tier esgotado).
 // Output: PdiReport válido seguindo a mesma interface da geração LLM.
 
-import { DISC_STRATEGIES, NIVEIS_LIDER, FERRAMENTAS } from './pdi-knowledge'
-import type { PdiReport, PdiConvergenciaPoint, PdiFase } from './pdi-types'
+import {
+  DISC_STRATEGIES,
+  NIVEIS_LIDER,
+  FERRAMENTAS,
+  selectRelevantLiteraturas,
+} from './pdi-knowledge'
+import type { PdiReport, PdiConvergenciaPoint, PdiFase, PdiReferencia } from './pdi-types'
 import type { AnalyzerOutput } from './pdi-analyzer'
 
 export function buildRuleBasedPdi(
@@ -125,6 +130,23 @@ export function buildRuleBasedPdi(
   // ───── NOTA CRÍTICA ─────
   const notaCritica = `O maior risco identificado é que a sobrecarga operacional + ausência de plano estruturado pode gerar desmotivação e estresse acumulado. Sem execução deste PDI, o cenário tende a piorar nos próximos 6 meses. A retenção do seu talento e a evolução da operação dependem da execução dos primeiros 30 dias.`
 
+  // ───── REFERÊNCIAS BIBLIOGRÁFICAS ─────
+  const ferramentaIdsUsadas = [fase1, fase2, fase3].flatMap((f) =>
+    f.acoes.map((a) => a.ferramentaId),
+  )
+  const literaturasRelevantes = selectRelevantLiteraturas({
+    discPrimary: analyzer.discPrimary,
+    ferramentaIds: ferramentaIdsUsadas,
+    moduloIds: [],
+    nivelAtual: analyzer.nivelAtual,
+    nivelAlvo: analyzer.nivelAlvo,
+    limit: 4,
+  })
+  const referencias: PdiReferencia[] = literaturasRelevantes.map((lit) => ({
+    literaturaId: lit.id,
+    porQueLer: lit.aplicacaoLidera,
+  }))
+
   return {
     convergencia,
     fases: [fase1, fase2, fase3],
@@ -134,6 +156,7 @@ export function buildRuleBasedPdi(
       atual: analyzer.nivelAtual,
       alvo90Dias: analyzer.nivelAlvo,
     },
+    referencias,
     meta: {
       generatedAt: new Date().toISOString(),
       provider: 'rule-based-fallback',

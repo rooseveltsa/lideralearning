@@ -1,8 +1,13 @@
 // Fallback rule-based: gera PDI empresarial estruturado sem LLM.
 // Tom: executivo, terceira pessoa, voltado pro gestor.
 
-import { DISC_STRATEGIES, NIVEIS_LIDER, FERRAMENTAS } from './pdi-knowledge'
-import type { PdiReport, PdiConvergenciaPoint, PdiFase } from './pdi-types'
+import {
+  DISC_STRATEGIES,
+  NIVEIS_LIDER,
+  FERRAMENTAS,
+  selectRelevantLiteraturas,
+} from './pdi-knowledge'
+import type { PdiReport, PdiConvergenciaPoint, PdiFase, PdiReferencia } from './pdi-types'
 import type { EmpresaAnalyzerOutput } from './pdi-empresa-analyzer'
 
 export function buildRuleBasedPdiEmpresa(
@@ -133,6 +138,23 @@ export function buildRuleBasedPdiEmpresa(
   // ───── NOTA CRÍTICA ─────
   const notaCritica = `Para a ${context.empresa}, o risco principal de não executar este plano é duplo: (1) ${context.supervisorNome.split(' ')[0]} pode entrar em saturação operacional, gerando desmotivação e risco de saída (perda de talento e custo de reposição); (2) a operação continua dependente de uma única pessoa, gerando gargalo crônico e impacto direto nos indicadores de turnover, retrabalho e segurança. A execução das primeiras 4 semanas é o ponto de inflexão.`
 
+  // ───── REFERÊNCIAS BIBLIOGRÁFICAS ─────
+  const ferramentaIdsUsadas = [fase1, fase2, fase3].flatMap((f) =>
+    f.acoes.map((a) => a.ferramentaId),
+  )
+  const literaturasRelevantes = selectRelevantLiteraturas({
+    discPrimary: analyzer.discPrimary,
+    ferramentaIds: ferramentaIdsUsadas,
+    moduloIds: [],
+    nivelAtual: analyzer.nivelAtual,
+    nivelAlvo: analyzer.nivelAlvo,
+    limit: 4,
+  })
+  const referencias: PdiReferencia[] = literaturasRelevantes.map((lit) => ({
+    literaturaId: lit.id,
+    porQueLer: lit.aplicacaoLidera,
+  }))
+
   return {
     convergencia,
     fases: [fase1, fase2, fase3],
@@ -142,6 +164,7 @@ export function buildRuleBasedPdiEmpresa(
       atual: analyzer.nivelAtual,
       alvo90Dias: analyzer.nivelAlvo,
     },
+    referencias,
     meta: {
       generatedAt: new Date().toISOString(),
       provider: 'rule-based-fallback',

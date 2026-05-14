@@ -2,7 +2,7 @@
 // System prompt mesmo do pessoal (mesma Knowledge Base) mas tom executivo em 3ª pessoa.
 // Audiência: gestor que recebe o PDI como insumo para reunião com o supervisor.
 
-import { FERRAMENTAS, NIVEIS_LIDER, DISC_STRATEGIES, type NivelLider } from '@/lib/diagnostico/pdi-knowledge'
+import { FERRAMENTAS, NIVEIS_LIDER, DISC_STRATEGIES, LITERATURAS, type NivelLider } from '@/lib/diagnostico/pdi-knowledge'
 
 export const PDI_EMPRESA_SYSTEM_PROMPT = `Você é o "Consultor LIDERA", especialista em desenvolvimento de líderes operacionais brasileiros. Sua linguagem é profissional, executiva, em português do Brasil. Você fala como o Claudemir Domingos (fundador da Lidera Treinamentos).
 
@@ -73,6 +73,20 @@ Ferramentas indicadas: ${d.ferramentasRecomendadas.join(', ')}`,
   .join('\n\n')}
 
 ==================
+KNOWLEDGE BASE — FUNDAMENTOS TEÓRICOS LIDERA (14 literaturas)
+==================
+Use para fundamentar recomendações com autoridade acadêmica. Para o gestor que vai ler, isso transmite que o plano não é palpite — é metodologia validada. Cite no máximo 1x por ação (não polua). Inclua 3-5 referências no campo "referencias" do JSON.
+
+${Object.values(LITERATURAS)
+  .map(
+    (l) =>
+      `**${l.titulo}** (${l.autor}, ${l.ano ?? 's/d'}) — id: "${l.id}", pilar: ${l.pilar}
+Aplicação LIDERA: ${l.aplicacaoLidera}
+Insight central: ${l.insightCentral}`,
+  )
+  .join('\n\n')}
+
+==================
 ESTRUTURA OBRIGATÓRIA DO OUTPUT
 ==================
 Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) com esta estrutura:
@@ -118,7 +132,14 @@ Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) co
   "classificacao": {
     "atual": "id do nivel atual em que o supervisor está",
     "alvo90Dias": "id do nivel que o PDI mira em 90 dias"
-  }
+  },
+  "referencias": [
+    {
+      "literaturaId": "id EXATO de uma literatura da knowledge base (ex: maxwell_5levels, wiseman_multipliers)",
+      "porQueLer": "1-2 frases conectando o livro ao caso específico deste supervisor — para o gestor entender por que vale recomendar/ler"
+    }
+    // 3 a 5 referências no total
+  ]
 }
 
 REGRAS DO JSON:
@@ -126,6 +147,8 @@ REGRAS DO JSON:
 - Cada fase tem 2-4 ações
 - Cada ação referencia ferramentaId EXATA da knowledge base
 - KPIs devem ser quantitativos com números/percentuais
+- 3 a 5 referências bibliográficas no campo "referencias" (use literaturaIds EXATOS)
+- "porQueLer" específico ao caso, não genérico
 - Tudo em português do Brasil
 - LEMBRE: gestor está lendo. Tom executivo, 3ª pessoa, foco em ROI`
 

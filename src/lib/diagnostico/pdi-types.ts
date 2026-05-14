@@ -30,6 +30,13 @@ export type PdiProximoPasso = {
   descricao: string
 }
 
+export type PdiReferencia = {
+  // ID da literatura na knowledge base. Componente busca metadados completos.
+  literaturaId: string
+  // Justificativa: por que este livro foi escolhido para este PDI específico.
+  porQueLer: string
+}
+
 export type PdiReport = {
   convergencia: {
     resumo: string
@@ -42,6 +49,9 @@ export type PdiReport = {
     atual: NivelLiderId
     alvo90Dias: NivelLiderId
   }
+  // Referências bibliográficas que fundamentam este PDI (3-5 livros).
+  // Opcional para retro-compatibilidade (PDIs antigos sem este campo).
+  referencias?: PdiReferencia[]
   // Metadados de geração
   meta: {
     generatedAt: string
