@@ -14,6 +14,12 @@ import {
   EXPECTATIVAS_RESULTADOS,
   type ModuloKey,
 } from '@/lib/diagnostico/empresa-data'
+import {
+  PROXIMO_PASSO_SUPERVISOR,
+  PRAZO_EVOLUCAO_EMPRESA,
+  PLANO_SUCESSAO,
+} from '@/lib/diagnostico/carreira-data'
+import { KPIS_EMPRESA } from '@/lib/diagnostico/kpis-data'
 
 type FormData = {
   // 1. Identificação
@@ -39,6 +45,15 @@ type FormData = {
   comportamentosFortalecer: string
   comportamentosEliminar: string
   oQueSeriaExcelente: string
+
+  // 8. Carreira do supervisor (visão do gestor)
+  proximoPasso: string
+  prazoEvolucao: string
+  planoSucessao: string
+  maiorBloqueio: string
+
+  // 9. KPIs operacionais reais (números)
+  kpis: Record<string, string>
 }
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
@@ -64,6 +79,11 @@ const initialData: FormData = {
   comportamentosFortalecer: '',
   comportamentosEliminar: '',
   oQueSeriaExcelente: '',
+  proximoPasso: '',
+  prazoEvolucao: '',
+  planoSucessao: '',
+  maiorBloqueio: '',
+  kpis: {},
 }
 
 const inputClass =
@@ -386,6 +406,94 @@ export default function DiagnosticoEmpresaForm() {
           return 'Responda ao menos um campo do espaço aberto para finalizar.'
         return null
       },
+    },
+    {
+      id: 'carreira',
+      title: '8. Visão de Carreira do Supervisor',
+      subtitle:
+        'Qual o futuro projetado para este supervisor dentro da empresa? Essas respostas calibram a urgência e foco do PDI.',
+      render: (data, update) => (
+        <div className="space-y-4">
+          <ChoicePicker
+            label="Qual é o próximo passo natural para esta pessoa?"
+            options={PROXIMO_PASSO_SUPERVISOR}
+            value={data.proximoPasso}
+            onChange={(v) => update({ proximoPasso: v })}
+          />
+
+          <ChoicePicker
+            label="Qual prazo realista para essa evolução?"
+            options={PRAZO_EVOLUCAO_EMPRESA}
+            value={data.prazoEvolucao}
+            onChange={(v) => update({ prazoEvolucao: v })}
+          />
+
+          <ChoicePicker
+            label="Existe plano de sucessão envolvendo este supervisor?"
+            options={PLANO_SUCESSAO}
+            value={data.planoSucessao}
+            onChange={(v) => update({ planoSucessao: v })}
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">
+              Qual o <strong className="text-[#EF4444]">maior bloqueio</strong> para a carreira dele(a)?
+            </label>
+            <p className="text-xs text-[#64748B]">
+              Técnico, comportamental, político, expectativa errada, falta de oportunidade, etc.
+            </p>
+            <textarea
+              value={data.maiorBloqueio}
+              onChange={(e) => update({ maiorBloqueio: e.target.value })}
+              placeholder="Descreva com objetividade — quanto mais específico, melhor o PDI gerado..."
+              className={textareaClass}
+            />
+          </div>
+        </div>
+      ),
+      validate: (data) => {
+        if (!data.proximoPasso) return 'Escolha o próximo passo natural.'
+        if (!data.prazoEvolucao) return 'Escolha o prazo realista.'
+        if (!data.planoSucessao) return 'Indique o status de sucessão.'
+        return null
+      },
+    },
+    {
+      id: 'kpis',
+      title: '9. KPIs Operacionais Reais',
+      subtitle:
+        'Números atuais da operação dele(a). Preencha apenas os que conhece — campos vazios viram "não informado". Quanto mais números, mais específico o PDI.',
+      render: (data, update) => (
+        <div className="space-y-4">
+          <p className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-xs text-[#64748B]">
+            Não é obrigatório preencher tudo. Preencha apenas os que você sabe — o PDI usa esses
+            valores para gerar KPIs específicos (ex: &ldquo;reduzir turnover de 28% para 18%&rdquo;)
+            em vez de metas genéricas.
+          </p>
+          {KPIS_EMPRESA.map((kpi) => (
+            <div key={kpi.id} className="rounded-xl border border-[#E3EBF6] bg-white px-5 py-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-[#0F172A]">{kpi.label}</label>
+                {kpi.hint && <p className="text-xs text-[#64748B]">{kpi.hint}</p>}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={data.kpis[kpi.id] || ''}
+                    onChange={(e) => update({ kpis: { ...data.kpis, [kpi.id]: e.target.value } })}
+                    placeholder={kpi.placeholder}
+                    className={`${inputClass} max-w-[200px]`}
+                  />
+                  <span className="text-xs font-semibold uppercase tracking-wide text-[#94A3B8]">
+                    {kpi.unit}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ),
+      validate: () => null, // todos opcionais
     },
   ]
 

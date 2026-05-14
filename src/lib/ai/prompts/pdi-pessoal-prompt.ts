@@ -164,6 +164,17 @@ export type DiagnosticoPessoalInput = {
   alinhamento: Record<string, string | null>
   radar: Record<string, number>
   desejaDesenvolver: Record<string, number>
+  // PDI-4.A — Objetivo de carreira
+  objetivoCarreira?: {
+    cargo_almejado?: string | null
+    horizonte?: string | null
+    velocidade?: string | null
+    momento_vida?: string | null
+    maior_barreira?: string | null
+    quem_pode_apoiar?: string | null
+  }
+  // PDI-4.B — KPIs percebidos
+  kpisPercebidos?: Record<string, number>
   comparativoEmpresa?: {
     fitScore?: number
     discScores?: Record<string, number>
@@ -230,6 +241,34 @@ export function buildPdiPessoalUserPrompt(input: DiagnosticoPessoalInput): strin
     lines.push(`O que entrega melhor hoje: ${input.alinhamento.o_que_entrega_melhor}`)
   if (input.alinhamento.onde_maior_desalinhamento)
     lines.push(`Maior desalinhamento: ${input.alinhamento.onde_maior_desalinhamento}`)
+
+  if (input.objetivoCarreira && input.objetivoCarreira.cargo_almejado) {
+    lines.push('\n=== OBJETIVO DE CARREIRA (FONTE PDI-4.A) ===')
+    lines.push(`Cargo almejado: ${input.objetivoCarreira.cargo_almejado}`)
+    if (input.objetivoCarreira.horizonte)
+      lines.push(`Horizonte: ${input.objetivoCarreira.horizonte}`)
+    if (input.objetivoCarreira.velocidade)
+      lines.push(`Velocidade desejada: ${input.objetivoCarreira.velocidade}`)
+    if (input.objetivoCarreira.momento_vida)
+      lines.push(`Momento de vida: ${input.objetivoCarreira.momento_vida}`)
+    if (input.objetivoCarreira.maior_barreira)
+      lines.push(`Maior barreira: ${input.objetivoCarreira.maior_barreira}`)
+    if (input.objetivoCarreira.quem_pode_apoiar)
+      lines.push(`Apoio disponível: ${input.objetivoCarreira.quem_pode_apoiar}`)
+    lines.push(
+      'IMPORTANTE: calibre urgência e ferramentas pelo horizonte+velocidade. Plano de 6 meses muito acelerado é diferente de 5 anos gradual.',
+    )
+  }
+
+  if (input.kpisPercebidos && Object.keys(input.kpisPercebidos).length > 0) {
+    lines.push('\n=== KPIs OPERACIONAIS PERCEBIDOS (FONTE PDI-4.B) — escala 1 saudável a 5 crítico ===')
+    for (const [k, v] of Object.entries(input.kpisPercebidos)) {
+      lines.push(`${k}: ${v}`)
+    }
+    lines.push(
+      'IMPORTANTE: KPIs do PDI devem atacar diretamente os indicadores mais críticos (5/5). Não use KPIs genéricos quando há indicador específico ruim.',
+    )
+  }
 
   if (input.comparativoEmpresa) {
     lines.push('\n=== CRUZAMENTO COM DIAGNÓSTICO DA EMPRESA (cross-link) ===')

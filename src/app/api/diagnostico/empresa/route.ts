@@ -26,6 +26,13 @@ type Payload = {
   comportamentosFortalecer?: string
   comportamentosEliminar?: string
   oQueSeriaExcelente?: string
+  // PDI-4.A — Visão de carreira do supervisor (gestor)
+  proximoPasso?: string
+  prazoEvolucao?: string
+  planoSucessao?: string
+  maiorBloqueio?: string
+  // PDI-4.B — KPIs operacionais reais (números)
+  kpis?: Record<string, string>
 }
 
 function normalize(value: unknown): string {
@@ -107,6 +114,13 @@ export async function POST(request: Request) {
           fortalecer: normalize(json.comportamentosFortalecer) || null,
           eliminar: normalize(json.comportamentosEliminar) || null,
           excelente: normalize(json.oQueSeriaExcelente) || null,
+          objetivo_carreira_supervisor: {
+            proximo_passo: normalize(json.proximoPasso) || null,
+            prazo_evolucao: normalize(json.prazoEvolucao) || null,
+            plano_sucessao: normalize(json.planoSucessao) || null,
+            maior_bloqueio: normalize(json.maiorBloqueio) || null,
+          },
+          kpis_operacionais: json.kpis || {},
         },
         disc_scores: discScores,
         fit_score: fitScore,
@@ -225,7 +239,10 @@ export async function POST(request: Request) {
 
         if (!full) return
 
-        const espacoAberto = (full.espaco_aberto as Record<string, string | null>) || {}
+        const espacoAberto = (full.espaco_aberto as Record<string, unknown>) || {}
+        const objetivoCarreira =
+          (espacoAberto.objetivo_carreira_supervisor as Record<string, string | null>) || {}
+        const kpisOperacionais = (espacoAberto.kpis_operacionais as Record<string, string>) || {}
 
         const pdiReport = await generatePdiEmpresa({
           empresa: (full.empresa as string) || empresa,
@@ -244,10 +261,12 @@ export async function POST(request: Request) {
           modulos: (full.modulos_lidera as Record<string, string>) || {},
           expectativas: (full.expectativas as Record<string, number>) || {},
           espacoAberto: {
-            fortalecer: espacoAberto.fortalecer,
-            eliminar: espacoAberto.eliminar,
-            excelente: espacoAberto.excelente,
+            fortalecer: (espacoAberto.fortalecer as string) || undefined,
+            eliminar: (espacoAberto.eliminar as string) || undefined,
+            excelente: (espacoAberto.excelente as string) || undefined,
           },
+          objetivoCarreira,
+          kpisOperacionais,
         })
 
         const updatedEspacoAberto = { ...espacoAberto, pdi_generated: pdiReport }

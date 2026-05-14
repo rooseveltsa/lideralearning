@@ -171,6 +171,15 @@ export type DiagnosticoEmpresaInput = {
     eliminar?: string | null
     excelente?: string | null
   }
+  // PDI-4.A — Visão de carreira (gestor projeta o supervisor)
+  objetivoCarreira?: {
+    proximo_passo?: string | null
+    prazo_evolucao?: string | null
+    plano_sucessao?: string | null
+    maior_bloqueio?: string | null
+  }
+  // PDI-4.B — KPIs operacionais reais (gestor preenche números)
+  kpisOperacionais?: Record<string, string>
 }
 
 export function buildPdiEmpresaUserPrompt(input: DiagnosticoEmpresaInput): string {
@@ -218,6 +227,35 @@ export function buildPdiEmpresaUserPrompt(input: DiagnosticoEmpresaInput): strin
     lines.push(`Comportamentos a eliminar: ${input.espacoAberto.eliminar}`)
   if (input.espacoAberto.excelente)
     lines.push(`O que seria considerado excelência: ${input.espacoAberto.excelente}`)
+
+  if (input.objetivoCarreira && input.objetivoCarreira.proximo_passo) {
+    lines.push('\n=== VISÃO DE CARREIRA (FONTE PDI-4.A) ===')
+    lines.push(`Próximo passo: ${input.objetivoCarreira.proximo_passo}`)
+    if (input.objetivoCarreira.prazo_evolucao)
+      lines.push(`Prazo realista: ${input.objetivoCarreira.prazo_evolucao}`)
+    if (input.objetivoCarreira.plano_sucessao)
+      lines.push(`Status de sucessão: ${input.objetivoCarreira.plano_sucessao}`)
+    if (input.objetivoCarreira.maior_bloqueio)
+      lines.push(`Maior bloqueio percebido pelo gestor: ${input.objetivoCarreira.maior_bloqueio}`)
+    lines.push(
+      'IMPORTANTE: ajuste a urgência e profundidade do PDI ao prazo + plano de sucessão. Sucessor crítico em 6 meses = PDI mais acelerado e ferramentas de Alta Gestão.',
+    )
+  }
+
+  if (input.kpisOperacionais && Object.keys(input.kpisOperacionais).length > 0) {
+    const validKpis = Object.entries(input.kpisOperacionais).filter(
+      ([, v]) => v && v.trim() !== '',
+    )
+    if (validKpis.length > 0) {
+      lines.push('\n=== KPIs OPERACIONAIS REAIS (FONTE PDI-4.B) ===')
+      for (const [k, v] of validKpis) {
+        lines.push(`${k}: ${v}`)
+      }
+      lines.push(
+        'CRÍTICO: use esses números literalmente nos KPIs de sucesso do PDI. Ex: se turnover = 28%, KPI da fase 2 deve ser "reduzir turnover de 28% para 18% até dia 60". Nunca use KPIs genéricos quando há número real disponível.',
+      )
+    }
+  }
 
   lines.push(
     '\n=== INSTRUÇÃO FINAL ===\nGere o JSON do PDI executivo seguindo EXATAMENTE a estrutura especificada. Tom: terceira pessoa, voltado pro gestor que vai conduzir a reunião com o supervisor. Retorne SOMENTE o JSON, sem nenhum texto adicional, sem markdown.',

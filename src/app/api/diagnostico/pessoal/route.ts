@@ -32,6 +32,15 @@ type Payload = {
   oQueEmpresaEspera?: string
   oQueEntregaMelhor?: string
   ondeMaiorDesalinhamento?: string
+  // Step 9 — Carreira
+  cargoAlmejado?: string
+  horizonteCarreira?: string
+  velocidadeDesejada?: string
+  momentoVida?: string
+  maiorBarreira?: string
+  quemPodeApoiarCarreira?: string
+  // Step 10 — KPIs percebidos
+  kpisPercebidos?: Record<string, number>
 }
 
 function normalize(value: unknown): string {
@@ -153,6 +162,15 @@ export async function POST(request: Request) {
           o_que_empresa_espera: normalize(json.oQueEmpresaEspera) || null,
           o_que_entrega_melhor: normalize(json.oQueEntregaMelhor) || null,
           onde_maior_desalinhamento: normalize(json.ondeMaiorDesalinhamento) || null,
+          objetivo_carreira: {
+            cargo_almejado: normalize(json.cargoAlmejado) || null,
+            horizonte: normalize(json.horizonteCarreira) || null,
+            velocidade: normalize(json.velocidadeDesejada) || null,
+            momento_vida: normalize(json.momentoVida) || null,
+            maior_barreira: normalize(json.maiorBarreira) || null,
+            quem_pode_apoiar: normalize(json.quemPodeApoiarCarreira) || null,
+          },
+          kpis_percebidos: json.kpisPercebidos || {},
         },
         disc_scores: discScores,
         modulo_scores: { self_score: selfScore },
@@ -301,6 +319,10 @@ export async function POST(request: Request) {
         const desejaDesenvolver =
           (reflexao.deseja_desenvolver as Record<string, number>) || {}
 
+        const alinhamentoData = (full.alinhamento_final as Record<string, unknown>) || {}
+        const objetivoCarreira = (alinhamentoData.objetivo_carreira as Record<string, string | null>) || {}
+        const kpisPercebidos = (alinhamentoData.kpis_percebidos as Record<string, number>) || {}
+
         const pdiReport = await generatePdiPessoal({
           nomeCompleto,
           empresa,
@@ -313,10 +335,17 @@ export async function POST(request: Request) {
           autoavaliacao: (full.autoavaliacao_comportamental as Record<string, number>) || {},
           modulos: json.modulos || {},
           pdiForm: (full.pdi as Record<string, string | null>) || {},
-          alinhamento: (full.alinhamento_final as Record<string, string | null>) || {},
+          alinhamento: {
+            o_que_empresa_espera: (alinhamentoData.o_que_empresa_espera as string) || null,
+            o_que_entrega_melhor: (alinhamentoData.o_que_entrega_melhor as string) || null,
+            onde_maior_desalinhamento:
+              (alinhamentoData.onde_maior_desalinhamento as string) || null,
+          },
           radar: (full.radar_desenvolvimento as Record<string, number>) || {},
           desejaDesenvolver,
           comparativoEmpresa,
+          objetivoCarreira,
+          kpisPercebidos,
         })
 
         // Persiste o PDI dentro de pdi.generated (sem migration nova)

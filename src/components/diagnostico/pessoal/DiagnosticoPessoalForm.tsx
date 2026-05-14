@@ -15,6 +15,12 @@ import {
   PILARES_RADAR,
   type ModuloPessoalKey,
 } from '@/lib/diagnostico/pessoal-data'
+import {
+  HORIZONTE_CARREIRA,
+  VELOCIDADE_DESEJADA,
+  MOMENTO_VIDA,
+} from '@/lib/diagnostico/carreira-data'
+import { KPIS_PESSOAL_PERCEBIDOS } from '@/lib/diagnostico/kpis-data'
 
 type UserProfile = { id: string; fullName: string; email: string } | null
 
@@ -55,6 +61,17 @@ type FormData = {
   oQueEmpresaEspera: string
   oQueEntregaMelhor: string
   ondeMaiorDesalinhamento: string
+
+  // 9. Carreira
+  cargoAlmejado: string
+  horizonteCarreira: string
+  velocidadeDesejada: string
+  momentoVida: string
+  maiorBarreira: string
+  quemPodeApoiarCarreira: string
+
+  // 10. KPIs percebidos
+  kpisPercebidos: Record<string, number>
 }
 
 const todayISO = () => new Date().toISOString().slice(0, 10)
@@ -86,6 +103,13 @@ function getInitialData(user: UserProfile): FormData {
     oQueEmpresaEspera: '',
     oQueEntregaMelhor: '',
     ondeMaiorDesalinhamento: '',
+    cargoAlmejado: '',
+    horizonteCarreira: '',
+    velocidadeDesejada: '',
+    momentoVida: '',
+    maiorBarreira: '',
+    quemPodeApoiarCarreira: '',
+    kpisPercebidos: {},
   }
 }
 
@@ -465,6 +489,112 @@ export default function DiagnosticoPessoalForm({ user }: Props) {
           !data.ondeMaiorDesalinhamento.trim()
         )
           return 'Preencha ao menos um campo do alinhamento final.'
+        return null
+      },
+    },
+    {
+      id: 'carreira',
+      title: '9. Objetivo de Carreira',
+      subtitle:
+        'Onde você quer chegar — sem isso, qualquer PDI vira generalismo. Suas respostas calibram urgência e foco do plano.',
+      render: (data, update) => (
+        <div className="space-y-5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">
+              Qual <strong className="text-[#1565C0]">cargo / posição</strong> você gostaria de ocupar?
+            </label>
+            <input
+              type="text"
+              value={data.cargoAlmejado}
+              onChange={(e) => update({ cargoAlmejado: e.target.value })}
+              placeholder="Ex: Coordenador de Produção, Gerente de Operações, Diretor Industrial..."
+              className={inputClass}
+            />
+          </div>
+
+          <ChoicePicker
+            label="Em quanto tempo?"
+            helperText="Quanto tempo você se dá para chegar lá"
+            options={HORIZONTE_CARREIRA}
+            value={data.horizonteCarreira}
+            onChange={(v) => update({ horizonteCarreira: v })}
+          />
+
+          <ChoicePicker
+            label="Qual velocidade desejada?"
+            helperText="Quanto você está disposto(a) a investir"
+            options={VELOCIDADE_DESEJADA}
+            value={data.velocidadeDesejada}
+            onChange={(v) => update({ velocidadeDesejada: v })}
+          />
+
+          <ChoicePicker
+            label="Qual o seu momento de vida hoje?"
+            helperText="Contexto pessoal impacta o ritmo do plano"
+            options={MOMENTO_VIDA}
+            value={data.momentoVida}
+            onChange={(v) => update({ momentoVida: v })}
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">
+              Qual sua <strong className="text-[#EF4444]">maior barreira</strong> percebida?
+            </label>
+            <p className="text-xs text-[#64748B]">
+              O que pode te impedir de chegar lá: técnica, comportamental, política, mercado...
+            </p>
+            <textarea
+              value={data.maiorBarreira}
+              onChange={(e) => update({ maiorBarreira: e.target.value })}
+              className={textareaClass}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#334155]">
+              <strong className="text-[#7B1FA2]">Quem pode te apoiar</strong> nessa jornada de carreira?
+            </label>
+            <p className="text-xs text-[#64748B]">Mentor, gestor direto, mentor externo, network setor...</p>
+            <textarea
+              value={data.quemPodeApoiarCarreira}
+              onChange={(e) => update({ quemPodeApoiarCarreira: e.target.value })}
+              className={textareaClass}
+            />
+          </div>
+        </div>
+      ),
+      validate: (data) => {
+        if (!data.cargoAlmejado.trim()) return 'Informe um cargo ou posição almejada.'
+        if (!data.horizonteCarreira) return 'Escolha o horizonte de tempo.'
+        if (!data.velocidadeDesejada) return 'Escolha a velocidade desejada.'
+        if (!data.momentoVida) return 'Escolha seu momento de vida atual.'
+        return null
+      },
+    },
+    {
+      id: 'kpis',
+      title: '10. KPIs Operacionais Percebidos',
+      subtitle:
+        'Como você percebe os indicadores da sua operação hoje? Escala 1 (saudável) a 5 (muito crítico).',
+      render: (data, update) => (
+        <div className="space-y-3">
+          {KPIS_PESSOAL_PERCEBIDOS.map((k) => (
+            <ScaleRating
+              key={k.id}
+              label={k.label}
+              minLabel="Saudável"
+              maxLabel="Muito crítico"
+              helperText={k.description}
+              value={data.kpisPercebidos[k.id]}
+              onChange={(v) => update({ kpisPercebidos: { ...data.kpisPercebidos, [k.id]: v } })}
+            />
+          ))}
+        </div>
+      ),
+      validate: (data) => {
+        const answered = Object.keys(data.kpisPercebidos).length
+        if (answered < KPIS_PESSOAL_PERCEBIDOS.length)
+          return `Avalie todos os ${KPIS_PESSOAL_PERCEBIDOS.length} indicadores (${answered}/${KPIS_PESSOAL_PERCEBIDOS.length} respondidos).`
         return null
       },
     },
