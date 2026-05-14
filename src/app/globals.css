@@ -609,3 +609,76 @@
     -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PRINT — Otimizado para PDI baixar como PDF
+   Use class "print-area" no wrapper do conteúdo a imprimir
+   e "print:hidden" do Tailwind nos elementos a ocultar
+═══════════════════════════════════════════════════════════════ */
+@media print {
+  /* Background limpo e cores otimizadas */
+  html, body {
+    background: white !important;
+    color: #0F172A !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Esconde header e footer do site no print */
+  header, footer, nav {
+    display: none !important;
+  }
+
+  /* Remove sombras e gradientes pesados — mantém legibilidade */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Cards com borda sutil em vez de shadow */
+  .rounded-2xl, .rounded-3xl {
+    border: 1px solid #E3EBF6 !important;
+    background: white !important;
+    border-radius: 8px !important;
+    page-break-inside: avoid;
+  }
+
+  /* Page-break entre fases do PDI (cada fase começa em nova página se necessário) */
+  .pdi-fase {
+    page-break-inside: avoid;
+    page-break-before: auto;
+  }
+
+  /* Tabela da convergência fica em uma página */
+  .pdi-convergencia {
+    page-break-inside: avoid;
+  }
+
+  /* Tipografia print-friendly */
+  h1 { font-size: 24pt !important; margin: 0 0 12pt 0 !important; }
+  h2 { font-size: 18pt !important; margin: 16pt 0 8pt 0 !important; }
+  h3 { font-size: 14pt !important; margin: 12pt 0 6pt 0 !important; }
+  p, li, td, th { font-size: 11pt !important; line-height: 1.45 !important; }
+
+  /* Margens da página */
+  @page {
+    margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+    size: A4 portrait;
+  }
+
+  /* Botões e links externos do tipo "Falar com Claudemir" não imprimem */
+  a[href^="https://wa.me"] {
+    display: none !important;
+  }
+
+  /* Detalhes (details) sempre abertos no print */
+  details[open], details {
+    display: block !important;
+  }
+  details summary svg {
+    display: none !important;
+  }
+  details summary {
+    cursor: default !important;
+  }
+}

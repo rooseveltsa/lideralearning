@@ -14,6 +14,7 @@ import SiteFooter from '@/components/site/Footer'
 import { createAdminClient } from '@/lib/supabase/service'
 import { PdiConvergencia } from '@/components/diagnostico/pdi/PdiConvergencia'
 import { PdiFase } from '@/components/diagnostico/pdi/PdiFase'
+import { PdiPrintButton } from '@/components/diagnostico/pdi/PdiPrintButton'
 import { NIVEIS_LIDER } from '@/lib/diagnostico/pdi-knowledge'
 import type { PdiReport } from '@/lib/diagnostico/pdi-types'
 
@@ -98,13 +99,16 @@ export default async function PdiPessoalPage({ params }: Params) {
 
       <main className="px-4 pb-20 pt-28 sm:px-6">
         <div className="mx-auto w-full max-w-[1000px] space-y-6">
-          <Link
-            href={`/diagnostico/pessoal/resultado/${id}`}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar ao resultado do diagnóstico
-          </Link>
+          <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+            <Link
+              href={`/diagnostico/pessoal/resultado/${id}`}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar ao resultado do diagnóstico
+            </Link>
+            <PdiPrintButton variant="secondary" label="Baixar PDI em PDF" />
+          </div>
 
           {/* Hero */}
           <div className="rounded-3xl border border-[#E3EBF6] bg-gradient-to-br from-[#FFF7ED] to-white p-7 sm:p-10">
@@ -215,7 +219,7 @@ export default async function PdiPessoalPage({ params }: Params) {
               mentoria, treinamento presencial e acompanhamento dos próximos 60 dias.
             </p>
 
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3 print:hidden">
               <a
                 href={`https://wa.me/5564996099020?text=${waText}`}
                 target="_blank"
@@ -225,6 +229,7 @@ export default async function PdiPessoalPage({ params }: Params) {
                 <MessageCircle className="h-4 w-4" />
                 Falar com Claudemir
               </a>
+              <PdiPrintButton variant="secondary" label="Baixar PDI em PDF" />
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 rounded-xl border border-[#FCD49C] bg-white px-6 py-3 text-sm font-bold text-[#9A3412] transition-colors hover:bg-[#FFF7ED]"
