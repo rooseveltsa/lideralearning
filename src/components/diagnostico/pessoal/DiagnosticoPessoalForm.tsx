@@ -28,6 +28,7 @@ type FormData = {
   // 1. Identificação
   nomeCompleto: string
   email: string
+  whatsapp: string
   empresa: string
   cargo: string
   setor: string
@@ -80,6 +81,7 @@ function getInitialData(user: UserProfile): FormData {
   return {
     nomeCompleto: user?.fullName || '',
     email: user?.email || '',
+    whatsapp: '',
     empresa: '',
     cargo: '',
     setor: '',
@@ -176,6 +178,15 @@ export default function DiagnosticoPessoalForm({ user }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField label="Nome completo" value={data.nomeCompleto} onChange={(v) => update({ nomeCompleto: v })} icon={UserIcon} required />
           <TextField label="E-mail" value={data.email} onChange={(v) => update({ email: v })} icon={Mail} type="email" inputMode="email" required />
+          <TextField
+            label="WhatsApp"
+            value={data.whatsapp}
+            onChange={(v) => update({ whatsapp: v })}
+            icon={Phone}
+            type="tel"
+            inputMode="tel"
+            placeholder="(64) 9 9609-9020"
+          />
           <TextField label="Empresa (atual ou última)" value={data.empresa} onChange={(v) => update({ empresa: v })} icon={Building2} placeholder="Mesmo nome do form empresa, se houver" />
           <TextField label="Cargo / Função" value={data.cargo} onChange={(v) => update({ cargo: v })} icon={Briefcase} placeholder="Supervisor de Produção..." />
           <TextField label="Setor" value={data.setor} onChange={(v) => update({ setor: v })} placeholder="Produção, Logística..." />

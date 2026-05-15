@@ -1,7 +1,15 @@
-import Link from 'next/link'
-import { ExternalLink, Building2, User, Download, Calendar, Mail } from 'lucide-react'
+import { Building2, User, Download, Calendar, Mail } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/service'
 import { DiagnosticosFilters } from '@/components/admin/diagnosticos/DiagnosticosFilters'
+import { PdiActionsCell } from '@/components/admin/diagnosticos/PdiActionsCell'
+import {
+  emailBodyEmpresa,
+  emailBodyPessoal,
+  emailSubjectEmpresa,
+  emailSubjectPessoal,
+  whatsappTextEmpresa,
+  whatsappTextPessoal,
+} from '@/lib/admin/diagnosticos-templates'
 
 export const metadata = { title: 'Diagnósticos · Admin Lidera' }
 
@@ -17,9 +25,12 @@ type B2bRow = {
   empresa: string
   gestor_nome: string
   gestor_email: string
+  gestor_whatsapp: string | null
   supervisor_nome: string
+  supervisor_whatsapp: string | null
   fit_score: number | null
   disc_scores: Record<string, number> | null
+  pdi_enviado_em: string | null
   created_at: string
 }
 
@@ -27,13 +38,38 @@ type PersonalRow = {
   id: string
   nome_completo: string
   email: string
+  whatsapp: string | null
   empresa: string | null
   cargo: string | null
   modulo_scores: Record<string, number> | null
   radar_average: number | null
   disc_scores: Record<string, number> | null
   linked_b2b_diagnostic_id: string | null
+  pdi_enviado_em: string | null
   created_at: string
+}
+
+function onlyDigits(value: string | null | undefined): string {
+  if (!value) return ''
+  return value.replace(/\D/g, '')
+}
+
+function normalizeBrazilianWhatsapp(value: string | null | undefined): string | null {
+  const digits = onlyDigits(value)
+  if (!digits) return null
+  if (digits.startsWith('55')) return digits
+  if (digits.length >= 10 && digits.length <= 11) return `55${digits}`
+  return digits
+}
+
+function buildWhatsappUrl(phone: string | null | undefined, message: string): string | null {
+  const normalized = normalizeBrazilianWhatsapp(phone)
+  if (!normalized) return null
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(message)}`
+}
+
+function firstName(full: string): string {
+  return full.trim().split(/\s+/)[0] || full
 }
 
 function formatDate(iso: string): string {
@@ -78,7 +114,7 @@ export default async function AdminDiagnosticosPage({
     let q = admin
       .from('b2b_diagnostics')
       .select(
-        'id, empresa, gestor_nome, gestor_email, supervisor_nome, fit_score, disc_scores, created_at',
+        'id, empresa, gestor_nome, gestor_email, gestor_whatsapp, supervisor_nome, supervisor_whatsapp, fit_score, disc_scores, pdi_enviado_em, created_at',
       )
       .order('created_at', { ascending: false })
       .limit(200)
@@ -99,7 +135,7 @@ export default async function AdminDiagnosticosPage({
     let q = admin
       .from('personal_diagnostics')
       .select(
-        'id, nome_completo, email, empresa, cargo, modulo_scores, radar_average, disc_scores, linked_b2b_diagnostic_id, created_at',
+        'id, nome_completo, email, whatsapp, empresa, cargo, modulo_scores, radar_average, disc_scores, linked_b2b_diagnostic_id, pdi_enviado_em, created_at',
       )
       .order('created_at', { ascending: false })
       .limit(200)
@@ -185,7 +221,9 @@ export default async function AdminDiagnosticosPage({
                     <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] text-[#64748B]">
                       Data
                     </th>
-                    <th className="px-4 py-3"></th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-[0.1em] text-[#64748B]">
+                      Ações
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,15 +255,39 @@ export default async function AdminDiagnosticosPage({
                         <td className="px-4 py-3 text-xs text-[#64748B]">
                           {formatDate(r.created_at)}
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <Link
-                            href={`/diagnostico/empresa/resultado/${r.id}`}
-                            target="_blank"
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-[#E3EBF6] px-3 py-1.5 text-xs font-semibold text-[#0B4A8F] transition-colors hover:bg-[#EFF5FD]"
-                          >
-                            Ver
-                            <ExternalLink className="h-3 w-3" />
-                          </Link>
+                        <td className="px-4 py-3">
+                          <PdiActionsCell
+                            diagnosticoId={r.id}
+                            tipo="empresa"
+                            pdiHref={`/diagnostico/empresa/pdi/${r.id}`}
+                            contatoEmail={r.gestor_email}
+                            contatoNome={r.gestor_nome}
+                            whatsappUrl={buildWhatsappUrl(
+                              r.gestor_whatsapp,
+                              whatsappTextEmpresa({
+                                firstName: firstName(r.gestor_nome),
+                                empresa: r.empresa,
+                                supervisorNome: r.supervisor_nome,
+                                diagnosticoId: r.id,
+                              }),
+                            )}
+                            enviadoEm={r.pdi_enviado_em}
+                            emailDefault={{
+                              to: r.gestor_email,
+                              subject: emailSubjectEmpresa({
+                                firstName: firstName(r.gestor_nome),
+                                empresa: r.empresa,
+                                supervisorNome: r.supervisor_nome,
+                                diagnosticoId: r.id,
+                              }),
+                              body: emailBodyEmpresa({
+                                firstName: firstName(r.gestor_nome),
+                                empresa: r.empresa,
+                                supervisorNome: r.supervisor_nome,
+                                diagnosticoId: r.id,
+                              }),
+                            }}
+                          />
                         </td>
                       </tr>
                     ))
@@ -272,7 +334,9 @@ export default async function AdminDiagnosticosPage({
                     <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] text-[#64748B]">
                       Data
                     </th>
-                    <th className="px-4 py-3"></th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-[0.1em] text-[#64748B]">
+                      Ações
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -320,15 +384,36 @@ export default async function AdminDiagnosticosPage({
                         <td className="px-4 py-3 text-xs text-[#64748B]">
                           {formatDate(r.created_at)}
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <Link
-                            href={`/diagnostico/pessoal/resultado/${r.id}`}
-                            target="_blank"
-                            className="inline-flex items-center gap-1.5 rounded-lg border border-[#E3EBF6] px-3 py-1.5 text-xs font-semibold text-[#9A3412] transition-colors hover:bg-[#FFF7ED]"
-                          >
-                            Ver
-                            <ExternalLink className="h-3 w-3" />
-                          </Link>
+                        <td className="px-4 py-3">
+                          <PdiActionsCell
+                            diagnosticoId={r.id}
+                            tipo="pessoal"
+                            pdiHref={`/diagnostico/pessoal/pdi/${r.id}`}
+                            contatoEmail={r.email}
+                            contatoNome={r.nome_completo}
+                            whatsappUrl={buildWhatsappUrl(
+                              r.whatsapp,
+                              whatsappTextPessoal({
+                                firstName: firstName(r.nome_completo),
+                                diagnosticoId: r.id,
+                                empresa: r.empresa,
+                              }),
+                            )}
+                            enviadoEm={r.pdi_enviado_em}
+                            emailDefault={{
+                              to: r.email,
+                              subject: emailSubjectPessoal({
+                                firstName: firstName(r.nome_completo),
+                                diagnosticoId: r.id,
+                                empresa: r.empresa,
+                              }),
+                              body: emailBodyPessoal({
+                                firstName: firstName(r.nome_completo),
+                                diagnosticoId: r.id,
+                                empresa: r.empresa,
+                              }),
+                            }}
+                          />
                         </td>
                       </tr>
                     ))

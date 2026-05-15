@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
+import { BackButton } from '@/components/site/BackButton'
 import { createAdminClient } from '@/lib/supabase/service'
 import { PdiConvergencia } from '@/components/diagnostico/pdi/PdiConvergencia'
 import { PdiFase } from '@/components/diagnostico/pdi/PdiFase'
@@ -54,13 +55,10 @@ export default async function PdiPessoalPage({ params }: Params) {
         <SiteHeader />
         <main className="px-4 pb-20 pt-32 sm:px-6">
           <div className="mx-auto w-full max-w-[760px] text-center">
-            <Link
-              href={`/diagnostico/pessoal/resultado/${id}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
-            >
+            <BackButton fallbackHref={`/diagnostico/pessoal/resultado/${id}`}>
               <ArrowLeft className="h-4 w-4" />
-              Voltar ao resultado
-            </Link>
+              Voltar
+            </BackButton>
 
             <div className="mt-6 rounded-3xl border border-[#E3EBF6] bg-white p-10">
               <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFF7ED] text-[#F57C00]">
@@ -101,13 +99,10 @@ export default async function PdiPessoalPage({ params }: Params) {
       <main className="px-4 pb-20 pt-28 sm:px-6">
         <div className="mx-auto w-full max-w-[1000px] space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-            <Link
-              href={`/diagnostico/pessoal/resultado/${id}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
-            >
+            <BackButton fallbackHref={`/diagnostico/pessoal/resultado/${id}`}>
               <ArrowLeft className="h-4 w-4" />
-              Voltar ao resultado do diagnóstico
-            </Link>
+              Voltar
+            </BackButton>
             <PdiPrintButton variant="secondary" label="Baixar PDI em PDF" />
           </div>
 
@@ -241,7 +236,7 @@ export default async function PdiPessoalPage({ params }: Params) {
                 className="inline-flex items-center gap-2 rounded-xl border border-[#FCD49C] bg-white px-6 py-3 text-sm font-bold text-[#9A3412] transition-colors hover:bg-[#FFF7ED]"
               >
                 <Home className="h-4 w-4" />
-                Voltar para a home
+                Ir para home
               </Link>
             </div>
           </div>

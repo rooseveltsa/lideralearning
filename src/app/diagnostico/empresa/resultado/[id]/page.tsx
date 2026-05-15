@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, MessageCircle, Home, Sparkles, Building2 } from 'lucide-react'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
+import { BackButton } from '@/components/site/BackButton'
 import { createAdminClient } from '@/lib/supabase/service'
 import { ScoreCard } from '@/components/diagnostico/resultado/ScoreCard'
 import { DiscBarChart } from '@/components/diagnostico/resultado/DiscBarChart'
@@ -58,13 +59,10 @@ export default async function DiagnosticoEmpresaResultadoPage({ params }: Params
 
       <main className="px-4 pb-20 pt-28 sm:px-6">
         <div className="mx-auto w-full max-w-[1000px]">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
-          >
+          <BackButton fallbackHref="/">
             <ArrowLeft className="h-4 w-4" />
-            Voltar para a home
-          </Link>
+            Voltar
+          </BackButton>
 
           {/* Hero */}
           <div className="mt-6 rounded-3xl border border-[#E3EBF6] bg-white p-7 sm:p-10">
@@ -202,7 +200,7 @@ export default async function DiagnosticoEmpresaResultadoPage({ params }: Params
                 className="inline-flex items-center gap-2 rounded-xl border border-[#C8DAEE] bg-white px-6 py-3 text-sm font-bold text-[#0B4A8F] transition-colors hover:bg-[#EFF5FD]"
               >
                 <Home className="h-4 w-4" />
-                Voltar para a home
+                Ir para home
               </Link>
             </div>
 

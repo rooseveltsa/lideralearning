@@ -9,6 +9,7 @@ import { generatePdiPessoal } from '@/lib/diagnostico/pdi-generator'
 type Payload = {
   nomeCompleto?: string
   email?: string
+  whatsapp?: string
   empresa?: string
   cargo?: string
   setor?: string
@@ -134,6 +135,7 @@ export async function POST(request: Request) {
         user_id: user?.id ?? null,
         nome_completo: nomeCompleto,
         email,
+        whatsapp: normalize(json.whatsapp) || null,
         empresa: empresa || null,
         cargo: normalize(json.cargo) || null,
         setor: normalize(json.setor) || null,
@@ -238,7 +240,7 @@ export async function POST(request: Request) {
           job_function: 'outro',
           company_name: empresa || 'Não informado',
           email,
-          phone: null,
+          phone: normalize(json.whatsapp) || null,
           outreach_status: 'qualified',
           notes,
           last_outreach_at: new Date().toISOString(),

@@ -15,6 +15,7 @@ type Payload = {
   gestorWhatsapp?: string
   supervisorNome?: string
   supervisorCargo?: string
+  supervisorWhatsapp?: string
   tempoNaFuncao?: string
   qtdLiderados?: string
   dataAvaliacao?: string
@@ -102,6 +103,7 @@ export async function POST(request: Request) {
         gestor_whatsapp: normalize(json.gestorWhatsapp) || null,
         supervisor_nome: supervisorNome,
         supervisor_cargo: normalize(json.supervisorCargo) || null,
+        supervisor_whatsapp: normalize(json.supervisorWhatsapp) || null,
         tempo_na_funcao: normalize(json.tempoNaFuncao) || null,
         qtd_liderados: qtdLiderados,
         data_avaliacao: normalize(json.dataAvaliacao) || new Date().toISOString().slice(0, 10),

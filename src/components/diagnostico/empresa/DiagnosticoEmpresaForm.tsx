@@ -32,6 +32,7 @@ type FormData = {
   gestorWhatsapp: string
   supervisorNome: string
   supervisorCargo: string
+  supervisorWhatsapp: string
   tempoNaFuncao: string
   qtdLiderados: string
   dataAvaliacao: string
@@ -68,6 +69,7 @@ const initialData: FormData = {
   gestorWhatsapp: '',
   supervisorNome: '',
   supervisorCargo: '',
+  supervisorWhatsapp: '',
   tempoNaFuncao: '',
   qtdLiderados: '',
   dataAvaliacao: todayISO(),
@@ -173,6 +175,7 @@ export default function DiagnosticoEmpresaForm() {
             <div className="grid gap-4 sm:grid-cols-2">
               <TextField label="Nome do Supervisor" value={data.supervisorNome} onChange={(v) => update({ supervisorNome: v })} icon={UserIcon} required />
               <TextField label="Cargo / Função" value={data.supervisorCargo} onChange={(v) => update({ supervisorCargo: v })} placeholder="Supervisor de Produção..." />
+              <TextField label="WhatsApp do supervisor" value={data.supervisorWhatsapp} onChange={(v) => update({ supervisorWhatsapp: v })} icon={Phone} inputMode="tel" placeholder="(opcional, para envio direto)" />
               <TextField label="Tempo na função" value={data.tempoNaFuncao} onChange={(v) => update({ tempoNaFuncao: v })} placeholder="2 anos, 8 meses..." />
               <TextField label="Quantidade de liderados" value={data.qtdLiderados} onChange={(v) => update({ qtdLiderados: v })} icon={Users} inputMode="numeric" placeholder="12" />
               <TextField label="Data da avaliação" value={data.dataAvaliacao} onChange={(v) => update({ dataAvaliacao: v })} icon={Calendar} type="date" />
