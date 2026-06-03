@@ -314,37 +314,48 @@ export function PDIEmailTemplate(props: {
           </div>
         )}
 
-        {/* ── 3-Phase Development Plan ── */}
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Plano de Desenvolvimento — 12 Semanas</h2>
+        {/* ── Plano de Ação por competência (trilhas LIDERA) ── */}
+        {report.developmentTracks.length > 0 && (
+          <div style={styles.section}>
+            <h2 style={styles.sectionTitle}>Plano de Ação — Como desenvolver cada gap</h2>
 
-          {[report.developmentPlan.phase1, report.developmentPlan.phase2, report.developmentPlan.phase3].map(
-            (phase, i) => (
-              <div key={i} style={styles.phaseCard}>
-                <p style={styles.phaseTitle}>
-                  Fase {i + 1}: {phase.title}
-                </p>
-                <p style={styles.phaseWeeks}>{phase.weeks}</p>
-                <p style={styles.phaseFocus}>{phase.focus}</p>
-                <ul style={{ margin: 0, paddingLeft: '20px' }}>
-                  {phase.actions.slice(0, 3).map((action, j) => (
-                    <li
-                      key={j}
-                      style={{ fontSize: '13px', color: '#475569', marginBottom: '4px', lineHeight: '1.5' }}
-                    >
-                      {action}
-                    </li>
-                  ))}
-                  {phase.actions.length > 3 && (
-                    <li style={{ fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>
-                      +{phase.actions.length - 3} acoes adicionais no PDI completo
-                    </li>
+            {report.developmentTracks.map((track, i) => {
+              const pc = priorityColor(track.priority)
+              return (
+                <div key={track.dimensao} style={styles.phaseCard}>
+                  <p style={{ ...styles.phaseTitle, color: pc.color }}>
+                    Prioridade {i + 1}: {track.dimensao}
+                  </p>
+                  <p style={styles.phaseWeeks}>{track.moduloLidera}</p>
+                  <p style={styles.phaseFocus}>{track.porQueImporta}</p>
+                  {track.ferramentas.length > 0 && (
+                    <p style={{ fontSize: '13px', color: '#334155', margin: '0 0 8px 0' }}>
+                      <strong>Ferramentas LIDERA:</strong>{' '}
+                      {track.ferramentas.map((f) => f.sigla).join(' · ')}
+                    </p>
                   )}
-                </ul>
-              </div>
-            ),
-          )}
-        </div>
+                  <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                    {track.acoes.slice(0, 3).map((a, j) => (
+                      <li
+                        key={j}
+                        style={{ fontSize: '13px', color: '#475569', marginBottom: '4px', lineHeight: '1.5' }}
+                      >
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                  <p style={{ fontSize: '12px', color: '#64748B', margin: '8px 0 0 0' }}>
+                    <strong>Como medir:</strong> {track.comoMedir}
+                  </p>
+                </div>
+              )
+            })}
+
+            <p style={{ fontSize: '12px', color: '#94A3B8', fontStyle: 'italic', margin: '4px 0 0 0' }}>
+              Veja o plano completo (apostila, leitura e cronograma 30/60/90) no seu PDI na plataforma.
+            </p>
+          </div>
+        )}
 
         {/* ── CTAs ── */}
         <div style={styles.ctaContainer}>

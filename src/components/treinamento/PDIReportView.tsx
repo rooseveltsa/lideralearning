@@ -18,8 +18,14 @@ import {
   Target,
   TrendingUp,
   Users,
+  Wrench,
 } from 'lucide-react'
-import type { PDIDimension, PDIPlanPhase, PDIReport } from '@/lib/utils/pdi-generator'
+import type {
+  DevelopmentTrack,
+  PDIDimension,
+  PDIPlanPhase,
+  PDIReport,
+} from '@/lib/utils/pdi-generator'
 
 // ---------------------------------------------------------------------------
 // Props
@@ -188,6 +194,132 @@ function PhaseCard({ phase, index }: { phase: PDIPlanPhase; index: number }) {
           </li>
         ))}
       </ul>
+    </div>
+  )
+}
+
+const PRIORITY_STYLE: Record<
+  PDIDimension['priority'],
+  { color: string; bg: string; border: string; label: string }
+> = {
+  critical: { color: '#B91C1C', bg: 'bg-red-50', border: 'border-red-200', label: 'Crítico' },
+  high: { color: '#C2410C', bg: 'bg-orange-50', border: 'border-orange-200', label: 'Alto' },
+  medium: { color: '#B45309', bg: 'bg-amber-50', border: 'border-amber-200', label: 'Médio' },
+  low: { color: '#15803D', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Baixo' },
+}
+
+function TrackCard({
+  track,
+  index,
+  mode,
+}: {
+  track: DevelopmentTrack
+  index: number
+  mode: 'full' | 'partial'
+}) {
+  const ps = PRIORITY_STYLE[track.priority] ?? PRIORITY_STYLE.medium
+
+  return (
+    <div className={`rounded-2xl border ${ps.border} ${ps.bg} p-5 print:break-inside-avoid`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <span
+            className="text-xs font-bold uppercase tracking-wider"
+            style={{ color: ps.color }}
+          >
+            Prioridade {index + 1} · {ps.label}
+          </span>
+          <h3 className="mt-0.5 text-base font-extrabold text-[#0F172A]">{track.dimensao}</h3>
+        </div>
+        {mode === 'full' && (
+          <div className="shrink-0 text-right text-xs text-[#64748B]">
+            <span className="font-bold text-[#1565C0]">{track.selfScore}%</span> você
+            <br />
+            <span className="font-bold text-[#00695C]">{track.execScore}%</span> empresa
+          </div>
+        )}
+      </div>
+
+      <p className="mt-2 text-sm leading-relaxed text-[#475569]">{track.porQueImporta}</p>
+
+      <div
+        className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/70 px-2.5 py-1 text-xs font-bold"
+        style={{ color: ps.color }}
+      >
+        <Sparkles className="h-3.5 w-3.5" />
+        {track.moduloLidera}
+      </div>
+
+      {track.ferramentas.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+            <Wrench className="h-3.5 w-3.5" /> Ferramentas LIDERA
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {track.ferramentas.map((f) => (
+              <span
+                key={f.sigla}
+                title={f.shortDescription}
+                className="rounded-md border border-[#E3EBF6] bg-white px-2 py-1 text-xs font-semibold text-[#334155]"
+              >
+                {f.sigla} — {f.nome}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <p className="mt-3 flex items-start gap-1.5 text-xs text-[#475569]">
+        <BookOpen className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#7B1FA2]" />
+        <span>
+          <span className="font-semibold">Apostila:</span> {track.apostila}
+        </span>
+      </p>
+
+      <div className="mt-3">
+        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+          Como desenvolver
+        </p>
+        <ul className="space-y-1.5">
+          {track.acoes.map((a, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-[#374151]">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: ps.color }} />
+              {a}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {track.externo.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-1 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+            Complementar
+          </p>
+          <ul className="space-y-1">
+            {track.externo.map((e, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs text-[#64748B]">
+                <ArrowUpRight className="mt-0.5 h-3 w-3 shrink-0" />
+                {e}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-3 flex flex-col gap-1.5 border-t border-black/5 pt-3 text-xs text-[#64748B]">
+        {track.leitura.length > 0 && (
+          <p>
+            <span className="font-semibold text-[#475569]">Leitura:</span>{' '}
+            {track.leitura.map((l) => `${l.titulo} (${l.autor})`).join(' · ')}
+          </p>
+        )}
+        <p className="flex items-start gap-1.5">
+          <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#F57C00]" />
+          <span>
+            <span className="font-semibold text-[#475569]">Como medir:</span> {track.comoMedir}
+          </span>
+        </p>
+      </div>
     </div>
   )
 }
@@ -394,11 +526,34 @@ export default function PDIReportView({ report, hidePrint }: Props) {
         </div>
       </section>
 
-      {/* ── 5. 12-Week Development Plan ── */}
-      <section className="space-y-4 print:break-before-page">
+      {/* ── 5. Plano de Ação por Competência (trilhas LIDERA) ── */}
+      {report.developmentTracks.length > 0 && (
+        <section className="space-y-4 print:break-before-page">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">
+              <BookOpen className="h-5 w-5 text-[#7B1FA2]" />
+              Plano de Ação — Como desenvolver cada gap
+            </h2>
+            <p className="mt-1 text-sm text-[#64748B]">
+              Cada prioridade liga seu gap ao método LIDERA: módulo do treinamento,
+              ferramentas, apostila e leitura, com ações concretas e como medir a
+              evolução em 90 dias.
+            </p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {report.developmentTracks.map((track, i) => (
+              <TrackCard key={track.dimensao} track={track} index={i} mode={report.mode} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── 5b. Fases 30/60/90 (visão de cronograma) ── */}
+      <section className="space-y-4">
         <h2 className="flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">
-          <BookOpen className="h-5 w-5 text-[#7B1FA2]" />
-          Plano de Desenvolvimento — 12 Semanas
+          <Calendar className="h-5 w-5 text-[#7B1FA2]" />
+          Cronograma — 12 Semanas (30/60/90)
         </h2>
 
         <div className="grid gap-4 lg:grid-cols-3">

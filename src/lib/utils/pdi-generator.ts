@@ -13,6 +13,9 @@ import {
   calculateAlignment,
   normalizeScore,
 } from '@/lib/utils/assessment-comparison'
+import { DESENVOLVIMENTO_POR_DIMENSAO } from '@/lib/diagnostico/pdi-knowledge/desenvolvimento-por-dimensao'
+import { FERRAMENTAS } from '@/lib/diagnostico/pdi-knowledge/ferramentas'
+import { LITERATURAS } from '@/lib/diagnostico/pdi-knowledge/fundamentos'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,6 +42,27 @@ export type PDIKPI = {
   current: string
   target: string
   timeline: string
+}
+
+/**
+ * Trilha de desenvolvimento por gap — o "plano de ação" real do PDI.
+ * Liga cada dimensão fraca ao conteúdo do método LIDERA (módulo, ferramentas,
+ * apostila, leitura), com ações concretas e como medir.
+ */
+export type DevelopmentTrack = {
+  dimensao: string
+  priority: PDIDimension['priority']
+  selfScore: number
+  execScore: number
+  gap: number
+  moduloLidera: string
+  porQueImporta: string
+  ferramentas: { sigla: string; nome: string; shortDescription: string }[]
+  apostila: string
+  leitura: { titulo: string; autor: string }[]
+  acoes: string[]
+  externo: string[]
+  comoMedir: string
 }
 
 export type PDIReport = {
@@ -76,6 +100,9 @@ export type PDIReport = {
     phase2: PDIPlanPhase
     phase3: PDIPlanPhase
   }
+
+  // Trilhas de desenvolvimento por gap (plano de ação baseado no método LIDERA)
+  developmentTracks: DevelopmentTrack[]
 
   // KPIs to track
   kpisToTrack: PDIKPI[]
@@ -502,6 +529,65 @@ function generateMentoringFocus(dimensions: PDIDimension[], blindSpots: string[]
 }
 
 // ---------------------------------------------------------------------------
+// Development tracks generation (plano de ação por gap → conteúdo LIDERA)
+// ---------------------------------------------------------------------------
+
+const MAX_TRACKS = 5
+const WEAK_THRESHOLD = 67
+
+/**
+ * Constrói as trilhas de desenvolvimento: para cada dimensão fraca, busca a
+ * prescrição LIDERA (módulo, ferramentas, apostila, leitura, ações) e resolve
+ * os nomes reais das ferramentas e literaturas a partir da base de conhecimento.
+ *
+ * "Fraco" = menor score entre auto e executiva (modo full) ou só auto (partial).
+ * Garante pelo menos 2 trilhas mesmo quando o líder vai bem em tudo.
+ */
+function generateDevelopmentTracks(
+  dimensions: PDIDimension[],
+  mode: 'full' | 'partial',
+): DevelopmentTrack[] {
+  const scored = dimensions
+    .filter((d) => DESENVOLVIMENTO_POR_DIMENSAO[d.name])
+    .map((d) => ({
+      d,
+      effective: mode === 'full' ? Math.min(d.selfScore, d.execScore) : d.selfScore,
+    }))
+    .sort((a, b) => a.effective - b.effective)
+
+  let weak = scored.filter((s) => s.effective < WEAK_THRESHOLD).slice(0, MAX_TRACKS)
+  if (weak.length === 0) weak = scored.slice(0, 2) // sempre entrega plano acionável
+
+  return weak.map(({ d }) => {
+    const map = DESENVOLVIMENTO_POR_DIMENSAO[d.name]
+    const ferramentas = map.ferramentas
+      .map((id) => FERRAMENTAS[id])
+      .filter(Boolean)
+      .map((f) => ({ sigla: f.sigla, nome: f.nome, shortDescription: f.shortDescription }))
+    const leitura = map.leitura
+      .map((id) => LITERATURAS[id])
+      .filter(Boolean)
+      .map((l) => ({ titulo: l.titulo, autor: l.autor }))
+
+    return {
+      dimensao: d.name,
+      priority: d.priority,
+      selfScore: d.selfScore,
+      execScore: d.execScore,
+      gap: d.gap,
+      moduloLidera: map.moduloLidera,
+      porQueImporta: map.porQueImporta,
+      ferramentas,
+      apostila: map.apostila,
+      leitura,
+      acoes: map.acoes,
+      externo: map.externo,
+      comoMedir: map.comoMedir,
+    }
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -598,6 +684,8 @@ export function generatePartialPDI(
       phase2: generatePhase2(weakDimensions),
       phase3: generatePhase3(weakDimensions),
     },
+
+    developmentTracks: generateDevelopmentTracks(dimensions, 'partial'),
 
     kpisToTrack: generateKPIs(dimensions, perfil),
 
@@ -747,6 +835,8 @@ export function generatePDI(
       phase2: generatePhase2(weakDimensions),
       phase3: generatePhase3(weakDimensions),
     },
+
+    developmentTracks: generateDevelopmentTracks(dimensions, 'full'),
 
     kpisToTrack: generateKPIs(dimensions, perfil),
 
