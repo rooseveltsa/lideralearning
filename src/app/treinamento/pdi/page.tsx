@@ -10,6 +10,7 @@ import {
 
 import { createClient } from '@/lib/supabase/server'
 import { generatePDI, generatePartialPDI, getPDIStatus } from '@/lib/utils/pdi-generator'
+import { withStoredAiPlan } from '@/lib/diagnostico/pdi-ai-enricher'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import PDIReportView from '@/components/treinamento/PDIReportView'
@@ -68,6 +69,23 @@ export default async function PDIPage() {
   const alunoName = profile?.full_name || user.user_metadata?.full_name || ''
   const company = relationship?.company_name ?? null
 
+  // Plano de ação personalizado por IA (opcional). Falha → plano determinístico.
+  let aiPlan: unknown = null
+  if (status === 'ready') {
+    try {
+      const { data: pdiRow } = await supabase
+        .from('leadership_pdi')
+        .select('action_plan_ai')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      aiPlan = (pdiRow as { action_plan_ai?: unknown } | null)?.action_plan_ai ?? null
+    } catch {
+      aiPlan = null
+    }
+  }
+
   return (
     <>
       <SiteHeader />
@@ -104,12 +122,15 @@ export default async function PDIPage() {
           <div className="mx-auto max-w-4xl">
             {status === 'ready' ? (
               <PDIReportView
-                report={generatePDI(
-                  user.id,
-                  alunoName,
-                  company,
-                  selfAssessments![0] as Record<string, unknown>,
-                  execAssessments![0] as Record<string, unknown>,
+                report={withStoredAiPlan(
+                  generatePDI(
+                    user.id,
+                    alunoName,
+                    company,
+                    selfAssessments![0] as Record<string, unknown>,
+                    execAssessments![0] as Record<string, unknown>,
+                  ),
+                  aiPlan,
                 )}
               />
             ) : hasSelf ? (

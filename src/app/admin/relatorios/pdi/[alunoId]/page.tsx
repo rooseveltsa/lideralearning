@@ -4,6 +4,7 @@ import { ArrowLeft, FileBarChart } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
+import { withStoredAiPlan } from '@/lib/diagnostico/pdi-ai-enricher'
 import PDIReportView from '@/components/treinamento/PDIReportView'
 import PrintPDIButton from './PrintButton'
 import { PdiOutreachActions } from '@/components/admin/relatorios/PdiOutreachActions'
@@ -56,6 +57,23 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
   const alunoName = profile.full_name ?? 'Sem nome'
   const company = relationship?.company_name ?? null
 
+  // Plano de ação personalizado por IA (opcional). Falha → plano determinístico.
+  let aiPlan: unknown = null
+  if (status === 'ready') {
+    try {
+      const { data: pdiRow } = await admin
+        .from('leadership_pdi')
+        .select('action_plan_ai')
+        .eq('user_id', alunoId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      aiPlan = (pdiRow as { action_plan_ai?: unknown } | null)?.action_plan_ai ?? null
+    } catch {
+      aiPlan = null
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Back link */}
@@ -83,12 +101,15 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
 
       {status === 'ready' ? (
         <PDIReportView
-          report={generatePDI(
-            alunoId,
-            alunoName,
-            company,
-            selfAssessments![0] as Record<string, unknown>,
-            execAssessments![0] as Record<string, unknown>,
+          report={withStoredAiPlan(
+            generatePDI(
+              alunoId,
+              alunoName,
+              company,
+              selfAssessments![0] as Record<string, unknown>,
+              execAssessments![0] as Record<string, unknown>,
+            ),
+            aiPlan,
           )}
           hidePrint
         />

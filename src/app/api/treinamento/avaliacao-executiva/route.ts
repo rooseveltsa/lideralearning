@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { generatePDI } from '@/lib/utils/pdi-generator'
+import { generateAiTrackPatches } from '@/lib/diagnostico/pdi-ai-enricher'
+import { logger } from '@/lib/logger/structured'
 
 type AvaliacaoExecutivaPayload = {
   userId: string
@@ -119,12 +122,63 @@ export async function POST(request: Request) {
       // calculated
       media_dimensoes: mediaDimensoes,
     })
-    .select('id')
+    .select('*')
     .single()
 
   if (error) {
     console.error('Error inserting executive assessment:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // ── Plano de ação personalizado por IA (opcional, defensivo) ──
+  // Agora que a avaliação executiva fechou o PDI, gera o plano de IA 1x e salva.
+  // Qualquer falha é ignorada — o PDI cai no plano determinístico LIDERA.
+  try {
+    const { data: selfRows } = await admin
+      .from('leadership_self_assessments')
+      .select('*')
+      .eq('user_id', json.userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+
+    if (selfRows && selfRows.length > 0) {
+      const { data: rel } = await admin
+        .from('gestor_aluno_relationships')
+        .select('company_name')
+        .eq('aluno_user_id', json.userId)
+        .limit(1)
+        .maybeSingle()
+
+      const { data: prof } = await admin
+        .from('profiles')
+        .select('full_name')
+        .eq('id', json.userId)
+        .maybeSingle()
+
+      const report = generatePDI(
+        json.userId,
+        prof?.full_name ?? json.nomeSupervisor ?? 'Participante',
+        rel?.company_name ?? null,
+        selfRows[0] as Record<string, unknown>,
+        data as Record<string, unknown>,
+      )
+
+      const patches = await generateAiTrackPatches(report)
+      if (patches) {
+        const { error: updErr } = await admin
+          .from('leadership_pdi')
+          .update({ action_plan_ai: patches })
+          .eq('user_id', json.userId)
+        if (updErr) {
+          logger.error('pdi_ai_store_failed', { alunoId: json.userId, error: updErr.message })
+        }
+      }
+    }
+  } catch (e) {
+    logger.error('pdi_ai_pipeline_failed', {
+      alunoId: json.userId,
+      error: e instanceof Error ? e.message : 'unknown',
+    })
   }
 
   return NextResponse.json({ success: true, avaliacaoId: data.id })

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
+import { withStoredAiPlan } from '@/lib/diagnostico/pdi-ai-enricher'
 import { sendPDIEmail } from '@/lib/email/send-pdi'
 import { logger, maskEmail } from '@/lib/logger/structured'
 
@@ -84,13 +85,29 @@ export async function POST(
     )
   }
 
-  const report = generatePDI(
+  const baseReport = generatePDI(
     alunoId,
     profile.full_name ?? 'Participante',
     relationship?.company_name ?? null,
     selfAssessments![0] as Record<string, unknown>,
     execAssessments![0] as Record<string, unknown>,
   )
+
+  // Aplica o plano de ação de IA armazenado, se houver (fallback: determinístico)
+  let aiPlan: unknown = null
+  try {
+    const { data: pdiRow } = await admin
+      .from('leadership_pdi')
+      .select('action_plan_ai')
+      .eq('user_id', alunoId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    aiPlan = (pdiRow as { action_plan_ai?: unknown } | null)?.action_plan_ai ?? null
+  } catch {
+    aiPlan = null
+  }
+  const report = withStoredAiPlan(baseReport, aiPlan)
 
   try {
     const result = await sendPDIEmail(email, report)
