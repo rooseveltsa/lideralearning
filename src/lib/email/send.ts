@@ -8,6 +8,7 @@ import { ReengagementEmailTemplate } from './templates/reengagement'
 import { UpsellFullProgramEmailTemplate } from './templates/upsell-full-program'
 import { DiagnosticoEmpresaRecebidoTemplate } from './templates/diagnostico-empresa-recebido'
 import { DiagnosticoPessoalRecebidoTemplate } from './templates/diagnostico-pessoal-recebido'
+import { LeadPdiAlertTemplate } from './templates/lead-pdi-alert'
 import { generatePartialPDI } from '@/lib/utils/pdi-generator'
 
 type TemplateType =
@@ -20,6 +21,7 @@ type TemplateType =
   | 'upsell-full-program'
   | 'diagnostico-empresa-recebido'
   | 'diagnostico-pessoal-recebido'
+  | 'lead-pdi-alert'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
 
@@ -129,6 +131,22 @@ function buildEmail(
           discScores:
             (data.discScores as Record<string, number>) || { D: 0, I: 0, S: 0, C: 0 },
           diagnosticoId: (data.diagnosticoId as string | null | undefined) ?? null,
+        }),
+      }
+    }
+    case 'lead-pdi-alert': {
+      const participantName = (data.participantName as string) || 'Participante'
+      return {
+        subject: `🔔 Novo gatilho de venda: ${participantName} fez o PDI`,
+        react: LeadPdiAlertTemplate({
+          participantName,
+          participantEmail: (data.participantEmail as string) || '',
+          perfil: (data.perfil as string) || 'transicao',
+          score: (data.score as number) || 0,
+          dorAtual: (data.dorAtual as string | null | undefined) ?? null,
+          custoFuturo: (data.custoFuturo as string | null | undefined) ?? null,
+          adminPdiUrl: (data.adminPdiUrl as string) || SITE_URL,
+          whatsappUrl: (data.whatsappUrl as string | null | undefined) ?? null,
         }),
       }
     }

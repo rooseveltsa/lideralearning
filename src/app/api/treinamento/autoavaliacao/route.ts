@@ -4,6 +4,19 @@ import { createAdminClient } from '@/lib/supabase/service'
 import { generatePartialPDI } from '@/lib/utils/pdi-generator'
 import { sendPDIEmail } from '@/lib/email/send-pdi'
 import { sendEmail } from '@/lib/email/send'
+import { EMAIL_REPLY_TO } from '@/lib/email/resend'
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lideralearning.vercel.app'
+const ADMIN_NOTIFICATION_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || EMAIL_REPLY_TO
+
+function buildAdminWhatsappUrl(phone: string | null | undefined): string | null {
+  const digits = (phone || '').replace(/\D/g, '')
+  if (!digits) return null
+  const normalized = digits.startsWith('55') ? digits : `55${digits}`
+  const msg =
+    'Olá! Aqui é o Claudemir da Lidera Treinamentos. Vi que você fez sua autoavaliação de liderança e preparei seu PDI — quer que eu te explique os pontos principais?'
+  return `https://wa.me/${normalized}?text=${encodeURIComponent(msg)}`
+}
 
 type Payload = {
   userId: string
@@ -177,6 +190,35 @@ export async function POST(request: Request) {
         if (!result.success) console.error('[autoavaliacao] Assessment email failed:', result.error)
       })
       .catch((err) => console.error('[autoavaliacao] Assessment email exception:', err))
+  }
+
+  // ── GATILHO DE VENDA: notifica o admin (Claudemir) que um participante fez o PDI ──
+  // Non-blocking: erros são logados, nunca quebram a resposta ao participante.
+  try {
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('whatsapp')
+      .eq('id', json.userId)
+      .maybeSingle()
+
+    const whatsappUrl = buildAdminWhatsappUrl(profile?.whatsapp)
+
+    sendEmail(ADMIN_NOTIFICATION_EMAIL, 'lead-pdi-alert', {
+      participantName: json.userName || 'Participante',
+      participantEmail: json.userEmail || '',
+      perfil,
+      score: json.pontuacaoTotal,
+      dorAtual: normalize(json.textos?.dorAtual) || null,
+      custoFuturo: normalize(json.textos?.custoFuturo) || null,
+      adminPdiUrl: `${SITE_URL}/admin/relatorios/pdi/${json.userId}`,
+      whatsappUrl,
+    })
+      .then((result) => {
+        if (!result.success) console.error('[autoavaliacao] Lead alert email failed:', result.error)
+      })
+      .catch((err) => console.error('[autoavaliacao] Lead alert email exception:', err))
+  } catch (alertErr) {
+    console.error('[autoavaliacao] Lead alert preparation failed:', alertErr)
   }
 
   return NextResponse.json({ success: true, diagnosticoId: data.id })

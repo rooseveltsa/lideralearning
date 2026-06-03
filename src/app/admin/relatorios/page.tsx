@@ -13,6 +13,7 @@ import {
 
 import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
+import { PdiOutreachActions } from '@/components/admin/relatorios/PdiOutreachActions'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -22,6 +23,7 @@ type AlunoWithPDI = {
   id: string
   fullName: string
   company: string | null
+  whatsapp: string | null
   alignment: number | null
   perfil: string | null
   criticalGapsCount: number
@@ -38,7 +40,7 @@ export default async function AdminRelatoriosPage() {
   // Fetch all alunos (role = 'aluno')
   const { data: alunos } = await admin
     .from('profiles')
-    .select('id, full_name, role')
+    .select('id, full_name, role, whatsapp')
     .eq('role', 'aluno')
     .order('full_name')
 
@@ -126,6 +128,7 @@ export default async function AdminRelatoriosPage() {
       id: aluno.id,
       fullName: aluno.full_name ?? 'Sem nome',
       company,
+      whatsapp: aluno.whatsapp ?? null,
       alignment,
       perfil,
       criticalGapsCount,
@@ -307,17 +310,25 @@ function AlunoCard({ aluno }: { aluno: AlunoWithPDI }) {
         )}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex flex-col gap-2">
         {aluno.status === 'ready' ? (
-          <Link
-            href={`/admin/relatorios/pdi/${aluno.id}`}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#1E88E5] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#1565C0]"
-          >
-            <FileBarChart className="h-3.5 w-3.5" />
-            Ver PDI Completo
-          </Link>
+          <>
+            <Link
+              href={`/admin/relatorios/pdi/${aluno.id}`}
+              className="inline-flex w-fit items-center gap-1.5 rounded-lg bg-[#1E88E5] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#1565C0]"
+            >
+              <FileBarChart className="h-3.5 w-3.5" />
+              Ver PDI Completo
+            </Link>
+            <PdiOutreachActions
+              alunoId={aluno.id}
+              nome={aluno.fullName}
+              whatsapp={aluno.whatsapp}
+              variant="card"
+            />
+          </>
         ) : (
-          <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-[#F8FAFC] px-3 py-2 text-xs font-semibold text-[#94A3B8]">
+          <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-[#E5E7EB] bg-[#F8FAFC] px-3 py-2 text-xs font-semibold text-[#94A3B8]">
             PDI indisponivel
           </span>
         )}

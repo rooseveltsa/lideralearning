@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/service'
 import { generatePDI, getPDIStatus } from '@/lib/utils/pdi-generator'
 import PDIReportView from '@/components/treinamento/PDIReportView'
 import PrintPDIButton from './PrintButton'
+import { PdiOutreachActions } from '@/components/admin/relatorios/PdiOutreachActions'
 
 type Props = {
   params: Promise<{ alunoId: string }>
@@ -18,7 +19,7 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
   // Fetch profile
   const { data: profile } = await admin
     .from('profiles')
-    .select('id, full_name, role')
+    .select('id, full_name, role, whatsapp')
     .eq('id', alunoId)
     .single()
 
@@ -58,7 +59,7 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Back link */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between print:hidden">
         <Link
           href="/admin/relatorios"
           className="inline-flex items-center gap-2 text-sm font-semibold text-[#64748B] transition-colors hover:text-[#111827]"
@@ -68,7 +69,15 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
         </Link>
 
         {status === 'ready' && (
-          <PrintPDIButton />
+          <div className="flex items-center gap-2">
+            <PdiOutreachActions
+              alunoId={alunoId}
+              nome={alunoName}
+              whatsapp={profile.whatsapp ?? null}
+              variant="header"
+            />
+            <PrintPDIButton />
+          </div>
         )}
       </div>
 
