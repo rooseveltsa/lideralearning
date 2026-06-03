@@ -91,8 +91,12 @@ export default async function AdminRelatoriosPage() {
   const execMap = new Map<string, Record<string, unknown>>()
   if (execAssessments) {
     for (const ea of execAssessments) {
-      if (!execMap.has(ea.user_id)) {
+      // A exec liga o participante por user_id (quem preencheu) OU supervisor_user_id (o avaliado)
+      if (ea.user_id && !execMap.has(ea.user_id)) {
         execMap.set(ea.user_id, ea as Record<string, unknown>)
+      }
+      if (ea.supervisor_user_id && !execMap.has(ea.supervisor_user_id)) {
+        execMap.set(ea.supervisor_user_id, ea as Record<string, unknown>)
       }
     }
   }

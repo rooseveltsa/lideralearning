@@ -48,11 +48,18 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient()
 
-  // Descobre participantes com PDI pronto (self + exec)
+  // Descobre participantes com PDI pronto (self + exec).
+  // A exec liga o participante por user_id (quem preencheu) OU supervisor_user_id (o avaliado).
   const { data: selfs } = await admin.from('leadership_self_assessments').select('user_id')
-  const { data: execs } = await admin.from('leadership_executive_assessments').select('user_id')
+  const { data: execs } = await admin
+    .from('leadership_executive_assessments')
+    .select('user_id, supervisor_user_id')
   const selfSet = new Set((selfs ?? []).map((s) => s.user_id))
-  const execSet = new Set((execs ?? []).map((e) => e.user_id))
+  const execSet = new Set<string>()
+  for (const e of execs ?? []) {
+    if (e.user_id) execSet.add(e.user_id)
+    if (e.supervisor_user_id) execSet.add(e.supervisor_user_id)
+  }
 
   let readyIds = [...selfSet].filter((id) => execSet.has(id))
   if (targetUserId) readyIds = readyIds.filter((id) => id === targetUserId)
@@ -76,7 +83,7 @@ export async function POST(request: Request) {
       const { data: execRows } = await admin
         .from('leadership_executive_assessments')
         .select('*')
-        .eq('user_id', userId)
+        .or(`user_id.eq.${userId},supervisor_user_id.eq.${userId}`)
         .order('created_at', { ascending: false })
         .limit(1)
 

@@ -42,11 +42,11 @@ export default async function AdminPDIAlunoPage({ params }: Props) {
     .order('created_at', { ascending: false })
     .limit(1)
 
-  // Fetch latest exec assessment
+  // Fetch latest exec assessment (linked by user_id OU supervisor_user_id)
   const { data: execAssessments } = await admin
     .from('leadership_executive_assessments')
     .select('*')
-    .eq('user_id', alunoId)
+    .or(`user_id.eq.${alunoId},supervisor_user_id.eq.${alunoId}`)
     .order('created_at', { ascending: false })
     .limit(1)
 
