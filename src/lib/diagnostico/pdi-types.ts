@@ -23,6 +23,9 @@ export type PdiFase = {
   objetivo: string
   acoes: PdiAcao[]
   kpiSucesso: string
+  // Módulo do treinamento LIDERA que esta fase ataca (ex: "Módulo 2 — Inteligência Comportamental").
+  // Opcional para retro-compatibilidade (PDIs antigos sem este campo).
+  moduloLidera?: string
 }
 
 export type PdiProximoPasso = {

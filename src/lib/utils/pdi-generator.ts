@@ -14,6 +14,7 @@ import {
   normalizeScore,
 } from '@/lib/utils/assessment-comparison'
 import { DESENVOLVIMENTO_POR_DIMENSAO } from '@/lib/diagnostico/pdi-knowledge/desenvolvimento-por-dimensao'
+import { POTENCIALIZACAO_POR_FORCA } from '@/lib/diagnostico/pdi-knowledge/potencializacao-por-forca'
 import { FERRAMENTAS } from '@/lib/diagnostico/pdi-knowledge/ferramentas'
 import { LITERATURAS } from '@/lib/diagnostico/pdi-knowledge/fundamentos'
 
@@ -21,12 +22,26 @@ import { LITERATURAS } from '@/lib/diagnostico/pdi-knowledge/fundamentos'
 // Types
 // ---------------------------------------------------------------------------
 
+/**
+ * Tipo de (des)alinhamento entre a autoavaliação e a avaliação executiva.
+ * É o que faz a prescrição mudar: um ponto cego não se resolve com mais módulo,
+ * uma força oculta não se resolve com treino. Só é determinável no modo full;
+ * no modo partial (sem avaliação executiva) fica 'indefinido'.
+ */
+export type AlignmentType =
+  | 'gap_real' // ambos avaliam baixo → falta de competência real (treinar)
+  | 'ponto_cego' // self alto, empresa baixo → superestimação (feedback/realidade)
+  | 'forca_oculta' // empresa alto, self baixo → subestimação (confiança/visibilidade)
+  | 'alinhado_forte' // ambos altos e próximos → força consolidada
+  | 'indefinido' // sem avaliação executiva (PDI parcial)
+
 export type PDIDimension = {
   name: string
   selfScore: number       // normalized 0-100
   execScore: number       // normalized 0-100
   gap: number             // absolute difference
   priority: 'critical' | 'high' | 'medium' | 'low'
+  alignmentType: AlignmentType
   recommendation: string
 }
 
@@ -55,6 +70,9 @@ export type DevelopmentTrack = {
   selfScore: number
   execScore: number
   gap: number
+  alignmentType: AlignmentType
+  /** Aviso que adapta a abordagem ao tipo de desalinhamento (ex: ponto cego → reality-check antes do conteúdo) */
+  alignmentNote?: string
   moduloLidera: string
   porQueImporta: string
   ferramentas: { sigla: string; nome: string; shortDescription: string }[]
@@ -62,6 +80,26 @@ export type DevelopmentTrack = {
   leitura: { titulo: string; autor: string }[]
   acoes: string[]
   externo: string[]
+  comoMedir: string
+}
+
+/**
+ * Trilha de potencialização por força — o lado "forte → mais ferramentas".
+ * Liga cada dimensão forte ao método LIDERA: ferramentas avançadas para ir além
+ * do básico + papel de multiplicador (transformar a força individual em padrão
+ * da equipe), com ações concretas e como medir.
+ */
+export type StrengthTrack = {
+  dimensao: string
+  selfScore: number
+  execScore: number
+  alignmentType: AlignmentType
+  /** Aviso para força oculta: a empresa já reconhece, foco é confiança/visibilidade */
+  alignmentNote?: string
+  comoAlavancar: string
+  ferramentasAvancadas: { sigla: string; nome: string; shortDescription: string }[]
+  papelMultiplicador: string
+  acoes: string[]
   comoMedir: string
 }
 
@@ -103,6 +141,9 @@ export type PDIReport = {
 
   // Trilhas de desenvolvimento por gap (plano de ação baseado no método LIDERA)
   developmentTracks: DevelopmentTrack[]
+
+  // Trilhas de potencialização por força (forças que viram alavanca)
+  strengthTracks: StrengthTrack[]
 
   // KPIs to track
   kpisToTrack: PDIKPI[]
@@ -334,6 +375,27 @@ function classifyPriority(gap: number): PDIDimension['priority'] {
   return 'low'
 }
 
+// Delta mínimo entre self e exec para caracterizar superestimação/subestimação.
+const MISALIGN_DELTA = 30
+// Ambos acima deste valor (e gap pequeno) = força consolidada e alinhada.
+const ALIGNED_STRONG = 65
+
+/**
+ * Classifica o TIPO de (des)alinhamento — o que faz a prescrição mudar.
+ * Só é determinável no modo full; partial sempre retorna 'indefinido'.
+ */
+function classifyAlignment(
+  selfScore: number,
+  execScore: number,
+  mode: 'full' | 'partial',
+): AlignmentType {
+  if (mode === 'partial') return 'indefinido'
+  if (selfScore - execScore > MISALIGN_DELTA) return 'ponto_cego'
+  if (execScore - selfScore > MISALIGN_DELTA) return 'forca_oculta'
+  if (selfScore >= ALIGNED_STRONG && execScore >= ALIGNED_STRONG) return 'alinhado_forte'
+  return 'gap_real'
+}
+
 function getRecommendation(dimensionName: string, gap: number, selfScore: number, execScore: number): string {
   const rec = RECOMMENDATIONS[dimensionName]
   if (!rec) return 'Monitorar evolucao e buscar feedback continuo.'
@@ -536,12 +598,26 @@ const MAX_TRACKS = 5
 const WEAK_THRESHOLD = 67
 
 /**
+ * Nota que adapta a trilha de desenvolvimento ao tipo de desalinhamento.
+ * O ponto cego é o caso crítico: a pessoa não reconhece o gap, então o conteúdo
+ * não "gruda" antes de um reality-check. Os demais não precisam de aviso especial.
+ */
+function buildDevAlignmentNote(d: PDIDimension): string | undefined {
+  if (d.alignmentType === 'ponto_cego') {
+    return `Ponto cego: você se avalia em ${d.selfScore}% nesta dimensão, mas a empresa avalia em ${d.execScore}%. Antes de consumir conteúdo, feche essa lacuna de percepção — peça feedback 360 e exemplos concretos ao gestor. Treino sobre um gap que a pessoa não reconhece não gera mudança.`
+  }
+  return undefined
+}
+
+/**
  * Constrói as trilhas de desenvolvimento: para cada dimensão fraca, busca a
  * prescrição LIDERA (módulo, ferramentas, apostila, leitura, ações) e resolve
  * os nomes reais das ferramentas e literaturas a partir da base de conhecimento.
  *
  * "Fraco" = menor score entre auto e executiva (modo full) ou só auto (partial).
- * Garante pelo menos 2 trilhas mesmo quando o líder vai bem em tudo.
+ * Exclui forças ocultas (empresa avalia alto, pessoa baixo): não é gap de skill,
+ * vai para a trilha de força. Garante pelo menos 2 trilhas mesmo quando o líder
+ * vai bem em tudo.
  */
 function generateDevelopmentTracks(
   dimensions: PDIDimension[],
@@ -549,6 +625,7 @@ function generateDevelopmentTracks(
 ): DevelopmentTrack[] {
   const scored = dimensions
     .filter((d) => DESENVOLVIMENTO_POR_DIMENSAO[d.name])
+    .filter((d) => d.alignmentType !== 'forca_oculta') // força oculta não é gap de competência
     .map((d) => ({
       d,
       effective: mode === 'full' ? Math.min(d.selfScore, d.execScore) : d.selfScore,
@@ -575,6 +652,8 @@ function generateDevelopmentTracks(
       selfScore: d.selfScore,
       execScore: d.execScore,
       gap: d.gap,
+      alignmentType: d.alignmentType,
+      alignmentNote: buildDevAlignmentNote(d),
       moduloLidera: map.moduloLidera,
       porQueImporta: map.porQueImporta,
       ferramentas,
@@ -582,6 +661,74 @@ function generateDevelopmentTracks(
       leitura,
       acoes: map.acoes,
       externo: map.externo,
+      comoMedir: map.comoMedir,
+    }
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Strength tracks generation (forças que viram alavanca → conteúdo LIDERA)
+// ---------------------------------------------------------------------------
+
+const MAX_STRENGTH_TRACKS = 3
+const STRONG_THRESHOLD = 67
+
+/**
+ * Nota para força oculta: a empresa já reconhece a competência que a pessoa
+ * subestima. A prescrição não é treinar — é ganhar confiança e visibilidade.
+ */
+function buildStrengthAlignmentNote(d: PDIDimension): string | undefined {
+  if (d.alignmentType === 'forca_oculta') {
+    return `Força oculta: você se avalia em ${d.selfScore}%, mas a empresa reconhece ${d.execScore}% nesta dimensão. Você se subestima aqui. O foco não é treinar — é assumir essa força com confiança e torná-la visível (puxar projetos, mentorar pares).`
+  }
+  return undefined
+}
+
+/**
+ * Constrói as trilhas de potencialização. Uma dimensão entra como força quando:
+ *  - força consolidada: no modo full ambas as notas altas (execScore >= STRONG_THRESHOLD);
+ *    no modo partial, a autoavaliação alta; OU
+ *  - força oculta: a empresa avalia alto mesmo que a pessoa se subestime.
+ * Pontos cegos (pessoa alto, empresa baixo) NUNCA são forças. Ordena pela visão
+ * da empresa (mais objetiva no modo full). Garante pelo menos 1 trilha quando há
+ * qualquer força reconhecível.
+ */
+function generateStrengthTracks(
+  dimensions: PDIDimension[],
+  mode: 'full' | 'partial',
+): StrengthTrack[] {
+  const scored = dimensions
+    .filter((d) => POTENCIALIZACAO_POR_FORCA[d.name])
+    .filter((d) => d.alignmentType !== 'ponto_cego') // superestimação não é força
+    .map((d) => ({
+      d,
+      // força real: visão da empresa no modo full; autoavaliação no partial
+      strength: mode === 'full' ? d.execScore : d.selfScore,
+    }))
+    .sort((a, b) => b.strength - a.strength)
+
+  let strong = scored
+    .filter((s) => s.d.alignmentType === 'forca_oculta' || s.strength >= STRONG_THRESHOLD)
+    .slice(0, MAX_STRENGTH_TRACKS)
+  if (strong.length === 0) strong = scored.slice(0, 1) // reconhece a melhor força disponível
+
+  return strong.map(({ d }) => {
+    const map = POTENCIALIZACAO_POR_FORCA[d.name]
+    const ferramentasAvancadas = map.ferramentasAvancadas
+      .map((id) => FERRAMENTAS[id])
+      .filter(Boolean)
+      .map((f) => ({ sigla: f.sigla, nome: f.nome, shortDescription: f.shortDescription }))
+
+    return {
+      dimensao: d.name,
+      selfScore: d.selfScore,
+      execScore: d.execScore,
+      alignmentType: d.alignmentType,
+      alignmentNote: buildStrengthAlignmentNote(d),
+      comoAlavancar: map.comoAlavancar,
+      ferramentasAvancadas,
+      papelMultiplicador: map.papelMultiplicador,
+      acoes: map.acoes,
       comoMedir: map.comoMedir,
     }
   })
@@ -640,6 +787,7 @@ export function generatePartialPDI(
       execScore: 0, // no exec data
       gap,
       priority,
+      alignmentType: 'indefinido' as AlignmentType, // sem avaliação executiva
       recommendation,
     }
   })
@@ -686,6 +834,8 @@ export function generatePartialPDI(
     },
 
     developmentTracks: generateDevelopmentTracks(dimensions, 'partial'),
+
+    strengthTracks: generateStrengthTracks(dimensions, 'partial'),
 
     kpisToTrack: generateKPIs(dimensions, perfil),
 
@@ -743,6 +893,7 @@ export function generatePDI(
     const gap = Math.abs(selfNorm - execNorm)
     const priority = classifyPriority(gap)
     const recommendation = getRecommendation(dim.name, gap, selfNorm, execNorm)
+    const alignmentType = classifyAlignment(selfNorm, execNorm, 'full')
 
     return {
       name: dim.name,
@@ -750,6 +901,7 @@ export function generatePDI(
       execScore: execNorm,
       gap,
       priority,
+      alignmentType,
       recommendation,
     }
   })
@@ -837,6 +989,8 @@ export function generatePDI(
     },
 
     developmentTracks: generateDevelopmentTracks(dimensions, 'full'),
+
+    strengthTracks: generateStrengthTracks(dimensions, 'full'),
 
     kpisToTrack: generateKPIs(dimensions, perfil),
 

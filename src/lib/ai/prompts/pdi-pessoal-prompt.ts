@@ -3,7 +3,15 @@
 // User prompt monta dados específicos do diagnóstico.
 // Modelo aprende o padrão a partir do template real do doc Fernanda Campos.
 
-import { FERRAMENTAS, NIVEIS_LIDER, DISC_STRATEGIES, LITERATURAS, type NivelLider } from '@/lib/diagnostico/pdi-knowledge'
+import {
+  FERRAMENTAS,
+  NIVEIS_LIDER,
+  DISC_STRATEGIES,
+  LITERATURAS,
+  MODULOS_LIDERA,
+  recommendModulosForCompetencias,
+  type NivelLider,
+} from '@/lib/diagnostico/pdi-knowledge'
 
 export const PDI_PESSOAL_SYSTEM_PROMPT = `Você é o "Consultor LIDERA", especialista em desenvolvimento de líderes operacionais brasileiros (supervisores, encarregados, gestores de linha). Sua linguagem é profissional, direta, em português do Brasil. Você fala como o Claudemir Domingos (fundador da Lidera Treinamentos).
 
@@ -42,6 +50,21 @@ ${f.estrutura.map((e) => `  • ${e.label}: ${e.detail}`).join('\n')}
 Aplicação prática: ${f.exemploAplicacao}`,
   )
   .join('\n\n---\n\n')}
+
+==================
+KNOWLEDGE BASE — 8 MÓDULOS DO TREINAMENTO LIDERA
+==================
+Cada gap de competência é atacado por um módulo específico do treinamento. Quando uma fase do PDI ataca um gap, NOMEIE o módulo correspondente no campo "moduloLidera" da fase. Use o título EXATO abaixo.
+
+${Object.values(MODULOS_LIDERA)
+  .map(
+    (m) =>
+      `**${m.titulo}**
+Foco: ${m.foco}
+Competências que desenvolve: ${m.competencias.length > 0 ? m.competencias.join(', ') : '(visão de carreira)'}
+Ferramentas: ${m.ferramentas.join(', ')}`,
+  )
+  .join('\n\n')}
 
 ==================
 KNOWLEDGE BASE — 5 NÍVEIS DE LÍDER
@@ -108,6 +131,7 @@ Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) co
       "titulo": "Fase 1: [foco principal]",
       "periodo": "Dias 1-30",
       "objetivo": "1 frase descrevendo o que essa fase resolve",
+      "moduloLidera": "Título EXATO do módulo LIDERA que esta fase ataca (ex: Módulo 2 — Inteligência Comportamental)",
       "acoes": [
         {
           "descricao": "Ação prática concreta",
@@ -142,6 +166,7 @@ Retorne EXCLUSIVAMENTE um JSON válido (sem markdown, sem texto antes/depois) co
 
 REGRAS DO JSON:
 - 3 fases obrigatórias (não 2, não 4)
+- Cada fase deve ter "moduloLidera" com o título EXATO de um dos 8 módulos da knowledge base (escolha o que ataca o gap principal daquela fase)
 - Cada fase tem 2-4 ações (não 1, não 5+)
 - Cada ação referencia ferramentaId EXATA da knowledge base (caso contrário, retorne erro)
 - KPIs devem ser quantitativos (com número/percentual/meta)
@@ -205,6 +230,21 @@ export function buildPdiPessoalUserPrompt(input: DiagnosticoPessoalInput): strin
   lines.push('\n=== AUTOAVALIAÇÃO POR COMPETÊNCIA (1=fraco, 5=forte) ===')
   for (const [k, v] of Object.entries(input.autoavaliacao)) {
     lines.push(`${k}: ${v}`)
+  }
+
+  // Módulos LIDERA prioritários: derivados das competências de menor nota.
+  const competenciasOrdenadas = Object.entries(input.autoavaliacao)
+    .sort(([, a], [, b]) => a - b)
+    .map(([id]) => id)
+  const modulosPrioritarios = recommendModulosForCompetencias(competenciasOrdenadas).slice(0, 3)
+  if (modulosPrioritarios.length > 0) {
+    lines.push('\n=== MÓDULOS LIDERA PRIORITÁRIOS (atacam os maiores gaps desta pessoa) ===')
+    for (const m of modulosPrioritarios) {
+      lines.push(`${m.titulo} — ${m.foco}`)
+    }
+    lines.push(
+      'IMPORTANTE: priorize estes módulos no campo "moduloLidera" das fases, na ordem do gap.',
+    )
   }
 
   lines.push('\n=== MÓDULOS LIDERA — COMO A PESSOA SE PERCEBE ===')

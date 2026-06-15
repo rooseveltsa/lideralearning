@@ -25,6 +25,7 @@ import type {
   PDIDimension,
   PDIPlanPhase,
   PDIReport,
+  StrengthTrack,
 } from '@/lib/utils/pdi-generator'
 
 // ---------------------------------------------------------------------------
@@ -242,6 +243,13 @@ function TrackCard({
 
       <p className="mt-2 text-sm leading-relaxed text-[#475569]">{track.porQueImporta}</p>
 
+      {track.alignmentNote && (
+        <div className="mt-3 flex items-start gap-1.5 rounded-lg border border-amber-300 bg-amber-100/70 px-2.5 py-2 text-xs font-medium text-amber-900">
+          <EyeOff className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span>{track.alignmentNote}</span>
+        </div>
+      )}
+
       <div
         className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/70 px-2.5 py-1 text-xs font-bold"
         style={{ color: ps.color }}
@@ -315,6 +323,87 @@ function TrackCard({
         )}
         <p className="flex items-start gap-1.5">
           <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#F57C00]" />
+          <span>
+            <span className="font-semibold text-[#475569]">Como medir:</span> {track.comoMedir}
+          </span>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function StrengthTrackCard({ track, mode }: { track: StrengthTrack; mode: 'full' | 'partial' }) {
+  return (
+    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 print:break-inside-avoid">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+            Força · alavancar
+          </span>
+          <h3 className="mt-0.5 text-base font-extrabold text-[#0F172A]">{track.dimensao}</h3>
+        </div>
+        {mode === 'full' && (
+          <div className="shrink-0 text-right text-xs text-[#64748B]">
+            <span className="font-bold text-[#1565C0]">{track.selfScore}%</span> você
+            <br />
+            <span className="font-bold text-[#00695C]">{track.execScore}%</span> empresa
+          </div>
+        )}
+      </div>
+
+      <p className="mt-2 text-sm leading-relaxed text-[#475569]">{track.comoAlavancar}</p>
+
+      {track.alignmentNote && (
+        <div className="mt-3 flex items-start gap-1.5 rounded-lg border border-blue-300 bg-blue-100/70 px-2.5 py-2 text-xs font-medium text-blue-900">
+          <Eye className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span>{track.alignmentNote}</span>
+        </div>
+      )}
+
+      <div className="mt-3 flex items-start gap-1.5 rounded-lg bg-white/70 px-2.5 py-2 text-xs font-semibold text-emerald-800">
+        <Users className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <span>
+          <span className="font-bold uppercase tracking-wider">Vire multiplicador:</span>{' '}
+          {track.papelMultiplicador}
+        </span>
+      </div>
+
+      {track.ferramentasAvancadas.length > 0 && (
+        <div className="mt-3">
+          <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+            <Wrench className="h-3.5 w-3.5" /> Ferramentas para ir além
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {track.ferramentasAvancadas.map((f) => (
+              <span
+                key={f.sigla}
+                title={f.shortDescription}
+                className="rounded-md border border-emerald-200 bg-white px-2 py-1 text-xs font-semibold text-[#334155]"
+              >
+                {f.sigla} — {f.nome}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-3">
+        <p className="mb-1.5 text-xs font-bold uppercase tracking-wider text-[#64748B]">
+          Como extrair mais
+        </p>
+        <ul className="space-y-1.5">
+          {track.acoes.map((a, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-[#374151]">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
+              {a}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-3 border-t border-black/5 pt-3 text-xs text-[#64748B]">
+        <p className="flex items-start gap-1.5">
+          <Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-600" />
           <span>
             <span className="font-semibold text-[#475569]">Como medir:</span> {track.comoMedir}
           </span>
@@ -544,6 +633,29 @@ export default function PDIReportView({ report, hidePrint }: Props) {
           <div className="grid gap-4 lg:grid-cols-2">
             {report.developmentTracks.map((track, i) => (
               <TrackCard key={track.dimensao} track={track} index={i} mode={report.mode} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── 5a. Forças que viram alavanca (trilhas de potencialização) ── */}
+      {report.strengthTracks.length > 0 && (
+        <section className="space-y-4 print:break-inside-avoid">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-extrabold text-[#0F172A]">
+              <Star className="h-5 w-5 text-emerald-600" />
+              Forças que viram alavanca
+            </h2>
+            <p className="mt-1 text-sm text-[#64748B]">
+              Onde você já é forte, o método LIDERA não manda treinar mais — manda
+              ir além: ferramentas avançadas e o papel de multiplicador, para
+              transformar a competência individual em padrão da equipe.
+            </p>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            {report.strengthTracks.map((track) => (
+              <StrengthTrackCard key={track.dimensao} track={track} mode={report.mode} />
             ))}
           </div>
         </section>

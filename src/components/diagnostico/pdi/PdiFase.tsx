@@ -1,6 +1,6 @@
 // Card de uma fase do PDI (90 dias dividido em 3).
 
-import { Target, CheckCircle2 } from 'lucide-react'
+import { Target, CheckCircle2, BookOpen } from 'lucide-react'
 import type { PdiFase as PdiFaseType } from '@/lib/diagnostico/pdi-types'
 import { PdiFerramentaCard } from './PdiFerramentaCard'
 
@@ -31,6 +31,15 @@ export function PdiFase({ fase }: { fase: PdiFaseType }) {
           <h3 className="mt-3 font-heading text-xl font-extrabold tracking-tight text-[#0F172A] sm:text-2xl">
             {fase.titulo}
           </h3>
+          {fase.moduloLidera && (
+            <span
+              className="mt-2 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-bold"
+              style={{ backgroundColor: style.bg, color: style.color }}
+            >
+              <BookOpen className="h-3 w-3" />
+              {fase.moduloLidera}
+            </span>
+          )}
           <p className="mt-2 text-sm leading-relaxed text-[#475569]">{fase.objetivo}</p>
         </div>
       </div>

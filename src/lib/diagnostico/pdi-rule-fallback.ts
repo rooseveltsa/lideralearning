@@ -6,6 +6,8 @@ import {
   DISC_STRATEGIES,
   NIVEIS_LIDER,
   FERRAMENTAS,
+  MODULOS_LIDERA,
+  recommendModulosForCompetencias,
   selectRelevantLiteraturas,
 } from './pdi-knowledge'
 import type { PdiReport, PdiConvergenciaPoint, PdiFase, PdiReferencia } from './pdi-types'
@@ -18,6 +20,11 @@ export function buildRuleBasedPdi(
   const discStrat = DISC_STRATEGIES[analyzer.discPrimary]
   const nivelAtual = NIVEIS_LIDER[analyzer.nivelAtual]
   const nivelAlvo = NIVEIS_LIDER[analyzer.nivelAlvo]
+
+  // Módulos LIDERA: fase 1 ataca o módulo do maior gap; fases 2 e 3 seguem o
+  // tema fixo da sua estrutura (sucessão e dados). Une o PDI ao treinamento.
+  const modulosPrioritarios = recommendModulosForCompetencias(analyzer.topGaps.map((g) => g.id))
+  const moduloFase1 = modulosPrioritarios[0]?.titulo ?? MODULOS_LIDERA.m1.titulo
 
   // ───── CONVERGÊNCIA ─────
   const convergencia = {
@@ -56,6 +63,7 @@ export function buildRuleBasedPdi(
     titulo: 'Fase 1: Fundação e Organização',
     periodo: 'Dias 1-30',
     objetivo: `Estruturar rotina, reduzir sobrecarga e atacar o gargalo principal (${analyzer.gargaloPrincipal}).`,
+    moduloLidera: moduloFase1,
     acoes: fase1Ferramentas.map((id) => {
       const f = FERRAMENTAS[id]
       return {
@@ -73,6 +81,7 @@ export function buildRuleBasedPdi(
     titulo: 'Fase 2: Desenvolvimento de Equipe e Sucessão',
     periodo: 'Dias 31-60',
     objetivo: 'Formar equipe autônoma e iniciar plano de sucessão.',
+    moduloLidera: MODULOS_LIDERA.m5.titulo,
     acoes: [
       {
         descricao: 'Mapear equipe com 9Box (Desempenho × Potencial)',
@@ -96,6 +105,7 @@ export function buildRuleBasedPdi(
     titulo: 'Fase 3: Gestão por Indicadores',
     periodo: 'Dias 61-90',
     objetivo: 'Atuar de forma preventiva e estratégica, antecipando problemas via dados.',
+    moduloLidera: MODULOS_LIDERA.m6.titulo,
     acoes: [
       {
         descricao: 'Estabelecer dashboard de KPIs diários',
