@@ -32,10 +32,20 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // This will refresh session if expired
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    // This will refresh session if expired.
+    // Blindagem: o getUser() é uma chamada de rede ao Auth do Supabase. Se o
+    // projeto estiver pausado/lento, uma chamada pendurada estoura o tempo do
+    // middleware e derruba o site inteiro (MIDDLEWARE_INVOCATION_TIMEOUT / 504).
+    // Damos um timeout curto e tratamos falha como "deslogado": rotas públicas
+    // passam (fail open) e rotas protegidas caem no login (fail closed).
+    const AUTH_TIMEOUT_MS = 2500
+    const user = await Promise.race([
+        supabase.auth
+            .getUser()
+            .then(({ data }) => data.user)
+            .catch(() => null),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), AUTH_TIMEOUT_MS)),
+    ])
 
     // Protect dashboard routes — anonymous users go to login
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
