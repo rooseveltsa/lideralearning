@@ -7,6 +7,9 @@ import {
   ClipboardList,
   ExternalLink,
   Eye,
+  GraduationCap,
+  ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
@@ -49,6 +52,30 @@ export default async function AdminFormulariosPage() {
       .from('climate_survey_responses')
       .select('*', { count: 'exact', head: true })
     totalClima = count ?? 0
+  } catch { /* table may not exist */ }
+
+  let totalPsico = 0
+  try {
+    const { count } = await admin
+      .from('psychosocial_survey_responses')
+      .select('*', { count: 'exact', head: true })
+    totalPsico = count ?? 0
+  } catch { /* table may not exist */ }
+
+  let totalCultura = 0
+  try {
+    const { count } = await admin
+      .from('preventive_culture_responses')
+      .select('*', { count: 'exact', head: true })
+    totalCultura = count ?? 0
+  } catch { /* table may not exist */ }
+
+  let totalFormacao = 0
+  try {
+    const { count } = await admin
+      .from('training_needs_assessments')
+      .select('*', { count: 'exact', head: true })
+    totalFormacao = count ?? 0
   } catch { /* table may not exist */ }
 
   // ── Perfil breakdown ──
@@ -119,6 +146,45 @@ export default async function AdminFormulariosPage() {
       cor: '#1565C0',
       bgCor: '#EFF6FE',
       respostas: totalClima,
+    },
+    {
+      id: 'psicossocial',
+      titulo: 'Indicadores Psicossociais (NR-1 / ISO 45003)',
+      descricao: 'Avaliacao de riscos psicossociais, anonima por setor e turno. Niveis de risco por fator + alertas de assedio/violencia (Parte 2). Insumo para o PGR/GRO.',
+      tipo: 'Anonimo',
+      duracao: '~12 min',
+      rota: '/pesquisa/psicossocial',
+      respostasRota: '/admin/psicossocial',
+      icon: ShieldAlert,
+      cor: '#B91C1C',
+      bgCor: '#FEF2F2',
+      respostas: totalPsico,
+    },
+    {
+      id: 'cultura',
+      titulo: 'Cultura Preventiva (anonima)',
+      descricao: 'Termometro de maturidade da cultura de prevencao e seguranca psicologica. Anonima por setor. Estagios reativo -> cultura madura.',
+      tipo: 'Anonimo',
+      duracao: '~7 min',
+      rota: '/pesquisa/cultura',
+      respostasRota: '/admin/cultura',
+      icon: ShieldCheck,
+      cor: '#15803D',
+      bgCor: '#F0FDF4',
+      respostas: totalCultura,
+    },
+    {
+      id: 'formacao',
+      titulo: 'Diagnostico de Formacao de Supervisores',
+      descricao: 'Needs-assessment identificado: competencia x prioridade nos 8 modulos LIDERA. Recomenda os 3 modulos a priorizar e alimenta o PDI.',
+      tipo: 'Identificado',
+      duracao: '~10 min',
+      rota: '/formacao/diagnostico',
+      respostasRota: '/admin/formacao',
+      icon: GraduationCap,
+      cor: '#7B1FA2',
+      bgCor: '#F3E5F5',
+      respostas: totalFormacao,
     },
   ]
 
