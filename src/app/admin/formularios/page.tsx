@@ -43,6 +43,14 @@ export default async function AdminFormulariosPage() {
     totalExecutiva = count ?? 0
   } catch { /* table may not exist */ }
 
+  let totalClima = 0
+  try {
+    const { count } = await admin
+      .from('climate_survey_responses')
+      .select('*', { count: 'exact', head: true })
+    totalClima = count ?? 0
+  } catch { /* table may not exist */ }
+
   // ── Perfil breakdown ──
   const perfilCounts = { reativo: 0, transicao: 0, lider_valor: 0 }
   try {
@@ -67,6 +75,7 @@ export default async function AdminFormulariosPage() {
       tipo: 'Multipla escolha',
       duracao: '~5 min',
       rota: '/treinamento/autoavaliacao',
+      respostasRota: '/admin/formularios/respostas/autoavaliacao',
       icon: ClipboardCheck,
       cor: '#1565C0',
       bgCor: '#EFF6FE',
@@ -79,6 +88,7 @@ export default async function AdminFormulariosPage() {
       tipo: 'Misto',
       duracao: '~10 min',
       rota: '/treinamento/avaliacao-executiva',
+      respostasRota: '/admin/formularios/respostas/avaliacao-executiva',
       icon: Building2,
       cor: '#00695C',
       bgCor: '#E0F2F1',
@@ -91,10 +101,24 @@ export default async function AdminFormulariosPage() {
       tipo: 'Auto-gerado',
       duracao: 'Auto',
       rota: '/treinamento/pdi',
+      respostasRota: '/admin/formularios/respostas/pdi',
       icon: BookOpen,
       cor: '#7B1FA2',
       bgCor: '#F3E5F5',
       respostas: totalPdi,
+    },
+    {
+      id: 'clima',
+      titulo: 'Pesquisa de Clima (anonima)',
+      descricao: '47 perguntas em 8 dimensoes. Anonima, com recorte por setor. Gera notas por dimensao, eNPS e alertas de itens criticos.',
+      tipo: 'Anonimo',
+      duracao: '~10 min',
+      rota: '/pesquisa/clima',
+      respostasRota: '/admin/clima',
+      icon: ClipboardList,
+      cor: '#1565C0',
+      bgCor: '#EFF6FE',
+      respostas: totalClima,
     },
   ]
 
@@ -209,7 +233,7 @@ export default async function AdminFormulariosPage() {
                         Abrir
                       </a>
                       <Link
-                        href={`/admin/formularios/respostas/${form.id}`}
+                        href={form.respostasRota}
                         className="inline-flex items-center gap-1 rounded-lg border border-[#D8E2EF] bg-white px-2.5 py-1.5 text-[11px] font-bold text-[#334155] transition-colors hover:bg-[#F7FAFE]"
                       >
                         <BarChart3 className="h-3 w-3" />
