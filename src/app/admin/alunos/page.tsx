@@ -29,7 +29,7 @@ export default async function AdminAlunosPage() {
   }
 
   // Fetch PDI data per user
-  let pdiMap = new Map<string, number>()
+  const pdiMap = new Map<string, number>()
   try {
     const { data: pdiData } = await admin
       .from('leadership_pdi')
@@ -44,7 +44,7 @@ export default async function AdminAlunosPage() {
   }
 
   // Fetch executive assessment data per user
-  let execMap = new Map<string, number>()
+  const execMap = new Map<string, number>()
   try {
     const { data: execData } = await admin
       .from('leadership_executive_assessments')

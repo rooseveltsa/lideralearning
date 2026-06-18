@@ -763,6 +763,8 @@ function PresentialTab({
   globalParticipantStatus,
 }: Props) {
   const totalParticipants = Object.values(globalParticipantStatus).reduce((a, b) => a + b, 0) || 1
+  // "Agora" capturado uma única vez (evita chamar Date.now() durante o render).
+  const [nowMs] = useState(() => Date.now())
 
   return (
     <div className="space-y-6">
@@ -852,7 +854,7 @@ function PresentialTab({
               const endDate = new Date(t.dateEnd)
               const fmtDate = (d: Date) =>
                 d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
-              const daysUntil = Math.ceil((startDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+              const daysUntil = Math.ceil((startDate.getTime() - nowMs) / (1000 * 60 * 60 * 24))
 
               return (
                 <div
