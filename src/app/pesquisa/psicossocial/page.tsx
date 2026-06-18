@@ -5,6 +5,7 @@ import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import PsicossocialForm from '@/components/psicossocial/PsicossocialForm'
 import { PSICOSSOCIAL_ANONIMATO } from '@/lib/psicossocial/psicossocial-data'
+import { getOrg } from '@/lib/surveys/orgs'
 
 export const metadata: Metadata = {
   title: 'Indicadores Psicossociais | Lidera Treinamentos',
@@ -13,7 +14,14 @@ export const metadata: Metadata = {
 }
 
 // Pesquisa anônima — não exige login.
-export default function PesquisaPsicossocialPage() {
+export default async function PesquisaPsicossocialPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const empresa = await getOrg(org)
+
   return (
     <div className="min-h-screen bg-[#F4F8FC] text-[#0F172A]">
       <SiteHeader />
@@ -31,6 +39,11 @@ export default function PesquisaPsicossocialPage() {
               <h1 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-[#0F172A] sm:text-4xl">
                 Como o trabalho tem pesado em você
               </h1>
+              {empresa && (
+                <p className="mt-2 text-sm font-semibold text-[#1565C0]">
+                  Empresa: {empresa.nome}
+                </p>
+              )}
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#64748B]">
                 Queremos mapear os pontos de pressão do trabalho para prevenir adoecimento e
                 melhorar as condições do seu setor. Responda com sinceridade — esta pesquisa não
@@ -56,7 +69,10 @@ export default function PesquisaPsicossocialPage() {
             </div>
 
             <div className="mt-8 border-t border-[#E3EBF6] pt-8">
-              <PsicossocialForm />
+              <PsicossocialForm
+                orgCode={empresa?.code ?? null}
+                canais={empresa?.canais ?? null}
+              />
             </div>
           </div>
         </div>

@@ -199,6 +199,13 @@ export default async function AdminFormulariosPage() {
         <p className="mt-1 max-w-lg text-xs text-[#A9BDD8]">
           Supervisor preenche Autoavaliacao → Gestor preenche Executiva → Sistema gera PDI.
         </p>
+        <Link
+          href="/admin/empresas"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-[#1E88E5] px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-[#1565C0]"
+        >
+          <Building2 className="h-3.5 w-3.5" />
+          Empresas e links segmentados
+        </Link>
       </section>
 
       {/* KPIs — compact row */}

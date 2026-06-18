@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { AlertTriangle, ArrowLeft, BarChart3, Users } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { getOrg, normalizeOrgCode } from '@/lib/surveys/orgs'
 import {
   CLIMA_DIMENSOES,
   CLIMA_ITENS_CRITICOS,
@@ -20,6 +21,7 @@ type Row = {
   dimension_scores: { id: string; nome: string; score: number | null; semBase: boolean }[]
   overall_score: number | null
   enps_nota: number | null
+  org_code: string | null
 }
 
 type Aggregate = {
@@ -137,17 +139,30 @@ function AggCard({ titulo, agg }: { titulo: string; agg: Aggregate }) {
   )
 }
 
-export default async function AdminClimaPage() {
+export default async function AdminClimaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const orgFiltro = normalizeOrgCode(org)
+  const empresaFiltro = orgFiltro ? await getOrg(orgFiltro) : null
+
   const admin = createAdminClient()
   let rows: Row[] = []
   try {
     const { data } = await admin
       .from('climate_survey_responses')
-      .select('setor, respostas, dimension_scores, overall_score, enps_nota')
+      .select('setor, respostas, dimension_scores, overall_score, enps_nota, org_code')
       .order('created_at', { ascending: false })
     rows = (data as Row[]) ?? []
   } catch {
     /* tabela pode não existir ainda */
+  }
+
+  // Filtra por empresa (org_code) antes de agregar, quando vier ?org=code.
+  if (orgFiltro) {
+    rows = rows.filter((r) => r.org_code === orgFiltro)
   }
 
   const geral = aggregate(rows)
@@ -180,6 +195,18 @@ export default async function AdminClimaPage() {
         <p className="mt-1 text-xs text-[#A9BDD8]">
           Anônimo. Resultados por setor só aparecem com {CLIMA_MIN_CELULA}+ respostas (regra de privacidade).
         </p>
+        {orgFiltro ? (
+          <p className="mt-2 text-xs font-semibold text-[#8CB8E7]">
+            Empresa: {empresaFiltro?.nome ?? orgFiltro} ·{' '}
+            <Link href="/admin/clima" className="underline hover:text-white">
+              ver todas as empresas
+            </Link>
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-[#A9BDD8]">
+            Mostrando todas as empresas. Use ?org=código na URL para filtrar por empresa.
+          </p>
+        )}
       </section>
 
       {rows.length === 0 ? (

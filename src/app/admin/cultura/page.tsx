@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { AlertTriangle, ArrowLeft, BarChart3, ShieldAlert, Users } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { getOrg } from '@/lib/surveys/orgs'
 import {
   CULTURA_DIMENSOES,
   CULTURA_ITENS_CRITICOS,
@@ -26,6 +27,7 @@ type Row = {
   respostas: CulturaRespostas
   dimension_scores: { id: string; nome: string; score: number | null; semBase: boolean }[]
   overall_score: number | null
+  org_code: string | null
 }
 
 type Aggregate = {
@@ -181,17 +183,29 @@ function AggCard({ titulo, agg }: { titulo: string; agg: Aggregate }) {
   )
 }
 
-export default async function AdminCulturaPage() {
+export default async function AdminCulturaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const empresa = await getOrg(org)
+
   const admin = createAdminClient()
   let rows: Row[] = []
   try {
     const { data } = await admin
       .from('preventive_culture_responses')
-      .select('setor, respostas, dimension_scores, overall_score')
+      .select('setor, respostas, dimension_scores, overall_score, org_code')
       .order('created_at', { ascending: false })
     rows = (data as Row[]) ?? []
   } catch {
     /* tabela pode não existir ainda */
+  }
+
+  // Filtro multi-cliente: quando vem ?org=code, restringe às respostas da empresa.
+  if (empresa) {
+    rows = rows.filter((r) => r.org_code === empresa.code)
   }
 
   const geral = aggregate(rows)
@@ -224,6 +238,18 @@ export default async function AdminCulturaPage() {
         <p className="mt-1 text-xs text-[#A9BDD8]">
           Anônimo. Maturidade por setor só aparece com {CULTURA_MIN_CELULA}+ respostas (regra de
           privacidade). Antes de aceitar um setor como maduro, confira D5 alta e baixa inconsistência.
+        </p>
+        <p className="mt-2 text-xs font-semibold text-[#8CB8E7]">
+          {empresa ? (
+            <>
+              Filtrando por empresa: <span className="text-white">{empresa.nome}</span>{' '}
+              <Link href="/admin/cultura" className="font-bold underline">
+                ver todas
+              </Link>
+            </>
+          ) : (
+            'Mostrando todas as empresas. Use ?org=CODE na URL para filtrar por cliente.'
+          )}
         </p>
       </section>
 

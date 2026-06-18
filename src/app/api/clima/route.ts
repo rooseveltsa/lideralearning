@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { normalizeOrgCode } from '@/lib/surveys/orgs'
 import {
   CLIMA_TODOS_ITENS,
   computeDimensionScores,
@@ -14,6 +15,7 @@ type Payload = {
   respostas?: Record<string, unknown>
   enps?: unknown
   abertas?: Record<string, unknown>
+  org?: unknown
 }
 
 const ITEM_IDS = new Set(CLIMA_TODOS_ITENS.map((i) => i.id))
@@ -68,9 +70,12 @@ export async function POST(request: Request) {
     enps = Math.round(json.enps)
   }
 
+  const orgCode = normalizeOrgCode(typeof json.org === 'string' ? json.org : null) || null
+
   const admin = createAdminClient()
   const { error } = await admin.from('climate_survey_responses').insert({
     setor: setor.slice(0, 120),
+    org_code: orgCode,
     setor_outro:
       setor === 'Outro' && typeof json.setorOutro === 'string'
         ? json.setorOutro.trim().slice(0, 120) || null

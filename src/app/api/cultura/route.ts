@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { normalizeOrgCode } from '@/lib/surveys/orgs'
 import {
   CULTURA_TODOS_ITENS,
   computeDimensionScores,
@@ -13,6 +14,7 @@ type Payload = {
   setorOutro?: string
   respostas?: Record<string, unknown>
   abertas?: Record<string, unknown>
+  org?: string
 }
 
 const ITEM_IDS = new Set(CULTURA_TODOS_ITENS.map((i) => i.id))
@@ -62,9 +64,12 @@ export async function POST(request: Request) {
   const dimensionScores = computeDimensionScores(respostas)
   const overall = computeOverall(dimensionScores)
 
+  const orgCode = normalizeOrgCode(typeof json.org === 'string' ? json.org : null)
+
   const admin = createAdminClient()
   const { error } = await admin.from('preventive_culture_responses').insert({
     setor: setor.slice(0, 120),
+    org_code: orgCode || null,
     setor_outro:
       setor === 'Outro' && typeof json.setorOutro === 'string'
         ? json.setorOutro.trim().slice(0, 120) || null

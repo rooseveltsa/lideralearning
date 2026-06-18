@@ -4,6 +4,7 @@ import { ShieldCheck, Clock, Lock } from 'lucide-react'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import CulturaForm from '@/components/cultura/CulturaForm'
+import { getOrg } from '@/lib/surveys/orgs'
 
 export const metadata: Metadata = {
   title: 'Termômetro da Cultura Preventiva | Lidera Treinamentos',
@@ -12,7 +13,14 @@ export const metadata: Metadata = {
 }
 
 // Pesquisa anônima — não exige login.
-export default function PesquisaCulturaPage() {
+export default async function PesquisaCulturaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const empresa = await getOrg(org)
+
   return (
     <div className="min-h-screen bg-[#F4F8FC] text-[#0F172A]">
       <SiteHeader />
@@ -30,6 +38,11 @@ export default function PesquisaCulturaPage() {
               <h1 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-[#0F172A] sm:text-4xl">
                 Como a prevenção funciona no seu setor?
               </h1>
+              {empresa && (
+                <p className="mt-2 text-sm font-semibold text-[#0F4C81]">
+                  Empresa: {empresa.nome}
+                </p>
+              )}
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-[#64748B]">
                 Queremos saber, de forma anônima, como a segurança funciona de verdade no seu dia a
                 dia — se a liderança dá o exemplo, se dá para falar dos riscos sem medo e se a equipe
@@ -63,7 +76,7 @@ export default function PesquisaCulturaPage() {
             </div>
 
             <div className="mt-8 border-t border-[#E3EBF6] pt-8">
-              <CulturaForm />
+              <CulturaForm orgCode={empresa?.code ?? null} />
             </div>
           </div>
         </div>

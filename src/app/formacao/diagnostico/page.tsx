@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { GraduationCap, Clock, ShieldCheck } from 'lucide-react'
 
 import { createClient } from '@/lib/supabase/server'
+import { getOrg } from '@/lib/surveys/orgs'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import FormacaoForm from '@/components/formacao/FormacaoForm'
@@ -13,7 +14,14 @@ export const metadata: Metadata = {
 }
 
 // Instrumento IDENTIFICADO: usa o usuário logado quando houver, senão pede nome/e-mail no formulário.
-export default async function FormacaoDiagnosticoPage() {
+export default async function FormacaoDiagnosticoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const empresa = await getOrg(org)
+
   const supabase = await createClient()
   const {
     data: { user },
@@ -69,6 +77,12 @@ export default async function FormacaoDiagnosticoPage() {
                 </span>
               </div>
 
+              {empresa && (
+                <p className="mt-4 text-sm text-[#64748B]">
+                  Empresa: <strong className="text-[#0F172A]">{empresa.nome}</strong>
+                </p>
+              )}
+
               {userProfile?.fullName && (
                 <p className="mt-4 text-sm text-[#64748B]">
                   Respondendo como{' '}
@@ -89,7 +103,7 @@ export default async function FormacaoDiagnosticoPage() {
             </div>
 
             <div className="mt-8 border-t border-[#E3EBF6] pt-8">
-              <FormacaoForm user={userProfile} />
+              <FormacaoForm user={userProfile} orgCode={empresa?.code ?? null} />
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
   criticoDisparado,
   faixaDe,
 } from '@/lib/psicossocial/psicossocial-data'
+import { getOrg, normalizeOrgCode } from '@/lib/surveys/orgs'
 
 export const metadata = { title: 'Indicadores Psicossociais — Resultados | Admin' }
 
@@ -20,6 +21,7 @@ type Row = {
   dimension_scores: { id: string; nome: string; score: number | null; semBase: boolean }[]
   overall_risk: number | null
   criticos: Record<string, CriticoResp>
+  org_code: string | null
 }
 
 type CriticoAlerta = { id: string; texto: string; ocorrencias: number; relatos: number }
@@ -164,17 +166,30 @@ function AggCard({ titulo, agg }: { titulo: string; agg: Aggregate }) {
   )
 }
 
-export default async function AdminPsicossocialPage() {
+export default async function AdminPsicossocialPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const orgCode = normalizeOrgCode(org)
+  const empresa = orgCode ? await getOrg(orgCode) : null
+
   const admin = createAdminClient()
   let rows: Row[] = []
   try {
     const { data } = await admin
       .from('psychosocial_survey_responses')
-      .select('setor, turno, dimension_scores, overall_risk, criticos')
+      .select('setor, turno, dimension_scores, overall_risk, criticos, org_code')
       .order('created_at', { ascending: false })
     rows = (data as Row[]) ?? []
   } catch {
     /* tabela pode não existir ainda */
+  }
+
+  // Filtra por empresa quando há ?org= (antes de qualquer agregação).
+  if (orgCode) {
+    rows = rows.filter((r) => r.org_code === orgCode)
   }
 
   const geral = aggregate(rows)
@@ -211,6 +226,19 @@ export default async function AdminPsicossocialPage() {
           com {PSICOSSOCIAL_MIN_CELULA}+ respostas (regra de privacidade). Alertas críticos da Parte
           2 independem da média.
         </p>
+        <div className="mt-2 text-xs text-[#A9BDD8]">
+          {orgCode ? (
+            <span>
+              Filtrando por empresa:{' '}
+              <strong className="text-white">{empresa?.nome ?? orgCode}</strong>{' '}
+              <Link href="/admin/psicossocial" className="text-[#8CB8E7] hover:underline">
+                · ver todas
+              </Link>
+            </span>
+          ) : (
+            <span>Mostrando todas as empresas.</span>
+          )}
+        </div>
       </section>
 
       {rows.length === 0 ? (

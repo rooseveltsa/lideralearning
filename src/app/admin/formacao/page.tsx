@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { AlertTriangle, ArrowLeft, GraduationCap, Trophy } from 'lucide-react'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { getOrg, normalizeOrgCode } from '@/lib/surveys/orgs'
 import { faixaDe } from '@/lib/formacao/formacao-data'
 
 export const metadata = { title: 'Diagnóstico de Formação — Resultados | Admin' }
@@ -13,6 +14,7 @@ type Row = {
   nome: string
   email: string
   empresa: string | null
+  org_code: string | null
   setor: string | null
   tempo_funcao: string | null
   qtd_liderados: string | null
@@ -37,17 +39,30 @@ function inColor(inNorm: number | null): string {
   return '#DC2626'
 }
 
-export default async function AdminFormacaoPage() {
+export default async function AdminFormacaoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ org?: string }>
+}) {
+  const { org } = await searchParams
+  const orgCode = normalizeOrgCode(org)
+  const empresa = orgCode ? await getOrg(orgCode) : null
+
   const admin = createAdminClient()
   let rows: Row[] = []
   try {
     const { data } = await admin
       .from('training_needs_assessments')
-      .select('id, nome, email, empresa, setor, tempo_funcao, qtd_liderados, top_modulos, gaps, created_at')
+      .select('id, nome, email, empresa, org_code, setor, tempo_funcao, qtd_liderados, top_modulos, gaps, created_at')
       .order('created_at', { ascending: false })
     rows = (data as Row[]) ?? []
   } catch {
     /* tabela pode não existir ainda */
+  }
+
+  // Segmentação multi-cliente: filtra por org_code antes de exibir/agregar.
+  if (orgCode) {
+    rows = rows.filter((r) => r.org_code === orgCode)
   }
 
   return (
@@ -66,6 +81,18 @@ export default async function AdminFormacaoPage() {
         <p className="mt-1 text-xs text-[#A9BDD8]">
           Identificado por supervisor. Top 3 módulos recomendados alimentam a trilha LIDERA (motor de PDI de treinamento).
         </p>
+        {orgCode ? (
+          <p className="mt-2 text-xs font-bold text-[#8CB8E7]">
+            Filtrando por empresa: {empresa?.nome ?? orgCode}{' '}
+            <Link href="/admin/formacao" className="font-semibold underline">
+              (ver todas)
+            </Link>
+          </p>
+        ) : (
+          <p className="mt-2 text-xs text-[#A9BDD8]">
+            Mostrando todas as empresas. Use <code className="text-[#8CB8E7]">?org=CODE</code> na URL para filtrar por cliente.
+          </p>
+        )}
       </section>
 
       {rows.length === 0 ? (

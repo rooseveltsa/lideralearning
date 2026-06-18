@@ -82,7 +82,7 @@ function ScaleItem({
   )
 }
 
-export default function ClimaForm() {
+export default function ClimaForm({ orgCode = null }: { orgCode?: string | null }) {
   const [setor, setSetor] = useState<string>('')
   const [setorOutro, setSetorOutro] = useState<string>('')
   const [respostas, setRespostas] = useState<RespMap>({})
@@ -118,7 +118,7 @@ export default function ClimaForm() {
       const res = await fetch('/api/clima', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setor, setorOutro, respostas, enps, abertas }),
+        body: JSON.stringify({ setor, setorOutro, respostas, enps, abertas, org: orgCode }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { normalizeOrgCode } from '@/lib/surveys/orgs'
 import {
   FORMACAO_TODOS_ITENS,
   FORMACAO_MODULOS,
@@ -13,6 +14,7 @@ import {
 
 type Payload = {
   userId?: string
+  org?: string
   nome?: string
   email?: string
   empresa?: string
@@ -112,9 +114,13 @@ export async function POST(request: Request) {
   const userId =
     typeof json.userId === 'string' && /^[0-9a-f-]{36}$/i.test(json.userId) ? json.userId : null
 
+  // Segmentação multi-cliente via ?org=code na URL.
+  const orgCode = normalizeOrgCode(json.org) || null
+
   const admin = createAdminClient()
   const { error } = await admin.from('training_needs_assessments').insert({
     user_id: userId,
+    org_code: orgCode,
     nome,
     email,
     empresa: str(json.empresa, 160) || null,

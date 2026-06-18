@@ -78,7 +78,7 @@ function ScaleItem({
   )
 }
 
-export default function CulturaForm() {
+export default function CulturaForm({ orgCode }: { orgCode?: string | null }) {
   const [setor, setSetor] = useState<string>('')
   const [setorOutro, setSetorOutro] = useState<string>('')
   const [respostas, setRespostas] = useState<RespMap>({})
@@ -113,7 +113,7 @@ export default function CulturaForm() {
       const res = await fetch('/api/cultura', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setor, setorOutro, respostas, abertas }),
+        body: JSON.stringify({ setor, setorOutro, respostas, abertas, org: orgCode }),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))

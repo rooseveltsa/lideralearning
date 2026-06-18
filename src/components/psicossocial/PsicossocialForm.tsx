@@ -14,6 +14,7 @@ import {
   PSICOSSOCIAL_PARTE2_DESCRICAO,
   PSICOSSOCIAL_RELATO_PLACEHOLDER,
 } from '@/lib/psicossocial/psicossocial-data'
+import type { SurveyOrgCanais } from '@/lib/surveys/orgs'
 
 // Cores da escala de FREQUÊNCIA pensadas como RISCO neutro: o valor não é
 // "bom" ou "ruim" por si só (depende de o item ser positivo/risco), então
@@ -87,7 +88,15 @@ function ScaleItem({
   )
 }
 
-export default function PsicossocialForm() {
+export default function PsicossocialForm({
+  orgCode = null,
+  canais = null,
+}: {
+  orgCode?: string | null
+  canais?: SurveyOrgCanais | null
+}) {
+  const temCanais =
+    !!canais && !!(canais.ouvidoria || canais.cipa || canais.sesmt || canais.rh)
   const [setor, setSetor] = useState<string>('')
   const [setorOutro, setSetorOutro] = useState<string>('')
   const [turno, setTurno] = useState<string>('')
@@ -153,6 +162,7 @@ export default function PsicossocialForm() {
           turno,
           respostas,
           criticos: criticosPayload,
+          org: orgCode,
         }),
       })
       if (!res.ok) {
@@ -302,6 +312,30 @@ export default function PsicossocialForm() {
               )}
             </div>
           ))}
+        </div>
+
+        {/* Encaminhamento — canais da empresa quando disponíveis, senão texto genérico */}
+        <div className="mt-4 rounded-lg border border-[#F0C7C7] bg-white/70 p-3 text-xs leading-relaxed text-[#7A271A]">
+          {temCanais && canais ? (
+            <>
+              <p className="font-bold">Precisa falar com alguém ou denunciar? Canais da empresa:</p>
+              <p className="mt-1">
+                {[
+                  canais.ouvidoria && `Ouvidoria: ${canais.ouvidoria}`,
+                  canais.cipa && `CIPA: ${canais.cipa}`,
+                  canais.sesmt && `SESMT: ${canais.sesmt}`,
+                  canais.rh && `RH: ${canais.rh}`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            </>
+          ) : (
+            <p>
+              Se você vive alguma dessas situações, procure a ouvidoria, a CIPA, o SESMT ou o RH da
+              sua empresa. O atendimento é sigiloso e você não perde nada por relatar.
+            </p>
+          )}
         </div>
       </section>
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { normalizeOrgCode } from '@/lib/surveys/orgs'
 import {
   PSICOSSOCIAL_TODOS_ITENS,
   PSICOSSOCIAL_CRITICOS,
@@ -17,6 +18,7 @@ type Payload = {
   respostas?: Record<string, unknown>
   criticos?: Record<string, unknown>
   abertas?: Record<string, unknown>
+  org?: string
 }
 
 const ITEM_IDS = new Set(PSICOSSOCIAL_TODOS_ITENS.map((i) => i.id))
@@ -104,9 +106,11 @@ export async function POST(request: Request) {
 
   const dimensionScores = computeDimensionScores(respostas)
   const overall = computeOverall(dimensionScores)
+  const orgCode = normalizeOrgCode(typeof json.org === 'string' ? json.org : null)
 
   const admin = createAdminClient()
   const { error } = await admin.from('psychosocial_survey_responses').insert({
+    org_code: orgCode || null,
     setor: setor.slice(0, 120),
     setor_outro:
       setor === 'Outro' && typeof json.setorOutro === 'string'

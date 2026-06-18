@@ -110,7 +110,13 @@ function ItemRow({
   )
 }
 
-export default function FormacaoForm({ user }: { user: UserProfile | null }) {
+export default function FormacaoForm({
+  user,
+  orgCode,
+}: {
+  user: UserProfile | null
+  orgCode?: string | null
+}) {
   const [nome, setNome] = useState(user?.fullName ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [empresa, setEmpresa] = useState('')
@@ -162,6 +168,7 @@ export default function FormacaoForm({ user }: { user: UserProfile | null }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user?.id,
+          org: orgCode,
           nome,
           email,
           empresa,
