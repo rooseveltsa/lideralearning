@@ -13,7 +13,7 @@ const navLinks = [
   { href: '/contato', label: 'Contato' },
 ]
 
-const darkHeroRoutes = ['/', '/empresas', '/cursos', '/treinamento']
+const darkHeroRoutes = ['/', '/empresas', '/cursos', '/treinamento', '/pricing']
 
 export default function SiteHeader() {
   const pathname = usePathname()

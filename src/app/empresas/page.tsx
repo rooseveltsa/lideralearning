@@ -3,25 +3,35 @@ import SiteFooter from '@/components/site/Footer'
 import LeadFormB2B from '@/components/site/LeadFormB2B'
 import Link from 'next/link'
 import { ArrowRight, BarChart3, CheckCircle2, Handshake, Layers3, ShieldCheck, Users2 } from 'lucide-react'
+import SmoothScroll from '@/components/motion/SmoothScroll'
+import Reveal from '@/components/motion/Reveal'
+import SplitHeading from '@/components/motion/SplitHeading'
+import CountUp from '@/components/motion/CountUp'
+import Magnetic from '@/components/motion/Magnetic'
+import TiltCard from '@/components/motion/TiltCard'
 
 const differentiators = [
   {
     icon: Layers3,
+    color: '#ec6411',
     title: 'Arquitetura híbrida',
     description: 'Combinamos academy digital, encontros ao vivo e programas presenciais em uma jornada contínua.',
   },
   {
     icon: BarChart3,
+    color: '#0f8f3a',
     title: 'Medição operacional',
     description: 'Evolução por competência, taxa de conclusão e histórico de aplicação prática com visão para RH e liderança.',
   },
   {
     icon: ShieldCheck,
+    color: '#1855bd',
     title: 'Governança e rastreabilidade',
     description: 'Fluxo auditável de lead, proposta, matrícula, progresso e certificação em um único ecossistema.',
   },
   {
     icon: Users2,
+    color: '#cc4f06',
     title: 'Curadoria por perfil',
     description: 'Trilhas diferentes para coordenadores, gerentes e diretoria, respeitando maturidade e contexto do time.',
   },
@@ -30,21 +40,25 @@ const differentiators = [
 const deliveryModel = [
   {
     step: '01',
+    color: '#ec6411',
     title: 'Diagnóstico do cenário',
     description: 'Mapeamos estrutura de liderança, gargalos de execução e metas de negócio para priorizar competências críticas.',
   },
   {
     step: '02',
+    color: '#0f8f3a',
     title: 'Desenho da trilha',
     description: 'Configuramos plano de formação por público interno, combinando módulos digitais, workshops e checkpoints.',
   },
   {
     step: '03',
+    color: '#1855bd',
     title: 'Execução guiada',
     description: 'Ativamos a trilha com acompanhamento de engajamento, ritos de aplicação e suporte de customer success.',
   },
   {
     step: '04',
+    color: '#fb7d2e',
     title: 'Leitura de impacto',
     description: 'Consolidamos indicadores para RH e diretoria com recomendações de continuidade, expansão ou ajuste de rota.',
   },
@@ -76,169 +90,209 @@ const plans = [
 
 export default function EmpresasPage() {
   return (
-    <div className="min-h-screen bg-[#040812] text-[#E7EDF8]">
+    <SmoothScroll>
+    <div className="ld-deep min-h-screen">
       <SiteHeader />
 
       <main className="overflow-hidden">
-        <section className="relative border-b border-[#1A2438] px-6 pb-24 pt-36">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(30,136,229,0.24),transparent_42%),radial-gradient(circle_at_88%_20%,rgba(76,175,53,0.2),transparent_44%)]" />
+        {/* ═══ HERO ═══ */}
+        <section className="relative px-6 pb-24 pt-32" style={{ borderBottom: '1px solid rgba(245,241,234,0.10)' }}>
           <div
-            className="pointer-events-none absolute inset-0 opacity-[0.14]"
-            style={{ backgroundImage: 'linear-gradient(rgba(148,163,184,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.15) 1px, transparent 1px)', backgroundSize: '30px 30px' }}
+            className="pointer-events-none absolute inset-0"
+            style={{ background: 'radial-gradient(circle at 12% 0%, rgba(236,100,17,0.16), transparent 42%), radial-gradient(circle at 88% 20%, rgba(15,143,58,0.12), transparent 44%)' }}
           />
 
           <div className="relative mx-auto grid w-full max-w-[1280px] gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
             <div className="space-y-8">
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#2D4364] bg-[#0A1426] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">
-                <Handshake className="h-3.5 w-3.5" />
-                Lidera Corporativo
-              </p>
+              <Reveal y={20}>
+                <p className="ld-badge ld-badge-deep-line inline-flex items-center gap-2">
+                  <Handshake className="h-3.5 w-3.5" />
+                  Lidera Corporativo
+                </p>
+              </Reveal>
 
-              <h1 className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
-                Treinamento corporativo com <span className="text-[#8CC1F7]">lógica de operação</span>, não apenas conteúdo.
-              </h1>
+              <SplitHeading
+                as="h1"
+                delay={0.1}
+                className="ld-display max-w-3xl"
+                style={{ fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', color: '#f5f1ea' }}
+              >
+                Treinamento corporativo com <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>lógica de operação,</em> não apenas conteúdo.
+              </SplitHeading>
 
-              <p className="max-w-2xl text-lg leading-relaxed text-[#A9BDD8]">
-                Estruturamos jornadas híbridas para desenvolver liderança em escala. Da entrada do lead ao relatório de impacto, toda a experiência fica centralizada na plataforma.
-              </p>
+              <Reveal delay={0.35}>
+                <p className="max-w-2xl text-lg leading-relaxed" style={{ color: 'rgba(245,241,234,0.75)' }}>
+                  Estruturamos jornadas híbridas para desenvolver liderança em escala. Da entrada do lead ao relatório de impacto, toda a experiência fica centralizada na plataforma.
+                </p>
+              </Reveal>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="#diagnostico"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#1E88E5]/25 transition-colors hover:bg-[#1565C0]"
-                >
-                  Solicitar diagnóstico
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-                <Link
-                  href="/cursos"
-                  className="inline-flex items-center justify-center rounded-xl border border-[#35527B] px-6 py-3.5 text-sm font-bold text-[#D4E4F6] transition-colors hover:border-[#5480B8] hover:text-white"
-                >
-                  Ver programas digitais
-                </Link>
-              </div>
+              <Reveal delay={0.5} className="flex flex-col gap-3 sm:flex-row">
+                <Magnetic>
+                  <a href="#diagnostico" className="ld-btn-primary ld-btn-primary-xl">
+                    Solicitar diagnóstico
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Magnetic>
+                <Magnetic>
+                  <Link href="/cursos" className="ld-btn-outline-light ld-btn-primary-xl">
+                    Ver programas digitais
+                  </Link>
+                </Magnetic>
+              </Reveal>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <Reveal stagger={0.1} delay={0.3} className="grid gap-4 sm:grid-cols-2">
               {[
                 { label: 'Empresas atendidas', value: '200+' },
                 { label: 'Gestores em formação', value: '5.000+' },
                 { label: 'Tempo médio de resposta', value: '4h úteis' },
                 { label: 'Modelo de entrega', value: 'Digital + Presencial' },
               ].map((item) => (
-                <div key={item.label} className="rounded-2xl border border-[#253A58] bg-[#0A1324] p-5">
-                  <p className="text-xs font-semibold text-[#8FA8C5]">{item.label}</p>
-                  <p className="mt-2 text-3xl font-extrabold text-white">{item.value}</p>
-                </div>
+                <TiltCard
+                  key={item.label}
+                  max={4}
+                  className="rounded-2xl p-5"
+                  style={{ border: '1px solid rgba(245,241,234,0.12)', background: 'rgba(245,241,234,0.03)' }}
+                >
+                  <p className="text-xs font-semibold" style={{ color: 'rgba(245,241,234,0.6)' }}>{item.label}</p>
+                  <CountUp
+                    value={item.value}
+                    className="mt-2 font-heading text-3xl"
+                    style={{ color: '#f5f1ea', letterSpacing: '-0.02em' }}
+                  />
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section className="bg-[#F4F8FC] px-6 py-24 text-[#0F172A]">
+        {/* ═══ DIFERENCIAIS ═══ */}
+        <section className="px-6 py-24" style={{ background: '#f5f1ea', color: '#070e1c' }}>
           <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Diferenciais de plataforma</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">
+            <Reveal className="mb-12 max-w-3xl">
+              <p className="ld-eyebrow">Diferenciais de plataforma</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
                 Estrutura robusta para RH, business partner e líderes de área.
-              </h2>
-            </div>
+              </SplitHeading>
+            </Reveal>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              {differentiators.map(({ icon: Icon, title, description }) => (
-                <article key={title} className="rounded-2xl border border-[#D8E2EF] bg-white p-7">
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#0B4A8F]">
+            <Reveal stagger={0.1} className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {differentiators.map(({ icon: Icon, color, title, description }) => (
+                <TiltCard key={title} className="ld-card p-7">
+                  <div
+                    className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{ background: '#f1f4f9', color }}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">{title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#475569]">{description}</p>
-                </article>
+                  <h3 className="ld-h5" style={{ margin: 0, color: '#070e1c' }}>{title}</h3>
+                  <p className="ld-body mt-3" style={{ margin: 0 }}>{description}</p>
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section className="border-y border-[#1A2438] bg-[#060D1A] px-6 py-24">
+        {/* ═══ MODELO DE ENTREGA ═══ */}
+        <section className="px-6 py-24" style={{ background: '#070e1c', borderTop: '1px solid rgba(245,241,234,0.10)', borderBottom: '1px solid rgba(245,241,234,0.10)' }}>
           <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Modelo de entrega</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight text-white">
+            <Reveal className="mb-12 max-w-3xl">
+              <p className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Modelo de entrega</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#f5f1ea' }}>
                 Fluxo de implantação orientado por evidência e execução.
-              </h2>
-            </div>
+              </SplitHeading>
+            </Reveal>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <Reveal stagger={0.1} className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               {deliveryModel.map((item) => (
-                <article key={item.step} className="rounded-2xl border border-[#263A59] bg-[#0A1324] p-6">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#7FA0C2]">Etapa {item.step}</p>
-                  <h3 className="mt-3 text-xl font-bold text-white">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#9AB2CE]">{item.description}</p>
-                </article>
+                <TiltCard
+                  key={item.step}
+                  className="rounded-2xl p-6"
+                  style={{ border: '1px solid rgba(245,241,234,0.12)', background: 'rgba(245,241,234,0.03)' }}
+                >
+                  <p className="font-heading text-4xl" style={{ color: item.color, lineHeight: 1, letterSpacing: '-0.02em' }}>{item.step}</p>
+                  <h3 className="mt-4 text-xl font-bold" style={{ color: '#f5f1ea' }}>{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(245,241,234,0.65)' }}>{item.description}</p>
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section className="bg-[#F4F8FC] px-6 py-24 text-[#0F172A]">
+        {/* ═══ PLANOS ═══ */}
+        <section className="px-6 py-24" style={{ background: '#f5f1ea', color: '#070e1c' }}>
           <div className="mx-auto w-full max-w-[1280px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Planos de parceria</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">Formato de contratação para diferentes estágios de maturidade.</h2>
-            </div>
+            <Reveal className="mb-12 max-w-3xl">
+              <p className="ld-eyebrow">Planos de parceria</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+                Formato de contratação para diferentes estágios de maturidade.
+              </SplitHeading>
+            </Reveal>
 
-            <div className="grid gap-6 lg:grid-cols-3">
+            <Reveal stagger={0.12} className="grid gap-6 lg:grid-cols-3">
               {plans.map((plan) => (
-                <article
+                <TiltCard
                   key={plan.name}
-                  className={`flex h-full flex-col rounded-2xl border p-7 ${
-                    plan.highlight ? 'border-[#1E88E5] bg-[#0D1C33] text-white shadow-[0_18px_42px_rgba(16,42,84,0.25)]' : 'border-[#D8E2EF] bg-white'
-                  }`}
+                  max={3}
+                  className={plan.highlight ? 'flex h-full flex-col rounded-2xl p-7' : 'ld-card flex h-full flex-col p-7'}
+                  style={
+                    plan.highlight
+                      ? { background: '#070e1c', color: '#f5f1ea', border: '1px solid rgba(236,100,17,0.45)', boxShadow: '0 22px 48px rgba(7,14,28,0.28)' }
+                      : undefined
+                  }
                 >
-                  <p className={`text-xs font-bold uppercase tracking-[0.14em] ${plan.highlight ? 'text-[#9BC4EE]' : 'text-[#64748B]'}`}>{plan.name}</p>
-                  <h3 className={`mt-2 text-2xl font-extrabold ${plan.highlight ? 'text-white' : 'text-[#0F172A]'}`}>{plan.price}</h3>
-                  <p className={`mt-3 text-sm ${plan.highlight ? 'text-[#B5CAE3]' : 'text-[#475569]'}`}>{plan.audience}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em]" style={{ color: plan.highlight ? '#fb7d2e' : '#64748B' }}>
+                    {plan.name}
+                  </p>
+                  <h3 className="mt-2 font-heading text-2xl" style={{ color: plan.highlight ? '#f5f1ea' : '#070e1c', letterSpacing: '-0.02em' }}>
+                    {plan.price}
+                  </h3>
+                  <p className="mt-3 text-sm" style={{ color: plan.highlight ? 'rgba(245,241,234,0.7)' : '#475569' }}>{plan.audience}</p>
                   <ul className="mt-6 flex-1 space-y-2.5">
                     {plan.items.map((item) => (
-                      <li key={item} className={`flex items-center gap-2 text-sm ${plan.highlight ? 'text-[#E0ECFA]' : 'text-[#334155]'}`}>
-                        <CheckCircle2 className={`h-4 w-4 ${plan.highlight ? 'text-[#4CAF35]' : 'text-[#1E88E5]'}`} />
+                      <li key={item} className="flex items-center gap-2 text-sm" style={{ color: plan.highlight ? 'rgba(245,241,234,0.85)' : '#334155' }}>
+                        <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: plan.highlight ? '#fb7d2e' : '#0f8f3a' }} />
                         {item}
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href="#diagnostico"
-                    className={`mt-7 inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold ${
-                      plan.highlight ? 'bg-[#1E88E5] text-white hover:bg-[#1565C0]' : 'bg-[#EAF3FC] text-[#0B4A8F] hover:bg-[#DCEBFC]'
-                    }`}
-                  >
+                  <a href="#diagnostico" className={plan.highlight ? 'ld-btn-primary mt-7 justify-center' : 'ld-btn-outline mt-7 justify-center'}>
                     Falar com especialista
                     <ArrowRight className="h-4 w-4" />
                   </a>
-                </article>
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section id="diagnostico" className="border-t border-[#1A2438] bg-[#060D1A] px-6 py-24">
-          <div className="mx-auto grid w-full max-w-[1280px] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-            <div className="space-y-6">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Próximo passo</p>
-              <h2 className="font-heading text-4xl font-extrabold leading-tight text-white">
+        {/* ═══ DIAGNÓSTICO / FORM ═══ */}
+        <section id="diagnostico" className="relative overflow-hidden px-6 py-24" style={{ background: '#070e1c', borderTop: '1px solid rgba(245,241,234,0.10)' }}>
+          <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 85% 30%, rgba(236,100,17,0.14), transparent 50%)' }} />
+          <div className="relative mx-auto grid w-full max-w-[1280px] gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <Reveal className="space-y-6">
+              <p className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Próximo passo</p>
+              <SplitHeading as="h2" className="ld-h2" style={{ color: '#f5f1ea' }}>
                 Solicite um diagnóstico e desenhe a trilha ideal para sua operação.
-              </h2>
-              <p className="text-lg leading-relaxed text-[#A9BDD8]">
+              </SplitHeading>
+              <p className="text-lg leading-relaxed" style={{ color: 'rgba(245,241,234,0.75)' }}>
                 O formulário gera protocolo interno e abre o pipeline comercial da sua empresa dentro da plataforma Lidera.
               </p>
-            </div>
-            <div className="rounded-3xl border border-[#22314B] bg-[#0A1324] p-7 shadow-[0_22px_45px_rgba(2,6,23,0.55)]">
-              <LeadFormB2B />
-            </div>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div
+                className="rounded-3xl p-7"
+                style={{ border: '1px solid rgba(245,241,234,0.14)', background: 'rgba(245,241,234,0.03)', boxShadow: '0 22px 45px rgba(2,6,23,0.5)' }}
+              >
+                <LeadFormB2B />
+              </div>
+            </Reveal>
           </div>
         </section>
       </main>
 
       <SiteFooter />
     </div>
+    </SmoothScroll>
   )
 }

@@ -235,8 +235,8 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
       className="group min-w-[260px] max-w-[260px] shrink-0"
       aria-label={`Abrir programa ${course.title}`}
     >
-      <article className="overflow-hidden rounded-xl border border-white/10 bg-[#0E1424] transition-all duration-300 group-hover:border-[#1E88E5] group-hover:shadow-[0_12px_32px_rgba(30,136,229,0.24)]">
-          <div className="relative h-36 w-full overflow-hidden bg-[#090E1A]">
+      <article className="overflow-hidden rounded-xl border border-white/10 bg-[#0e1a2e] transition-all duration-300 group-hover:border-[#ec6411] group-hover:shadow-[0_12px_32px_rgba(236,100,17,0.20)]">
+          <div className="relative h-36 w-full overflow-hidden bg-[#0a1322]">
             {course.thumbnail_url ? (
             <Image
               src={course.thumbnail_url}
@@ -247,7 +247,7 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
               className="h-full w-full object-cover opacity-85 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-100"
             />
             ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#102341] to-[#0A1220] px-5 text-center text-sm font-semibold text-[#BFD4EA]">
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#122039] to-[#0c1729] px-5 text-center text-sm font-semibold text-[#d5cfc2]">
               {course.title}
             </div>
           )}
@@ -256,7 +256,7 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
 
           <div className="absolute left-3 top-3 flex items-center gap-2">
             {showNewTag && isNewRelease(course.created_at) ? (
-              <span className="rounded-md bg-[#4CAF35] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+              <span className="rounded-md bg-[#2eb555] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                 Novo
               </span>
             ) : null}
@@ -264,17 +264,17 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
         </div>
 
         <div className="space-y-3 p-4">
-          <h3 className="line-clamp-2 text-base font-bold leading-tight text-white group-hover:text-[#8CC1F7]">
+          <h3 className="line-clamp-2 text-base font-bold leading-tight text-white group-hover:text-[#fb7d2e]">
             {course.title}
           </h3>
 
-          <p className="line-clamp-2 text-sm leading-relaxed text-[#94A3B8]">
+          <p className="line-clamp-2 text-sm leading-relaxed text-[#a8a296]">
             {course.description || 'Programa com foco em aplicação prática e evolução de resultados.'}
           </p>
 
           <div className="flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#7FA0C2]">Compra Avulsa</span>
-            <strong className="text-sm font-bold text-[#E6F1FB]">{currencyBRL.format(Number(course.price ?? 0))}</strong>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#a8a296]">Compra Avulsa</span>
+            <strong className="text-sm font-bold text-[#f5f1ea]">{currencyBRL.format(Number(course.price ?? 0))}</strong>
           </div>
         </div>
       </article>
@@ -292,8 +292,8 @@ function ContinueCourseCard({ item }: { item: ContinueWatchingItem }) {
       className="group min-w-[320px] max-w-[320px] shrink-0"
       aria-label={`Continuar ${item.course.title}`}
     >
-      <article className="overflow-hidden rounded-xl border border-[#2B405F] bg-[#0B1222] transition-all duration-300 group-hover:border-[#1E88E5] group-hover:shadow-[0_14px_34px_rgba(16,64,120,0.4)]">
-        <div className="relative h-40 w-full overflow-hidden bg-[#060B17]">
+      <article className="overflow-hidden rounded-xl border border-[#26324a] bg-[#0c1729] transition-all duration-300 group-hover:border-[#ec6411] group-hover:shadow-[0_14px_34px_rgba(236,100,17,0.25)]">
+        <div className="relative h-40 w-full overflow-hidden bg-[#0a1322]">
           {item.course.thumbnail_url ? (
             <Image
               src={item.course.thumbnail_url}
@@ -304,36 +304,36 @@ function ContinueCourseCard({ item }: { item: ContinueWatchingItem }) {
               className="h-full w-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105 group-hover:opacity-100"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#102341] to-[#0A1220] px-5 text-center text-sm font-semibold text-[#BFD4EA]">
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#122039] to-[#0c1729] px-5 text-center text-sm font-semibold text-[#d5cfc2]">
               {item.course.title}
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#040913] via-transparent to-transparent" />
-          <span className="absolute left-3 top-3 rounded-md border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#D9E9FB]">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#070e1c] via-transparent to-transparent" />
+          <span className="absolute left-3 top-3 rounded-md border border-white/20 bg-black/40 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#e8e2d6]">
             Em andamento
           </span>
         </div>
 
         <div className="space-y-3 p-4">
-          <h3 className="line-clamp-2 text-base font-bold leading-tight text-white group-hover:text-[#8CC1F7]">
+          <h3 className="line-clamp-2 text-base font-bold leading-tight text-white group-hover:text-[#fb7d2e]">
             {item.course.title}
           </h3>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-[#9CB5D0]">
+            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-[#b3ada1]">
               <span>{item.progressPercent}% concluído</span>
               <span>
                 {item.completedLessons}/{item.totalLessons} aulas
               </span>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-[#243754]">
-              <div className="h-full rounded-full bg-[#1E88E5] transition-all duration-500" style={{ width: `${widthPercent}%` }} />
+            <div className="h-1.5 overflow-hidden rounded-full bg-[#26324a]">
+              <div className="h-full rounded-full bg-[#ec6411] transition-all duration-500" style={{ width: `${widthPercent}%` }} />
             </div>
           </div>
 
           <div className="flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="text-xs text-[#8DA9C8]">Último acesso {shortDateBR.format(new Date(item.lastAccessedAt))}</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-[#D4E8FC]">Continuar</span>
+            <span className="text-xs text-[#a8a296]">Último acesso {shortDateBR.format(new Date(item.lastAccessedAt))}</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#e8e2d6]">Continuar</span>
           </div>
         </div>
       </article>
@@ -422,41 +422,41 @@ export default async function CursosPage() {
     : 'Assista no seu ritmo, avance por trilhas certificadas e leve o aprendizado digital para imersões presenciais e programas corporativos.'
 
   return (
-    <div className="min-h-screen bg-[#040812] text-[#E7EDF8]">
+    <div className="min-h-screen bg-[#070e1c] text-[#f5f1ea]">
       <SiteHeader />
 
       <main>
         {featuredCourse ? (
-          <section className="relative isolate overflow-hidden border-b border-[#1A2438] pt-36">
+          <section className="relative isolate overflow-hidden border-b border-[#1d2940] pt-36">
             <div
               className="absolute inset-0 -z-20 bg-cover bg-center opacity-35"
               style={{
                 backgroundImage: featuredCourse.thumbnail_url
                   ? `url(${featuredCourse.thumbnail_url})`
-                  : 'linear-gradient(120deg, #11213F 0%, #0A1324 100%)',
+                  : 'linear-gradient(120deg, #122039 0%, #0c1729 100%)',
               }}
             />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#05080F] via-[#05080F]/85 to-[#05080F]/55" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#070e1c] via-[#070e1c]/85 to-[#070e1c]/55" />
 
             <div className="mx-auto grid max-w-[1280px] gap-12 px-6 pb-16 pt-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-end">
               <div className="max-w-3xl space-y-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#2A3D63] bg-[#0B1222]/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#9CC8F2]">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#26324a] bg-[#0c1729]/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#fb7d2e]">
                   <CalendarClock className="h-3.5 w-3.5" />
                   {user ? 'Seu Stream Personalizado' : 'Stream Lidera Academy'}
                 </div>
 
                 <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
-                  Evolução contínua em formato de <span className="text-[#4EA1F0]">stream de treinamentos</span>
+                  Evolução contínua em formato de <span className="text-[#fb7d2e]">stream de treinamentos</span>
                 </h1>
 
-                <p className="max-w-2xl text-lg leading-relaxed text-[#BCD0E4]">
+                <p className="max-w-2xl text-lg leading-relaxed text-[#d5cfc2]">
                   {personalizedSummary}
                 </p>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <Link
                     href={heroPrimaryHref}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#1E88E5] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1565C0]"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#ec6411] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#cc4f06]"
                   >
                     {heroPrimaryLabel}
                     <ArrowRight className="h-4 w-4" />
@@ -464,20 +464,20 @@ export default async function CursosPage() {
 
                   <Link
                     href={user ? '/dashboard/cursos' : '/empresas'}
-                    className="inline-flex items-center gap-2 rounded-lg border border-[#355583] bg-[#0B1222]/80 px-6 py-3 text-sm font-bold text-[#D9E9F9] transition hover:border-[#4EA1F0] hover:text-white"
+                    className="inline-flex items-center gap-2 rounded-lg border border-[#3a4763] bg-[#0c1729]/80 px-6 py-3 text-sm font-bold text-[#e8e2d6] transition hover:border-[#fb7d2e] hover:text-white"
                   >
                     {user ? 'Ver meus programas' : 'Soluções para empresas'}
                   </Link>
                 </div>
               </div>
 
-              <aside className="rounded-2xl border border-[#273B5A] bg-[#0B1222]/90 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.45)] backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#7FA0C2]">Destaque da semana</p>
+              <aside className="rounded-2xl border border-[#26324a] bg-[#0c1729]/90 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#a8a296]">Destaque da semana</p>
                 <h2 className="mt-3 text-xl font-bold text-white">{featuredCourse.title}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-[#9DB5CF]">
+                <p className="mt-3 text-sm leading-relaxed text-[#b3ada1]">
                   {featuredCourse.description || 'Programa recomendado para acelerar desenvolvimento profissional e resultados aplicáveis.'}
                 </p>
-                <p className="mt-5 text-sm font-semibold text-[#CFE2F6]">
+                <p className="mt-5 text-sm font-semibold text-[#e8e2d6]">
                   {user ? `${continueWatching.length} em andamento` : `A partir de ${currencyBRL.format(Number(featuredCourse.price ?? 0))}`}
                 </p>
               </aside>
@@ -487,14 +487,14 @@ export default async function CursosPage() {
 
         <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-12 px-6 py-12">
           {courses.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#2D3E5D] bg-[#0B1222] p-10 text-center">
+            <div className="rounded-2xl border border-dashed border-[#26324a] bg-[#0c1729] p-10 text-center">
               <h2 className="text-2xl font-bold text-white">Nenhum treinamento publicado no momento</h2>
-              <p className="mx-auto mt-3 max-w-2xl text-[#9EB6D0]">
+              <p className="mx-auto mt-3 max-w-2xl text-[#b3ada1]">
                 O catálogo está em atualização. Enquanto isso, você pode solicitar uma proposta corporativa personalizada para seu time.
               </p>
               <Link
                 href="/empresas"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#1565C0] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1E88E5]"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#cc4f06] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#ec6411]"
               >
                 Falar com time comercial
                 <ArrowRight className="h-4 w-4" />
@@ -507,27 +507,27 @@ export default async function CursosPage() {
                   <header className="flex items-end justify-between gap-4">
                     <div>
                       <h2 className="flex items-center gap-2 text-2xl font-bold text-white">
-                        <History className="h-5 w-5 text-[#4EA1F0]" />
+                        <History className="h-5 w-5 text-[#fb7d2e]" />
                         Continuar assistindo
                       </h2>
-                      <p className="mt-1 text-sm text-[#8DA9C8]">
+                      <p className="mt-1 text-sm text-[#a8a296]">
                         Retome exatamente de onde parou com progresso sincronizado por aula.
                       </p>
                     </div>
-                    <Link href="/dashboard/cursos" className="text-sm font-semibold text-[#9CC8F2] hover:text-[#D5E9FB]">
+                    <Link href="/dashboard/cursos" className="text-sm font-semibold text-[#fb7d2e] hover:text-[#e8e2d6]">
                       Abrir minha jornada
                     </Link>
                   </header>
 
                   {continueWatching.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-[#2D3E5D] bg-[#0B1222] p-8">
+                    <div className="rounded-2xl border border-dashed border-[#26324a] bg-[#0c1729] p-8">
                       <p className="text-base font-semibold text-white">Nenhuma aula iniciada ainda</p>
-                      <p className="mt-2 text-sm text-[#9EB6D0]">
+                      <p className="mt-2 text-sm text-[#b3ada1]">
                         Você já possui acesso a programas. Comece pela primeira aula para ativar esta trilha automática.
                       </p>
                       <Link
                         href="/dashboard/cursos"
-                        className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#1565C0] px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-[#1E88E5]"
+                        className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#cc4f06] px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-[#ec6411]"
                       >
                         Ir para meus programas
                         <ArrowRight className="h-4 w-4" />
@@ -550,10 +550,10 @@ export default async function CursosPage() {
                   <header className="flex items-end justify-between gap-4">
                     <div>
                       <h2 className="flex items-center gap-2 text-2xl font-bold text-white">
-                        <Sparkles className="h-5 w-5 text-[#4EA1F0]" />
+                        <Sparkles className="h-5 w-5 text-[#fb7d2e]" />
                         Recomendado para você
                       </h2>
-                      <p className="mt-1 text-sm text-[#8DA9C8]">
+                      <p className="mt-1 text-sm text-[#a8a296]">
                         Seleção automática do catálogo para ampliar sua trilha atual.
                       </p>
                     </div>
@@ -577,12 +577,12 @@ export default async function CursosPage() {
                     <header className="flex items-end justify-between gap-4">
                       <div>
                         <h2 className="flex items-center gap-2 text-2xl font-bold text-white">
-                          <Icon className="h-5 w-5 text-[#4EA1F0]" />
+                          <Icon className="h-5 w-5 text-[#fb7d2e]" />
                           {rail.title}
                         </h2>
-                        <p className="mt-1 text-sm text-[#8DA9C8]">{rail.description}</p>
+                        <p className="mt-1 text-sm text-[#a8a296]">{rail.description}</p>
                       </div>
-                      <Link href="/contato" className="text-sm font-semibold text-[#9CC8F2] hover:text-[#D5E9FB]">
+                      <Link href="/contato" className="text-sm font-semibold text-[#fb7d2e] hover:text-[#e8e2d6]">
                         Precisa de ajuda para escolher?
                       </Link>
                     </header>

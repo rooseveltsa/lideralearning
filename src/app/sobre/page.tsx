@@ -2,25 +2,34 @@ import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import Link from 'next/link'
 import { ArrowRight, Award, Compass, Gem, Handshake, Target, Users2 } from 'lucide-react'
+import SmoothScroll from '@/components/motion/SmoothScroll'
+import Reveal from '@/components/motion/Reveal'
+import SplitHeading from '@/components/motion/SplitHeading'
+import Magnetic from '@/components/motion/Magnetic'
+import TiltCard from '@/components/motion/TiltCard'
 
 const principles = [
   {
     icon: Target,
+    color: '#ec6411',
     title: 'Resultado antes de discurso',
     description: 'Toda trilha é desenhada para gerar comportamento observável e impacto operacional.',
   },
   {
     icon: Compass,
+    color: '#1855bd',
     title: 'Direção estratégica clara',
     description: 'Decisões de produto e de conteúdo seguem problema real de negócio, não tendências superficiais.',
   },
   {
     icon: Users2,
+    color: '#0f8f3a',
     title: 'Evolução humana aplicada',
     description: 'Desenvolvimento técnico e soft skills caminham juntos para sustentar liderança em contexto de pressão.',
   },
   {
     icon: Gem,
+    color: '#cc4f06',
     title: 'Qualidade de execução',
     description: 'Mantemos padrão alto de curadoria, experiência e acompanhamento para evitar jornadas genéricas.',
   },
@@ -29,21 +38,25 @@ const principles = [
 const timeline = [
   {
     year: '2014',
+    color: '#ec6411',
     title: 'Origem em campo',
     text: 'A metodologia nasceu da necessidade de formar líderes em ambientes de alta pressão operacional.',
   },
   {
     year: '2018',
+    color: '#0f8f3a',
     title: 'Consolidação em B2B',
     text: 'Programas in-company passam a estruturar jornadas por nível de liderança e metas de negócio.',
   },
   {
     year: '2022',
+    color: '#1855bd',
     title: 'Integração digital',
     text: 'Academy e trilhas online entram como acelerador contínuo de formação e escala.',
   },
   {
     year: '2026',
+    color: '#fb7d2e',
     title: 'Ecossistema híbrido',
     text: 'Plataforma robusta conectando digital, presencial, pipeline comercial e certificação rastreável.',
   },
@@ -57,116 +70,144 @@ const commitments = [
 
 export default function SobrePage() {
   return (
-    <div className="min-h-screen bg-[#F4F8FC] text-[#0F172A]">
+    <SmoothScroll>
+    <div className="min-h-screen" style={{ background: '#f5f1ea', color: '#070e1c' }}>
       <SiteHeader />
 
       <main className="overflow-hidden">
-        <section className="relative border-b border-[#DBE5F1] px-6 pb-20 pt-36">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,rgba(30,136,229,0.18),transparent_44%),radial-gradient(circle_at_90%_20%,rgba(76,175,53,0.14),transparent_48%)]" />
+        {/* ═══ HERO / MANIFESTO ═══ */}
+        <section className="relative px-6 pb-20 pt-32" style={{ borderBottom: '1px solid rgba(7,14,28,0.08)' }}>
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{ background: 'radial-gradient(circle at 10% 0%, rgba(236,100,17,0.10), transparent 44%), radial-gradient(circle at 90% 20%, rgba(15,143,58,0.08), transparent 48%)' }}
+          />
           <div className="relative mx-auto w-full max-w-[1200px]">
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#C8DAEE] bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">
-              <Handshake className="h-3.5 w-3.5" />
-              Manifesto Lidera
-            </p>
+            <Reveal y={20}>
+              <p className="ld-badge ld-badge-orange inline-flex items-center gap-2">
+                <Handshake className="h-3.5 w-3.5" />
+                Manifesto Lidera
+              </p>
+            </Reveal>
 
-            <h1 className="mt-6 max-w-4xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-[#0F172A] sm:text-5xl lg:text-6xl">
-              A Lidera existe para transformar treinamento em vantagem competitiva real.
-            </h1>
+            <SplitHeading
+              as="h1"
+              delay={0.1}
+              className="ld-display mt-6 max-w-4xl"
+              style={{ fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', color: '#070e1c' }}
+            >
+              A Lidera existe para transformar treinamento em <em style={{ fontStyle: 'normal', color: '#ec6411' }}>vantagem competitiva real.</em>
+            </SplitHeading>
 
-            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-[#475569]">
-              Não criamos jornadas para impressionar com volume de conteúdo. Criamos estrutura para que líderes evoluam comportamento, decisões e execução de time com consistência.
-            </p>
+            <Reveal delay={0.35}>
+              <p className="mt-6 max-w-3xl text-lg leading-relaxed" style={{ color: '#4a5060' }}>
+                Não criamos jornadas para impressionar com volume de conteúdo. Criamos estrutura para que líderes evoluam comportamento, decisões e execução de time com consistência.
+              </p>
+            </Reveal>
           </div>
         </section>
 
-        <section className="bg-white px-6 py-24">
+        {/* ═══ PRINCÍPIOS ═══ */}
+        <section className="px-6 py-24" style={{ background: '#fdfcfa' }}>
           <div className="mx-auto w-full max-w-[1200px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Princípios de produto</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">Como pensamos cada solução da plataforma.</h2>
-            </div>
+            <Reveal className="mb-12 max-w-3xl">
+              <p className="ld-eyebrow">Princípios de produto</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+                Como pensamos cada solução da plataforma.
+              </SplitHeading>
+            </Reveal>
 
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-              {principles.map(({ icon: Icon, title, description }) => (
-                <article key={title} className="rounded-2xl border border-[#D8E2EF] bg-[#F9FBFE] p-7">
-                  <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#EAF3FC] text-[#0B4A8F]">
+            <Reveal stagger={0.1} className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {principles.map(({ icon: Icon, color, title, description }) => (
+                <TiltCard key={title} className="ld-card p-7">
+                  <div
+                    className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl"
+                    style={{ background: '#f1f4f9', color }}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-bold text-[#0F172A]">{title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#475569]">{description}</p>
-                </article>
+                  <h3 className="ld-h5" style={{ margin: 0, color: '#070e1c' }}>{title}</h3>
+                  <p className="ld-body mt-3" style={{ margin: 0 }}>{description}</p>
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section className="border-y border-[#1A2438] bg-[#060D1A] px-6 py-24 text-[#E7EDF8]">
+        {/* ═══ TIMELINE ═══ */}
+        <section className="px-6 py-24" style={{ background: '#070e1c', color: '#f5f1ea' }}>
           <div className="mx-auto w-full max-w-[1200px]">
-            <div className="mb-12 max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Evolução da metodologia</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight text-white">
+            <Reveal className="mb-12 max-w-3xl">
+              <p className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Evolução da metodologia</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#f5f1ea' }}>
                 Construída na prática, refinada em ciclos curtos e validação contínua.
-              </h2>
-            </div>
+              </SplitHeading>
+            </Reveal>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <Reveal stagger={0.12} className="grid gap-6 md:grid-cols-2">
               {timeline.map((item) => (
-                <article key={item.year} className="rounded-2xl border border-[#263A59] bg-[#0A1324] p-7">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">{item.year}</p>
-                  <h3 className="mt-2 text-2xl font-bold text-white">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#9AB2CE]">{item.text}</p>
-                </article>
+                <TiltCard
+                  key={item.year}
+                  max={3}
+                  className="rounded-2xl p-7"
+                  style={{ border: '1px solid rgba(245,241,234,0.12)', background: 'rgba(245,241,234,0.03)' }}
+                >
+                  <p className="font-heading text-3xl" style={{ color: item.color, lineHeight: 1, letterSpacing: '-0.02em' }}>{item.year}</p>
+                  <h3 className="mt-3 text-2xl font-bold" style={{ color: '#f5f1ea' }}>{item.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed" style={{ color: 'rgba(245,241,234,0.65)' }}>{item.text}</p>
+                </TiltCard>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
-        <section className="bg-white px-6 py-24">
+        {/* ═══ COMPROMISSOS + CTA ═══ */}
+        <section className="px-6 py-24" style={{ background: '#fdfcfa' }}>
           <div className="mx-auto grid w-full max-w-[1200px] gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Compromissos de execução</p>
-              <h2 className="mt-3 font-heading text-4xl font-extrabold leading-tight">A régua de qualidade que guiamos internamente.</h2>
-              <p className="mt-5 text-lg leading-relaxed text-[#475569]">
+            <Reveal>
+              <p className="ld-eyebrow">Compromissos de execução</p>
+              <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+                A régua de qualidade que guiamos internamente.
+              </SplitHeading>
+              <p className="mt-5 text-lg leading-relaxed" style={{ color: '#4a5060' }}>
                 Essa disciplina é o que sustenta a consistência entre branding, experiência do aluno e resultado para empresas.
               </p>
 
               <ul className="mt-7 space-y-3">
                 {commitments.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm font-semibold text-[#334155]">
-                    <Award className="h-4 w-4 text-[#1E88E5]" />
+                  <li key={item} className="flex items-center gap-2.5 text-sm font-semibold" style={{ color: '#334155' }}>
+                    <Award className="h-4 w-4 shrink-0" style={{ color: '#ec6411' }} />
                     {item}
                   </li>
                 ))}
               </ul>
-            </div>
+            </Reveal>
 
-            <aside className="rounded-2xl border border-[#D8E2EF] bg-[#F9FBFE] p-8">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Próximo passo</p>
-              <h3 className="mt-3 text-2xl font-extrabold text-[#0F172A]">Conheça a solução completa da Lidera.</h3>
-              <p className="mt-4 text-sm leading-relaxed text-[#475569]">
-                Se você quer avaliar aderência para seu time ou para sua empresa, nosso time pode orientar o melhor caminho de entrada.
-              </p>
-              <div className="mt-6 flex flex-col gap-3">
-                <Link
-                  href="/empresas"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1E88E5] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
-                >
-                  Ver solução corporativa
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  href="/cursos"
-                  className="inline-flex items-center justify-center rounded-xl border border-[#C8DAEE] px-5 py-3 text-sm font-bold text-[#0B4A8F] transition-colors hover:border-[#A9C8EA] hover:bg-[#EFF5FD]"
-                >
-                  Explorar programas
-                </Link>
-              </div>
-            </aside>
+            <Reveal delay={0.15}>
+              <aside className="ld-card p-8">
+                <p className="ld-eyebrow">Próximo passo</p>
+                <h3 className="mt-3 text-2xl font-bold" style={{ color: '#070e1c' }}>Conheça a solução completa da Lidera.</h3>
+                <p className="mt-4 text-sm leading-relaxed" style={{ color: '#4a5060' }}>
+                  Se você quer avaliar aderência para seu time ou para sua empresa, nosso time pode orientar o melhor caminho de entrada.
+                </p>
+                <div className="mt-6 flex flex-col gap-3">
+                  <Magnetic>
+                    <Link href="/empresas" className="ld-btn-primary w-full justify-center">
+                      Ver solução corporativa
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Magnetic>
+                  <Link href="/cursos" className="ld-btn-outline w-full justify-center">
+                    Explorar programas
+                  </Link>
+                </div>
+              </aside>
+            </Reveal>
           </div>
         </section>
       </main>
 
       <SiteFooter />
     </div>
+    </SmoothScroll>
   )
 }

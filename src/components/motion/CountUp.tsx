@@ -17,10 +17,12 @@ export default function CountUp({ value, className, style }: CountUpProps) {
     const el = ref.current
     if (!el || prefersReducedMotion()) return
 
-    const match = value.match(/^([+\-−]?)(\d+)(.*)$/)
+    const match = value.match(/^([+\-−]?)(\d[\d.]*?)(\D.*|)$/)
     if (!match) return
     const [, prefix, num, suffix] = match
-    const target = parseInt(num, 10)
+    const hasThousands = num.includes('.')
+    const target = parseInt(num.replace(/\./g, ''), 10)
+    const format = (n: number) => (hasThousands ? n.toLocaleString('pt-BR') : String(n))
     const state = { n: 0 }
 
     el.textContent = `${prefix}0${suffix}`
@@ -30,7 +32,7 @@ export default function CountUp({ value, className, style }: CountUpProps) {
       ease: 'power2.out',
       scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
       onUpdate: () => {
-        el.textContent = `${prefix}${Math.round(state.n)}${suffix}`
+        el.textContent = `${prefix}${format(Math.round(state.n))}${suffix}`
       },
     })
 
