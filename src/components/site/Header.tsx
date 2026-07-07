@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 
@@ -45,12 +46,15 @@ export default function SiteHeader() {
         {/* Left: Logo + Nav */}
         <div className="flex items-center gap-12">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            {/* Lidera Logo Mark — 3 setas ascendentes */}
-            <svg width={28} height={28} viewBox="0 0 64 64" fill="none" aria-hidden>
-              <path d="M10 50 L22 18 L26 30 L18 50 Z" fill="#ec6411" />
-              <path d="M22 50 L34 14 L38 26 L30 50 Z" fill="#0f8f3a" />
-              <path d="M34 50 L46 18 L54 30 L42 50 Z" fill="#1855bd" />
-            </svg>
+            {/* Marca oficial Lidera */}
+            <Image
+              src="/brand/lidera-mark.png"
+              alt=""
+              width={38}
+              height={26}
+              priority
+              aria-hidden
+            />
             <span
               className="font-sans text-xl font-bold tracking-tight"
               style={{ color: isDark ? '#f5f1ea' : '#070e1c', letterSpacing: '-0.02em' }}

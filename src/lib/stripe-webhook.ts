@@ -98,24 +98,44 @@ async function processCheckoutCompleted(
 
   const userId = session.metadata?.userId
   const courseId = session.metadata?.courseId
+  const productType = session.metadata?.productType
   const orderId = session.metadata?.orderId ?? session.client_reference_id ?? null
 
-  if (!userId || !courseId) {
-    return 'ignored'
-  }
-
-  const { error: enrollmentError } = await admin.from('enrollments').upsert(
-    {
-      user_id: userId,
-      course_id: courseId,
-      status: 'active',
-    },
-    {
-      onConflict: 'user_id, course_id',
+  if (productType === 'pdi') {
+    // Funil PDI: desbloqueia o plano pago no diagnóstico (sem matrícula)
+    const diagnosticoId = session.metadata?.diagnosticoId
+    if (!diagnosticoId) {
+      return 'ignored'
     }
-  )
 
-  await assertNoCriticalDbError(enrollmentError, 'Failed to grant enrollment')
+    const { error: unlockError } = await admin
+      .from('personal_diagnostics')
+      .update({
+        pdi_paid_at: new Date().toISOString(),
+        pdi_order_id: orderId,
+      })
+      .eq('id', diagnosticoId)
+      .is('pdi_paid_at', null)
+
+    await assertNoCriticalDbError(unlockError, 'Failed to unlock paid PDI')
+  } else {
+    if (!userId || !courseId) {
+      return 'ignored'
+    }
+
+    const { error: enrollmentError } = await admin.from('enrollments').upsert(
+      {
+        user_id: userId,
+        course_id: courseId,
+        status: 'active',
+      },
+      {
+        onConflict: 'user_id, course_id',
+      }
+    )
+
+    await assertNoCriticalDbError(enrollmentError, 'Failed to grant enrollment')
+  }
 
   const paymentIntentId = getPaymentIntentId(session.payment_intent)
   const amount = toMajorUnit(session.amount_total)

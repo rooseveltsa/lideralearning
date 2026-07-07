@@ -124,6 +124,47 @@ export async function createModule(formData: FormData) {
     return { success: true }
 }
 
+export async function updateModule(moduleId: string, courseId: string, formData: FormData) {
+    const { admin } = await verifyAdmin()
+
+    const { error } = await admin
+        .from('modules')
+        .update({ title: formData.get('title') as string })
+        .eq('id', moduleId)
+
+    if (error) return { error: error.message }
+
+    revalidatePath(`/admin/cursos/${courseId}`)
+    return { success: true }
+}
+
+export async function moveModule(moduleId: string, courseId: string, direction: 'up' | 'down') {
+    const { admin } = await verifyAdmin()
+
+    const { data: modules, error: listError } = await admin
+        .from('modules')
+        .select('id')
+        .eq('course_id', courseId)
+        .order('order_index', { ascending: true })
+
+    if (listError || !modules) return { error: listError?.message ?? 'Módulos não encontrados' }
+
+    const index = modules.findIndex((m) => m.id === moduleId)
+    const target = direction === 'up' ? index - 1 : index + 1
+    if (index === -1 || target < 0 || target >= modules.length) return { success: true }
+
+    const reordered = [...modules]
+    ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
+
+    for (let i = 0; i < reordered.length; i++) {
+        const { error } = await admin.from('modules').update({ order_index: i + 1 }).eq('id', reordered[i].id)
+        if (error) return { error: error.message }
+    }
+
+    revalidatePath(`/admin/cursos/${courseId}`)
+    return { success: true }
+}
+
 export async function deleteModule(moduleId: string, courseId: string) {
     const { admin } = await verifyAdmin()
 
@@ -163,6 +204,52 @@ export async function createLesson(formData: FormData) {
         })
 
     if (error) return { error: error.message }
+
+    revalidatePath(`/admin/cursos/${courseId}`)
+    return { success: true }
+}
+
+export async function updateLesson(lessonId: string, courseId: string, formData: FormData) {
+    const { admin } = await verifyAdmin()
+
+    const { error } = await admin
+        .from('lessons')
+        .update({
+            title: formData.get('title') as string,
+            video_url: (formData.get('video_url') as string) || null,
+            content_text: (formData.get('content_text') as string) || null,
+            duration_seconds: parseInt(formData.get('duration_seconds') as string) || 0,
+        })
+        .eq('id', lessonId)
+
+    if (error) return { error: error.message }
+
+    revalidatePath(`/admin/cursos/${courseId}`)
+    return { success: true }
+}
+
+export async function moveLesson(lessonId: string, moduleId: string, courseId: string, direction: 'up' | 'down') {
+    const { admin } = await verifyAdmin()
+
+    const { data: lessons, error: listError } = await admin
+        .from('lessons')
+        .select('id')
+        .eq('module_id', moduleId)
+        .order('order_index', { ascending: true })
+
+    if (listError || !lessons) return { error: listError?.message ?? 'Aulas não encontradas' }
+
+    const index = lessons.findIndex((l) => l.id === lessonId)
+    const target = direction === 'up' ? index - 1 : index + 1
+    if (index === -1 || target < 0 || target >= lessons.length) return { success: true }
+
+    const reordered = [...lessons]
+    ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
+
+    for (let i = 0; i < reordered.length; i++) {
+        const { error } = await admin.from('lessons').update({ order_index: i + 1 }).eq('id', reordered[i].id)
+        if (error) return { error: error.message }
+    }
 
     revalidatePath(`/admin/cursos/${courseId}`)
     return { success: true }

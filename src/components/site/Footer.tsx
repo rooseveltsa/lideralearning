@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Instagram, Linkedin, Youtube } from 'lucide-react'
 
 const footerColumns = [
@@ -22,11 +23,7 @@ export default function SiteFooter() {
           {/* Brand column */}
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5">
-              <svg width={26} height={26} viewBox="0 0 64 64" fill="none" aria-hidden>
-                <path d="M10 50 L22 18 L26 30 L18 50 Z" fill="#ec6411" />
-                <path d="M22 50 L34 14 L38 26 L30 50 Z" fill="#0f8f3a" />
-                <path d="M34 50 L46 18 L54 30 L42 50 Z" fill="#1855bd" />
-              </svg>
+              <Image src="/brand/lidera-mark.png" alt="" width={35} height={24} aria-hidden />
               <span className="font-sans text-lg font-bold tracking-tight" style={{ color: '#f5f1ea' }}>
                 Lidera
               </span>

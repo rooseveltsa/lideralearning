@@ -19,12 +19,19 @@ import { PdiReferencias } from '@/components/diagnostico/pdi/PdiReferencias'
 import { PdiPrintButton } from '@/components/diagnostico/pdi/PdiPrintButton'
 import { NIVEIS_LIDER } from '@/lib/diagnostico/pdi-knowledge'
 import type { PdiReport } from '@/lib/diagnostico/pdi-types'
+import { PDI_CHECKOUT_ENABLED } from '@/lib/funnel'
+import { PdiPaywall } from '@/components/diagnostico/pdi/PdiPaywall'
+import { PdiFunnelLadder } from '@/components/diagnostico/pdi/PdiFunnelLadder'
+import { verifyPdiCheckoutSession } from './checkout-actions'
 
 export const metadata = { title: 'Seu Plano de Desenvolvimento · Lidera' }
 
-type Params = { params: Promise<{ id: string }> }
+type Params = {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ session_id?: string }>
+}
 
-export default async function PdiPessoalPage({ params }: Params) {
+export default async function PdiPessoalPage({ params, searchParams }: Params) {
   const { id } = await params
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
     notFound()
@@ -47,6 +54,24 @@ export default async function PdiPessoalPage({ params }: Params) {
   const firstName = nomeCompleto.trim().split(' ')[0]
   const empresa = (diag.empresa as string) || null
   const cargo = (diag.cargo as string) || null
+
+  // Funil PDI pago: consulta tolerante (não quebra se a migration 58 não rodou)
+  let pdiPaid = !PDI_CHECKOUT_ENABLED
+  if (PDI_CHECKOUT_ENABLED) {
+    const { data: paidRow } = await admin
+      .from('personal_diagnostics')
+      .select('pdi_paid_at')
+      .eq('id', id)
+      .maybeSingle()
+    pdiPaid = Boolean(paidRow?.pdi_paid_at)
+
+    if (!pdiPaid) {
+      const { session_id } = await searchParams
+      if (session_id) {
+        pdiPaid = await verifyPdiCheckoutSession(id, session_id)
+      }
+    }
+  }
 
   // Se PDI ainda não foi gerado, mostra estado de "processando"
   if (!pdiReport) {
@@ -83,6 +108,10 @@ export default async function PdiPessoalPage({ params }: Params) {
         <SiteFooter />
       </div>
     )
+  }
+
+  if (!pdiPaid) {
+    return <PdiPaywall diagnosticoId={id} firstName={firstName} />
   }
 
   const nivelAtual = NIVEIS_LIDER[pdiReport.classificacao.atual]
@@ -240,6 +269,9 @@ export default async function PdiPessoalPage({ params }: Params) {
               </Link>
             </div>
           </div>
+
+          {/* Escada do funil: próximos degraus de formação */}
+          <PdiFunnelLadder />
 
           {/* Footer info */}
           <div className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4 text-center text-xs text-[#94A3B8]">

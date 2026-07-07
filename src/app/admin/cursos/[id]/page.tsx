@@ -14,7 +14,7 @@ export default async function EditarCursoPage({ params }: { params: Promise<{ id
       modules (
         id, title, order_index,
         lessons (
-          id, title, video_url, duration_seconds, order_index
+          id, title, video_url, content_text, duration_seconds, order_index
         )
       )
     `)
