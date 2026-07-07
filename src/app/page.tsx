@@ -2,9 +2,18 @@ import Link from 'next/link'
 import SiteFooter from '@/components/site/Footer'
 import SiteHeader from '@/components/site/Header'
 import { DiagnosticoCTA } from '@/components/diagnostico/DiagnosticoCTA'
+import SmoothScroll from '@/components/motion/SmoothScroll'
+import HeroBackdrop from '@/components/motion/HeroBackdrop'
+import Reveal from '@/components/motion/Reveal'
+import SplitHeading from '@/components/motion/SplitHeading'
+import CountUp from '@/components/motion/CountUp'
+import Magnetic from '@/components/motion/Magnetic'
+import TiltCard from '@/components/motion/TiltCard'
+import Marquee from '@/components/motion/Marquee'
 
 export default function HomePage() {
   return (
+    <SmoothScroll>
     <div className="ld-deep">
       <SiteHeader />
 
@@ -32,26 +41,32 @@ export default function HomePage() {
             <path d="M500 900 L1300 180 L1500 320 L760 900 Z" fill="url(#h-blue)" />
           </svg>
         </div>
+        <HeroBackdrop />
 
         <div className="ld-mw-xl relative">
           {/* Badge */}
-          <span className="ld-badge-deep-line ld-badge">
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 4v6M12 14v6M4 12h6M14 12h6" />
-              <path d="M18 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" fill="currentColor" stroke="none" />
-            </svg>
-            Formação de líderes &middot; Presencial + Digital
-          </span>
+          <Reveal y={20}>
+            <span className="ld-badge-deep-line ld-badge">
+              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 4v6M12 14v6M4 12h6M14 12h6" />
+                <path d="M18 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" fill="currentColor" stroke="none" />
+              </svg>
+              Formação de líderes &middot; Presencial + Digital
+            </span>
+          </Reveal>
 
           {/* Headline */}
-          <h1
+          <SplitHeading
+            as="h1"
+            delay={0.15}
             className="ld-display mt-8"
             style={{ fontSize: 'clamp(3rem, 8vw, 7.5rem)', maxWidth: 1200, color: '#f5f1ea' }}
           >
             Formamos os líderes que a sua <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>operação precisa.</em>
-          </h1>
+          </SplitHeading>
 
           {/* Subheadline */}
+          <Reveal delay={0.4}>
           <p
             className="mt-9"
             style={{ color: 'rgba(245,241,234,0.78)', fontSize: 21, maxWidth: 640, lineHeight: 1.55 }}
@@ -60,21 +75,27 @@ export default function HomePage() {
             acompanhamento. Supervisores que saem da operação e assumem a{' '}
             <strong style={{ color: '#f5f1ea' }}>liderança de verdade.</strong>
           </p>
+          </Reveal>
 
           {/* CTAs */}
-          <div className="mt-10 flex flex-wrap gap-3">
-            <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
-              Fazer diagnóstico gratuito
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </DiagnosticoCTA>
-            <Link href="/empresas" className="ld-btn-outline-light ld-btn-primary-xl">
-              Soluções para empresas
-            </Link>
-          </div>
+          <Reveal delay={0.55} className="mt-10 flex flex-wrap gap-3">
+            <Magnetic>
+              <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
+                Fazer diagnóstico gratuito
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </DiagnosticoCTA>
+            </Magnetic>
+            <Magnetic>
+              <Link href="/empresas" className="ld-btn-outline-light ld-btn-primary-xl">
+                Soluções para empresas
+              </Link>
+            </Magnetic>
+          </Reveal>
 
           {/* Prova social inline */}
+          <Reveal delay={0.7}>
           <div className="mt-14 flex flex-wrap items-center gap-5">
             <div className="flex -space-x-2.5">
               {['#ec6411', '#0f8f3a', '#1855bd', '#122039', '#cc4f06'].map((c, i) => (
@@ -100,6 +121,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          </Reveal>
         </div>
       </section>
 
@@ -112,29 +134,31 @@ export default function HomePage() {
           background: 'rgba(255,255,255,0.02)',
         }}
       >
-        <div className="ld-mw-xl flex flex-wrap items-center justify-center gap-4 py-8 sm:justify-between sm:gap-6">
+        <div className="ld-mw-xl py-8">
           <span
-            className="w-full text-center text-xs uppercase tracking-[0.14em] sm:w-auto sm:text-left"
+            className="mb-6 block text-center text-xs uppercase tracking-[0.14em]"
             style={{ color: 'rgba(245,241,234,0.55)' }}
           >
             Empresas que formam líderes conosco
           </span>
-          {['GRUPO ALFA', 'MERIDIAN', 'VOLTARE', 'NORTHCAP', 'PRISMO', 'ORION'].map((n) => (
-            <span
-              key={n}
-              className="font-heading text-lg tracking-[0.08em] sm:text-2xl"
-              style={{ color: 'rgba(245,241,234,0.45)' }}
-            >
-              {n}
-            </span>
-          ))}
+          <Marquee>
+            {['GRUPO ALFA', 'MERIDIAN', 'VOLTARE', 'NORTHCAP', 'PRISMO', 'ORION'].map((n) => (
+              <span
+                key={n}
+                className="font-heading text-lg tracking-[0.08em] sm:text-2xl"
+                style={{ color: 'rgba(245,241,234,0.45)' }}
+              >
+                {n}
+              </span>
+            ))}
+          </Marquee>
         </div>
       </section>
 
       {/* ═══ MÉTRICAS — impacto na formação ═══ */}
       <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
         <div className="ld-mw-xl">
-          <div className="mb-10 grid items-end gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-16">
+          <Reveal stagger={0.15} className="mb-10 grid items-end gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-16">
             <div>
               <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Impacto mensurável</div>
               <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)', color: '#f5f1ea' }}>
@@ -144,9 +168,10 @@ export default function HomePage() {
             <p className="ld-body-lg" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 480 }}>
               Medimos o antes e o depois. Engajamento do time, retenção de talentos, execução gerencial — indicadores reais que mostram a transformação do líder.
             </p>
-          </div>
+          </Reveal>
 
-          <div
+          <Reveal
+            stagger={0.1}
             className="grid grid-cols-2 lg:grid-cols-4"
             style={{ borderTop: '1px solid rgba(245,241,234,0.10)', borderBottom: '1px solid rgba(245,241,234,0.10)' }}
           >
@@ -161,35 +186,37 @@ export default function HomePage() {
                 className="p-8 lg:p-10"
                 style={{ borderRight: i < a.length - 1 ? '1px solid rgba(245,241,234,0.10)' : 'none' }}
               >
-                <div className="font-heading" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea', lineHeight: 1, letterSpacing: '-0.025em' }}>
-                  {s.v}
-                </div>
+                <CountUp
+                  value={s.v}
+                  className="font-heading"
+                  style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea', lineHeight: 1, letterSpacing: '-0.025em' }}
+                />
                 <div className="mt-3 text-sm" style={{ color: 'rgba(245,241,234,0.65)', maxWidth: 220 }}>
                   {s.l}
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ═══ COMO FUNCIONA — 3 passos ═══ */}
       <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
         <div className="ld-mw-xl">
-          <div className="mb-10 lg:mb-16" style={{ maxWidth: 720 }}>
+          <Reveal className="mb-10 lg:mb-16" style={{ maxWidth: 720 }}>
             <div className="ld-eyebrow">Como funciona</div>
-            <h2 className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+            <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
               Do <em style={{ fontStyle: 'normal', color: '#ec6411' }}>diagnóstico</em> à transformação real.
-            </h2>
-          </div>
+            </SplitHeading>
+          </Reveal>
 
-          <div className="grid gap-6 lg:grid-cols-3">
+          <Reveal stagger={0.12} className="grid gap-6 lg:grid-cols-3">
             {[
               { n: '01', t: 'Diagnóstico de liderança', d: 'Autoavaliação das 5 dimensões de liderança. Você recebe o mapa completo de competências do seu time — onde estão os gaps e o que desenvolver.', c: '#ec6411' },
               { n: '02', t: 'Imersão presencial + Academy', d: 'Workshop intensivo de 2 dias com turmas de até 10 pessoas. Depois, acesso contínuo à plataforma digital com trilhas personalizadas por papel.', c: '#0f8f3a' },
               { n: '03', t: 'Acompanhamento de 60 dias', d: 'Mentoria pós-treinamento para garantir que o aprendizado vire prática. Sem isso, é teoria. Com isso, é transformação.', c: '#1855bd' },
             ].map((s) => (
-              <div
+              <TiltCard
                 key={s.n}
                 className="ld-card relative overflow-hidden p-9"
               >
@@ -210,9 +237,9 @@ export default function HomePage() {
                 </div>
                 <h4 className="ld-h5" style={{ margin: '0 0 10px', color: '#070e1c' }}>{s.t}</h4>
                 <p className="ld-body" style={{ margin: 0 }}>{s.d}</p>
-              </div>
+              </TiltCard>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -222,15 +249,15 @@ export default function HomePage() {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
             <div>
               <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Programa completo</div>
-              <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea' }}>
+              <SplitHeading as="h2" className="ld-display mt-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea' }}>
                 Tudo que o seu líder precisa para <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>crescer.</em>
-              </h2>
+              </SplitHeading>
               <p className="ld-body-lg mt-7" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 18, maxWidth: 480 }}>
                 Um programa completo que combina presencial e digital.
                 Não é só conteúdo — é formação estruturada com acompanhamento e resultado mensurável.
               </p>
 
-              <div className="mt-9 flex flex-col gap-3.5">
+              <Reveal stagger={0.07} className="mt-9 flex flex-col gap-3.5">
                 {[
                   'Diagnóstico individualizado de liderança',
                   'PDI — Plano de Desenvolvimento Individual',
@@ -251,21 +278,24 @@ export default function HomePage() {
                     <span className="text-[15px]">{b}</span>
                   </div>
                 ))}
-              </div>
+              </Reveal>
 
               <div className="mt-10 flex gap-3">
-                <DiagnosticoCTA className="ld-btn-primary">
-                  Começar pelo diagnóstico
-                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M13 5l7 7-7 7" />
-                  </svg>
-                </DiagnosticoCTA>
+                <Magnetic>
+                  <DiagnosticoCTA className="ld-btn-primary">
+                    Começar pelo diagnóstico
+                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M13 5l7 7-7 7" />
+                    </svg>
+                  </DiagnosticoCTA>
+                </Magnetic>
               </div>
             </div>
 
             {/* Platform preview card — hidden on mobile */}
             <div className="relative hidden lg:block">
-              <div
+              <TiltCard
+                max={4}
                 className="rounded-2xl p-6"
                 style={{
                   background: 'linear-gradient(180deg, #0c1729 0%, #070e1c 100%)',
@@ -336,11 +366,11 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </TiltCard>
 
               {/* Floating chip */}
               <div
-                className="absolute -right-2.5 -top-4 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white"
+                className="ld-float absolute -right-2.5 -top-4 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white"
                 style={{ background: '#0f8f3a', boxShadow: '0 12px 40px -12px rgba(15, 143, 58, 0.45)' }}
               >
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
@@ -356,14 +386,14 @@ export default function HomePage() {
       {/* ═══ DEPOIMENTOS ═══ */}
       <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
         <div className="ld-mw-xl">
-          <div className="mb-10 lg:mb-14" style={{ maxWidth: 720 }}>
+          <Reveal className="mb-10 lg:mb-14" style={{ maxWidth: 720 }}>
             <div className="ld-eyebrow">Resultados reais</div>
-            <h2 className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
+            <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
               Quem já passou pelo programa.
-            </h2>
-          </div>
+            </SplitHeading>
+          </Reveal>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+          <Reveal stagger={0.12} className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
             {/* Featured testimonial */}
             <div
               className="flex flex-col justify-between rounded-2xl p-8 md:col-span-2 md:p-10 lg:col-span-1"
@@ -416,15 +446,16 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ═══ DOIS CAMINHOS — Individual + Corporativo ═══ */}
       <section className="py-16 md:py-20 lg:py-[100px]" style={{ background: '#070e1c' }}>
-        <div className="ld-mw-xl grid gap-6 md:grid-cols-2">
+        <Reveal stagger={0.15} className="ld-mw-xl grid gap-6 md:grid-cols-2">
           {/* Para você */}
-          <div
+          <TiltCard
+            max={3}
             className="rounded-2xl p-10 transition-all"
             style={{ border: '1px solid rgba(236,100,17,0.2)', background: 'linear-gradient(135deg, rgba(236,100,17,0.06), transparent)' }}
           >
@@ -442,10 +473,11 @@ export default function HomePage() {
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
             </Link>
-          </div>
+          </TiltCard>
 
           {/* Para empresas */}
-          <div
+          <TiltCard
+            max={3}
             className="rounded-2xl p-10 transition-all"
             style={{ border: '1px solid rgba(245,241,234,0.10)', background: 'linear-gradient(135deg, rgba(245,241,234,0.03), transparent)' }}
           >
@@ -463,8 +495,8 @@ export default function HomePage() {
                 <path d="M5 12h14M13 5l7 7-7 7" />
               </svg>
             </Link>
-          </div>
-        </div>
+          </TiltCard>
+        </Reveal>
       </section>
 
       {/* ═══ CTA FINAL ═══ */}
@@ -472,35 +504,42 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 80% 50%, rgba(236,100,17,0.18), transparent 50%)' }} />
         <div className="ld-mw relative text-center">
           <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Comece sua jornada</div>
-          <h2 className="ld-display mx-auto mt-5" style={{ fontSize: 'clamp(2.5rem, 7vw, 6.875rem)', color: '#f5f1ea', maxWidth: 1100 }}>
+          <SplitHeading as="h2" className="ld-display mx-auto mt-5" style={{ fontSize: 'clamp(2.5rem, 7vw, 6.875rem)', color: '#f5f1ea', maxWidth: 1100 }}>
             Descubra seu perfil de<br /><em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>liderança.</em>
-          </h2>
-          <p className="mx-auto mt-8" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 580 }}>
-            Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
-          </p>
-          <div className="mt-11 flex flex-wrap justify-center gap-3">
-            <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
-              Fazer diagnóstico gratuito
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </DiagnosticoCTA>
-            <a
-              href="https://wa.me/5564996099020"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ld-btn-outline-light ld-btn-primary-xl"
-            >
-              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
-              </svg>
-              Falar com Claudemir
-            </a>
-          </div>
+          </SplitHeading>
+          <Reveal delay={0.15}>
+            <p className="mx-auto mt-8" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 580 }}>
+              Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
+            </p>
+          </Reveal>
+          <Reveal delay={0.3} className="mt-11 flex flex-wrap justify-center gap-3">
+            <Magnetic>
+              <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
+                Fazer diagnóstico gratuito
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M13 5l7 7-7 7" />
+                </svg>
+              </DiagnosticoCTA>
+            </Magnetic>
+            <Magnetic>
+              <a
+                href="https://wa.me/5564996099020"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ld-btn-outline-light ld-btn-primary-xl"
+              >
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
+                </svg>
+                Falar com Claudemir
+              </a>
+            </Magnetic>
+          </Reveal>
         </div>
       </section>
 
       <SiteFooter />
     </div>
+    </SmoothScroll>
   )
 }
