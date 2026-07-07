@@ -19,27 +19,29 @@ export default function HomePage() {
 
       {/* ═══ HERO ═══ */}
       <section className="relative overflow-hidden px-0 py-16 md:py-20 lg:py-[120px]">
-        {/* Background: setas ascendentes decorativas */}
-        <div className="pointer-events-none absolute inset-0" style={{ opacity: 0.16 }}>
-          <svg width="100%" height="100%" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <linearGradient id="h-orange" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0" stopColor="#ec6411" stopOpacity="0" />
-                <stop offset="1" stopColor="#ec6411" stopOpacity="1" />
-              </linearGradient>
-              <linearGradient id="h-green" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0" stopColor="#0f8f3a" stopOpacity="0" />
-                <stop offset="1" stopColor="#0f8f3a" stopOpacity="1" />
-              </linearGradient>
-              <linearGradient id="h-blue" x1="0" x2="0" y1="1" y2="0">
-                <stop offset="0" stopColor="#1855bd" stopOpacity="0" />
-                <stop offset="1" stopColor="#1855bd" stopOpacity="1" />
-              </linearGradient>
-            </defs>
-            <path d="M-100 900 L600 200 L680 320 L20 900 Z" fill="url(#h-orange)" />
-            <path d="M200 900 L900 100 L980 240 L320 900 Z" fill="url(#h-green)" />
-            <path d="M500 900 L1300 180 L1500 320 L760 900 Z" fill="url(#h-blue)" />
-          </svg>
+        {/* Fundo: gradientes profundos + grade técnica sutil */}
+        <div className="pointer-events-none absolute inset-0">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(ellipse 75% 60% at 75% 15%, rgba(24,85,189,0.16), transparent 60%), radial-gradient(ellipse 55% 45% at 10% 85%, rgba(236,100,17,0.10), transparent 55%)',
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(245,241,234,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(245,241,234,0.045) 1px, transparent 1px)',
+              backgroundSize: '56px 56px',
+              maskImage: 'radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, transparent 75%)',
+            }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-40"
+            style={{ background: 'linear-gradient(180deg, transparent, #070e1c)' }}
+          />
         </div>
         <HeroBackdrop />
 
