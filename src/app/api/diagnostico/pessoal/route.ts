@@ -1,10 +1,14 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
 import { createClient } from '@/lib/supabase/server'
 import { sendEmailWithRetry } from '@/lib/email/send-with-retry'
 import { logger, maskEmail } from '@/lib/logger/structured'
 import { generatePdiPessoal } from '@/lib/diagnostico/pdi-generator'
+
+// A geração do PDI chama o LLM (até 30s) e roda depois da response, via after().
+// O default da plataforma abortaria a execução no meio.
+export const maxDuration = 60
 
 type Payload = {
   nomeCompleto?: string
@@ -262,26 +266,13 @@ export async function POST(request: Request) {
     })
   }
 
-  // Send confirmation email (await — bloqueia para garantir entrega)
-  const emailResult = await sendEmailWithRetry(
-    email,
-    'diagnostico-pessoal-recebido',
-    {
-      nomeCompleto,
-      empresa,
-      selfScore,
-      radarAverage,
-      discScores,
-      diagnosticoId,
-    },
-    { leadId: diagnosticoId ?? undefined, origin: 'diagnostico_pessoal' },
-  )
-
-  // Geração do PDI em background (fire-and-forget — não bloqueia response).
-  // PDI é gravado em personal_diagnostics.pdi.generated quando pronto.
-  if (diagnosticoId) {
-    const diagId = diagnosticoId
-    void (async () => {
+  // Trabalho lento roda depois da response, mas dentro do ciclo de vida que a
+  // plataforma mantém vivo. Um fire-and-forget (`void (async () => {})()`) era
+  // descartado assim que a response saía — o PDI nunca chegava a ser gravado.
+  // Ordem importa: o PDI é gerado ANTES do e-mail, porque o e-mail carrega o link dele.
+  after(async () => {
+    if (diagnosticoId) {
+      const diagId = diagnosticoId
       try {
         // Recupera dados do diagnóstico (precisa de campos não preservados em variáveis)
         const { data: full } = await admin
@@ -290,7 +281,9 @@ export async function POST(request: Request) {
           .eq('id', diagId)
           .single()
 
-        if (!full) return
+        if (!full) {
+          throw new Error(`diagnóstico ${diagId} não encontrado para geração de PDI`)
+        }
 
         let comparativoEmpresa = null
         if (full.linked_b2b_diagnostic_id) {
@@ -367,18 +360,65 @@ export async function POST(request: Request) {
             (pdiReport.meta.promptTokens ?? 0) + (pdiReport.meta.completionTokens ?? 0),
         })
       } catch (e) {
-        logger.error('pdi_generation_failed', {
-          diagnosticoId: diagId,
-          error: e instanceof Error ? e.message : 'unknown',
+        const message = e instanceof Error ? e.message : 'unknown'
+        logger.error('pdi_generation_failed', { diagnosticoId: diagId, error: message })
+
+        // Marca a falha no próprio registro: a página do PDI precisa distinguir
+        // "ainda gerando" de "falhou", e o reprocessamento precisa saber quem recuperar.
+        const { data: row } = await admin
+          .from('personal_diagnostics')
+          .select('pdi')
+          .eq('id', diagId)
+          .maybeSingle()
+
+        await admin
+          .from('personal_diagnostics')
+          .update({
+            pdi: {
+              ...((row?.pdi as Record<string, unknown>) || {}),
+              error: { message, at: new Date().toISOString() },
+            },
+          })
+          .eq('id', diagId)
+      }
+    }
+
+    // E-mail por último: ele carrega o link do PDI, então só faz sentido depois
+    // que o PDI existe. Falha aqui não pode derrubar o resto — apenas registra.
+    try {
+      const emailResult = await sendEmailWithRetry(
+        email,
+        'diagnostico-pessoal-recebido',
+        {
+          nomeCompleto,
+          empresa,
+          selfScore,
+          radarAverage,
+          discScores,
+          diagnosticoId,
+        },
+        { leadId: diagnosticoId ?? undefined, origin: 'diagnostico_pessoal' },
+      )
+
+      if (!emailResult.success) {
+        logger.error('diagnostico_pessoal_email_failed', {
+          diagnosticoId,
+          email: maskEmail(email),
+          error: emailResult.error,
         })
       }
-    })()
-  }
+    } catch (e) {
+      logger.error('diagnostico_pessoal_email_failed', {
+        diagnosticoId,
+        email: maskEmail(email),
+        error: e instanceof Error ? e.message : 'unknown',
+      })
+    }
+  })
 
   return NextResponse.json({
     success: true,
     diagnosticoId,
-    emailSent: emailResult.success,
-    ...(emailResult.success ? {} : { emailError: emailResult.error }),
+    pdiStatus: 'processing',
   })
 }
