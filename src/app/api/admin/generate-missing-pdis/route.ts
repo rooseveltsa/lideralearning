@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
+import { requireAdmin } from '@/lib/auth/require-admin'
 
 /**
  * POST /api/admin/generate-missing-pdis
@@ -9,6 +10,10 @@ import { createAdminClient } from '@/lib/supabase/service'
  * self-assessments that don't have a corresponding PDI yet.
  */
 export async function POST() {
+  // Estava exposta: aceitava POST de qualquer origem, sem sessão nem role.
+  const auth = await requireAdmin()
+  if (!auth.ok) return auth.response
+
   const admin = createAdminClient()
 
   // Fetch all self-assessments

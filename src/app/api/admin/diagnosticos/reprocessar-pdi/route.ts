@@ -9,37 +9,13 @@
 import { NextResponse } from 'next/server'
 
 import { createAdminClient } from '@/lib/supabase/service'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import { logger } from '@/lib/logger/structured'
 import { listPdisOrfaos, regeneratePdiPessoal } from '@/lib/diagnostico/regenerate-pdi'
 
 export const maxDuration = 60
 
 const MAX_LOTE = 3
-
-/** A rota expõe dados de todos os leads e reprocessa PDIs — sem admin, não passa. */
-async function requireAdmin(): Promise<{ ok: true } | { ok: false; response: NextResponse }> {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { ok: false, response: NextResponse.json({ error: 'Não autenticado.' }, { status: 401 }) }
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (profile?.role !== 'admin') {
-    return { ok: false, response: NextResponse.json({ error: 'Acesso negado.' }, { status: 403 }) }
-  }
-
-  return { ok: true }
-}
 
 export async function GET() {
   const auth = await requireAdmin()
