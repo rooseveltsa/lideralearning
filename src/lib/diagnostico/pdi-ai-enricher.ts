@@ -10,7 +10,7 @@
  * retorna null → o PDI mostra o plano determinístico. Nunca quebra a tela.
  */
 
-import { nvidiaComplete } from '@/lib/ai/nvidia-client'
+import { llmComplete, isLlmConfigured } from '@/lib/ai/llm-client'
 import { logger } from '@/lib/logger/structured'
 import type { DevelopmentTrack, PDIReport } from '@/lib/utils/pdi-generator'
 
@@ -87,12 +87,12 @@ function sanitizePatch(raw: unknown, validDims: Set<string>): AiTrackPatch | nul
 export async function generateAiTrackPatches(
   report: PDIReport,
 ): Promise<AiTrackPatch[] | null> {
-  if (!process.env.NVIDIA_API_KEY) return null
+  if (!isLlmConfigured()) return null
   if (!report.developmentTracks?.length) return null
 
   try {
     const { system, user } = buildPrompt(report)
-    const result = await nvidiaComplete(
+    const result = await llmComplete(
       [
         { role: 'system', content: system },
         { role: 'user', content: user },

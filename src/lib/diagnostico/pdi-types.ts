@@ -58,7 +58,8 @@ export type PdiReport = {
   // Metadados de geração
   meta: {
     generatedAt: string
-    provider: 'nvidia-nim' | 'rule-based-fallback'
+    // 'nvidia-nim' fica para os PDIs antigos já gravados no banco.
+    provider: 'anthropic' | 'nvidia' | 'nvidia-nim' | 'rule-based-fallback'
     model?: string
     promptTokens?: number
     completionTokens?: number

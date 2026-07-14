@@ -4,7 +4,8 @@
 // 3. Se LLM falhar OU retornar JSON inválido → cai para rule-based fallback
 // 4. Persiste em personal_diagnostics.pdi.generated (JSONB sub-campo)
 
-import { nvidiaComplete, NvidiaError } from '@/lib/ai/nvidia-client'
+import { NvidiaError } from '@/lib/ai/nvidia-client'
+import { llmComplete, isLlmConfigured } from '@/lib/ai/llm-client'
 import {
   PDI_PESSOAL_SYSTEM_PROMPT,
   buildPdiPessoalUserPrompt,
@@ -89,9 +90,9 @@ export async function generatePdiPessoal(
     radar: input.radar,
   })
 
-  // Se NVIDIA_API_KEY não estiver configurado, vai direto pro fallback
-  if (!process.env.NVIDIA_API_KEY) {
-    logger.warn('pdi_no_nvidia_key_fallback', { nomeCompleto: input.nomeCompleto })
+  // Sem nenhum provedor de IA configurado, vai direto pro fallback determinístico
+  if (!isLlmConfigured()) {
+    logger.warn('pdi_no_llm_key_fallback', { nomeCompleto: input.nomeCompleto })
     return buildRuleBasedPdi(analyzer, {
       nomeCompleto: input.nomeCompleto,
       empresa: input.empresa,
@@ -100,12 +101,12 @@ export async function generatePdiPessoal(
 
   try {
     const userPrompt = buildPdiPessoalUserPrompt(input)
-    const result = await nvidiaComplete(
+    const result = await llmComplete(
       [
         { role: 'system', content: PDI_PESSOAL_SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
       ],
-      { jsonMode: true, temperature: 0.5, maxTokens: 2500 },
+      { jsonMode: true, temperature: 0.5, maxTokens: 4000 },
     )
 
     const parsed = tryParseLLMJson(result.content)
@@ -129,7 +130,7 @@ export async function generatePdiPessoal(
     }
     pdi.meta = {
       generatedAt: new Date().toISOString(),
-      provider: 'nvidia-nim',
+      provider: result.provider,
       model: result.model,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
@@ -138,7 +139,7 @@ export async function generatePdiPessoal(
     }
 
     logger.info('pdi_generated_ok', {
-      provider: 'nvidia-nim',
+      provider: result.provider,
       model: result.model,
       tokens: result.promptTokens + result.completionTokens,
       latencyMs: result.latencyMs,

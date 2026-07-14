@@ -1,7 +1,8 @@
 // PdiEmpresaGenerator: orquestra geração de PDI para o fluxo Empresa.
 // Mesma arquitetura do gerador pessoal: tenta NVIDIA NIM, fallback rule-based.
 
-import { nvidiaComplete, NvidiaError } from '@/lib/ai/nvidia-client'
+import { NvidiaError } from '@/lib/ai/nvidia-client'
+import { llmComplete, isLlmConfigured } from '@/lib/ai/llm-client'
 import {
   PDI_EMPRESA_SYSTEM_PROMPT,
   buildPdiEmpresaUserPrompt,
@@ -74,8 +75,8 @@ export async function generatePdiEmpresa(
     expectativas: input.expectativas,
   })
 
-  if (!process.env.NVIDIA_API_KEY) {
-    logger.warn('pdi_empresa_no_nvidia_key_fallback', { empresa: input.empresa })
+  if (!isLlmConfigured()) {
+    logger.warn('pdi_empresa_no_llm_key_fallback', { empresa: input.empresa })
     return buildRuleBasedPdiEmpresa(analyzer, {
       empresa: input.empresa,
       supervisorNome: input.supervisorNome,
@@ -85,12 +86,12 @@ export async function generatePdiEmpresa(
 
   try {
     const userPrompt = buildPdiEmpresaUserPrompt(input)
-    const result = await nvidiaComplete(
+    const result = await llmComplete(
       [
         { role: 'system', content: PDI_EMPRESA_SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
       ],
-      { jsonMode: true, temperature: 0.5, maxTokens: 2500 },
+      { jsonMode: true, temperature: 0.5, maxTokens: 4000 },
     )
 
     const parsed = tryParseLLMJson(result.content)
@@ -114,7 +115,7 @@ export async function generatePdiEmpresa(
     }
     pdi.meta = {
       generatedAt: new Date().toISOString(),
-      provider: 'nvidia-nim',
+      provider: result.provider,
       model: result.model,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
@@ -123,7 +124,7 @@ export async function generatePdiEmpresa(
     }
 
     logger.info('pdi_empresa_generated_ok', {
-      provider: 'nvidia-nim',
+      provider: result.provider,
       model: result.model,
       tokens: result.promptTokens + result.completionTokens,
       latencyMs: result.latencyMs,
