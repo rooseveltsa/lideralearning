@@ -89,6 +89,20 @@ Estimativa em **points** (Fibonacci 1/2/3/5/8/13) — referência: 1 pt ≈ 0.5 
 
 ---
 
+### PDI.0.6 — 🔴 `generate-missing-pdis` está aberta na internet
+**Pontos:** 1 · **Deps:** nenhuma · **Agente:** @dev · **Severidade:** 🔴 crítica (segurança)
+
+**Achado durante a implementação do PDI.0.5.**
+
+`src/app/api/admin/generate-missing-pdis/route.ts` exporta um `POST` **sem nenhuma verificação de autenticação** — não checa sessão, não checa role, não exige `CRON_SECRET`. Qualquer pessoa que descubra a URL dispara geração de PDI em massa contra a base inteira (custo de LLM + escrita no banco).
+
+**AC:**
+- [ ] Aplicar o mesmo guard de `api/admin/diagnosticos/reprocessar-pdi` (sessão Supabase + `profiles.role = 'admin'`)
+- [ ] Auditar as demais rotas sob `src/app/api/admin/` — ver se alguma outra está aberta
+- [ ] Se alguma precisar ser chamada por cron, usar `CRON_SECRET` em header, nunca rota pública
+
+---
+
 ### PDI.0.5 — Backfill: recuperar todos os PDIs perdidos
 **Pontos:** 3 · **Deps:** PDI.0.1, PDI.0.2 · **Agente:** @dev · **Severidade:** 🟡 alta
 
