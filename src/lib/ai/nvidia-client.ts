@@ -6,7 +6,12 @@ import { logger } from '@/lib/logger/structured'
 
 const NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1'
 const DEFAULT_MODEL = 'meta/llama-3.3-70b-instruct'
-const DEFAULT_TIMEOUT_MS = 30_000 // 30s — geração de PDI pode demorar
+// O Llama 3.3 70B estourava os 30s antigos gerando um PDI completo (medido em prod:
+// timeout em 30.003ms), e TODO PDI caía no fallback determinístico. As rotas que geram
+// PDI rodam com maxDuration = 60, então 50s deixa ~10s de folga para persistir o
+// resultado antes de a plataforma encerrar a execução.
+// Quem chama em contexto mais curto deve passar `timeoutMs` explicitamente.
+const DEFAULT_TIMEOUT_MS = 50_000
 const DEFAULT_TEMPERATURE = 0.6 // criativo mas consistente
 const DEFAULT_MAX_TOKENS = 2_500 // PDI completo cabe nisso
 
@@ -21,6 +26,7 @@ export type NvidiaCompletionOptions = {
   maxTokens?: number
   topP?: number
   jsonMode?: boolean
+  timeoutMs?: number
 }
 
 export type NvidiaCompletionResult = {
@@ -93,7 +99,7 @@ export async function nvidiaComplete(
         },
         body: JSON.stringify(body),
       }),
-      DEFAULT_TIMEOUT_MS,
+      opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     )
 
     if (!response.ok) {

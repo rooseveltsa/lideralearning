@@ -97,7 +97,9 @@ export async function generateAiTrackPatches(
         { role: 'system', content: system },
         { role: 'user', content: user },
       ],
-      { jsonMode: true, temperature: 0.5, maxTokens: 2200 },
+      // Enriquecimento é opcional (só dá "tom" ao PDI) e roda inline numa rota sem
+      // maxDuration estendido — por isso não herda os 50s do gerador de PDI.
+      { jsonMode: true, temperature: 0.5, maxTokens: 2200, timeoutMs: 20_000 },
     )
 
     const parsed = JSON.parse(result.content) as { tracks?: unknown }
