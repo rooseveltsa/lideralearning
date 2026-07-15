@@ -5,11 +5,13 @@
 import { logger } from '@/lib/logger/structured'
 
 const NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1'
-const DEFAULT_MODEL = 'meta/llama-3.3-70b-instruct'
-// O Llama 3.3 70B estourava os 30s antigos gerando um PDI completo (medido em prod:
-// timeout em 30.003ms), e TODO PDI caía no fallback determinístico. As rotas que geram
-// PDI rodam com maxDuration = 60, então 50s deixa ~10s de folga para persistir o
-// resultado antes de a plataforma encerrar a execução.
+// O Llama 3.3 70B ficava na fila do tier gratuito e nunca respondia (medido em prod:
+// timeout no limite exato, 30.003ms e depois 50.003ms — geração aceita mas lenta demais,
+// não erro de chave nem de saldo). Um modelo menor responde em segundos. Configurável
+// via NVIDIA_MODEL na Vercel para trocar sem novo deploy.
+const DEFAULT_MODEL = process.env.NVIDIA_MODEL ?? 'meta/llama-3.1-8b-instruct'
+// As rotas que geram PDI rodam com maxDuration = 60, então 50s deixa ~10s de folga
+// para persistir o resultado antes de a plataforma encerrar a execução.
 // Quem chama em contexto mais curto deve passar `timeoutMs` explicitamente.
 const DEFAULT_TIMEOUT_MS = 50_000
 const DEFAULT_TEMPERATURE = 0.6 // criativo mas consistente
