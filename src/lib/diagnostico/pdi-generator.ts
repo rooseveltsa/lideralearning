@@ -55,6 +55,74 @@ function validatePdiStructure(obj: unknown): obj is PdiReport {
   return true
 }
 
+function isNonEmptyString(v: unknown): v is string {
+  return typeof v === 'string' && v.trim().length > 0
+}
+
+/**
+ * Merge de reparo: esqueleto determinístico (IDs e estrutura sempre válidos) +
+ * texto interpretativo da IA onde ele é seguro de aproveitar.
+ *
+ * Por quê: modelos menores (ex.: Llama 8B) escrevem bom português mas erram os
+ * IDs de catálogo (ferramentas, níveis). Descartar o PDI inteiro por causa disso
+ * desperdiça a leitura que a IA fez. Aqui o motor de regras garante o "o quê"
+ * (quais ferramentas, qual nível, quais módulos) e a IA entrega o "porquê" — a
+ * convergência entre autoavaliação e percepção externa, e a nota crítica.
+ */
+function mergeRepair(llm: unknown, skeleton: PdiReport): PdiReport {
+  if (!llm || typeof llm !== 'object') return skeleton
+  const src = llm as Partial<PdiReport>
+  const out: PdiReport = { ...skeleton }
+
+  // Convergência: o núcleo interpretativo. Aproveita o resumo e os pontos da IA
+  // quando têm forma válida; senão mantém o determinístico.
+  if (src.convergencia && typeof src.convergencia === 'object') {
+    const conv = { ...skeleton.convergencia }
+    if (isNonEmptyString(src.convergencia.resumo)) conv.resumo = src.convergencia.resumo
+    if (Array.isArray(src.convergencia.pontos)) {
+      const pontos = src.convergencia.pontos.filter(
+        (p) => p && isNonEmptyString(p.analise) && isNonEmptyString(p.comentario),
+      )
+      if (pontos.length > 0) conv.pontos = pontos
+    }
+    out.convergencia = conv
+  }
+
+  // Nota crítica: prosa livre, sempre segura de aproveitar.
+  if (isNonEmptyString(src.notaCritica)) out.notaCritica = src.notaCritica
+
+  // Próximos passos: aproveita se vierem em forma válida.
+  if (Array.isArray(src.proximosPassos)) {
+    const passos = src.proximosPassos.filter(
+      (p) => p && isNonEmptyString(p.titulo) && isNonEmptyString(p.descricao),
+    )
+    if (passos.length > 0) out.proximosPassos = passos
+  }
+
+  // Fases: mantém o esqueleto (IDs de ferramenta válidos), mas empresta o texto
+  // narrativo da IA fase a fase, sem tocar nas ações — que dependem dos IDs certos.
+  if (Array.isArray(src.fases) && src.fases.length === skeleton.fases.length) {
+    out.fases = skeleton.fases.map((fase, i) => {
+      const llmFase = src.fases?.[i]
+      if (!llmFase) return fase
+      return {
+        ...fase,
+        titulo: isNonEmptyString(llmFase.titulo) ? llmFase.titulo : fase.titulo,
+        objetivo: isNonEmptyString(llmFase.objetivo) ? llmFase.objetivo : fase.objetivo,
+        kpiSucesso: isNonEmptyString(llmFase.kpiSucesso) ? llmFase.kpiSucesso : fase.kpiSucesso,
+      }
+    })
+  }
+
+  // Referências: só as com literaturaId válido.
+  if (Array.isArray(src.referencias)) {
+    const refs = src.referencias.filter((r) => r && VALID_LITERATURA_IDS.has(r.literaturaId))
+    if (refs.length > 0) out.referencias = refs
+  }
+
+  return out
+}
+
 function tryParseLLMJson(content: string): unknown | null {
   // Remove eventual wrapping em markdown
   const cleaned = content
@@ -110,27 +178,42 @@ export async function generatePdiPessoal(
     )
 
     const parsed = tryParseLLMJson(result.content)
-    if (!validatePdiStructure(parsed)) {
-      logger.warn('pdi_llm_invalid_structure', {
+    const skeleton = buildRuleBasedPdi(analyzer, {
+      nomeCompleto: input.nomeCompleto,
+      empresa: input.empresa,
+    })
+
+    let pdi: PdiReport
+    let providerLabel: PdiReport['meta']['provider']
+
+    if (validatePdiStructure(parsed)) {
+      // Saída da IA já bate 100% no schema (modelos maiores).
+      pdi = parsed as PdiReport
+      if (pdi.referencias && Array.isArray(pdi.referencias)) {
+        pdi.referencias = pdi.referencias.filter((ref) =>
+          VALID_LITERATURA_IDS.has(ref.literaturaId),
+        )
+      }
+      providerLabel = result.provider
+    } else if (parsed && typeof parsed === 'object') {
+      // A IA produziu texto mas errou algum ID de catálogo (comum em modelos
+      // menores). Repara em vez de descartar: esqueleto válido + prosa da IA.
+      logger.warn('pdi_llm_repaired', {
         contentPreview: result.content.slice(0, 200),
       })
-      const fallback = buildRuleBasedPdi(analyzer, {
-        nomeCompleto: input.nomeCompleto,
-        empresa: input.empresa,
+      pdi = mergeRepair(parsed, skeleton)
+      providerLabel = result.provider
+    } else {
+      // Nem JSON saiu — cai para o determinístico puro.
+      logger.warn('pdi_llm_unparseable', {
+        contentPreview: result.content.slice(0, 200),
       })
-      return fallback
+      return skeleton
     }
 
-    const pdi = parsed as PdiReport
-    // Filtra referências inválidas (LLM pode inventar literaturaIds)
-    if (pdi.referencias && Array.isArray(pdi.referencias)) {
-      pdi.referencias = pdi.referencias.filter((ref) =>
-        VALID_LITERATURA_IDS.has(ref.literaturaId),
-      )
-    }
     pdi.meta = {
       generatedAt: new Date().toISOString(),
-      provider: result.provider,
+      provider: providerLabel,
       model: result.model,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
@@ -139,7 +222,7 @@ export async function generatePdiPessoal(
     }
 
     logger.info('pdi_generated_ok', {
-      provider: result.provider,
+      provider: providerLabel,
       model: result.model,
       tokens: result.promptTokens + result.completionTokens,
       latencyMs: result.latencyMs,
