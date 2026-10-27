@@ -1,80 +1,94 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { BookOpen, LayoutDashboard, Settings, Shield, User, UsersRound } from 'lucide-react'
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Award,
+  BookOpen,
+  House,
+  Settings,
+  Shield,
+  User,
+  UsersRound,
+} from "lucide-react";
 
 const navGroups = [
   {
-    label: 'Workspace',
+    label: "Aprendizagem",
     links: [
-      { href: '/dashboard', label: 'Visão geral', icon: LayoutDashboard },
-      { href: '/dashboard/cursos', label: 'Meus programas', icon: BookOpen },
+      { href: "/dashboard", label: "Início", icon: House },
+      { href: "/dashboard/cursos", label: "Meus treinamentos", icon: BookOpen },
+      { href: "/dashboard/certificados", label: "Certificados", icon: Award },
     ],
   },
   {
-    label: 'Conta',
+    label: "Minha conta",
     links: [
-      { href: '/dashboard/perfil', label: 'Meu perfil', icon: User },
-      { href: '/dashboard/configuracoes', label: 'Configurações', icon: Settings },
+      { href: "/dashboard/perfil", label: "Meu perfil", icon: User },
+      {
+        href: "/dashboard/configuracoes",
+        label: "Configurações",
+        icon: Settings,
+      },
     ],
   },
-]
+];
 
-type SidebarNavProps = {
-  isAdmin?: boolean
-  role?: string
-}
-
-export default function SidebarNav({ isAdmin = false, role }: SidebarNavProps) {
-  const pathname = usePathname()
-
-  const allNavGroups = [...navGroups]
-
-  if (role === 'hr_manager') {
-    allNavGroups.push({
-      label: 'Gestão',
+export default function SidebarNav({
+  isAdmin = false,
+  role,
+  onNavigate,
+}: {
+  isAdmin?: boolean;
+  role?: string;
+  onNavigate?: () => void;
+}) {
+  const pathname = usePathname();
+  const groups = [...navGroups];
+  if (role === "hr_manager")
+    groups.push({
+      label: "Gestão",
       links: [
-        { href: '/dashboard/equipe', label: 'Minha Equipe', icon: UsersRound },
+        { href: "/dashboard/equipe", label: "Minha equipe", icon: UsersRound },
       ],
-    })
-  }
-
-  if (isAdmin) {
-    allNavGroups.push({
-      label: 'Administração',
-      links: [
-        { href: '/admin', label: 'Painel Admin', icon: Shield },
-      ],
-    })
-  }
-
+    });
+  if (isAdmin)
+    groups.push({
+      label: "Administração",
+      links: [{ href: "/admin", label: "Gerenciar plataforma", icon: Shield }],
+    });
   return (
-    <nav className="space-y-6 px-4">
-      {allNavGroups.map((group) => (
+    <nav aria-label="Área do aluno" className="space-y-7 p-4">
+      {groups.map((group) => (
         <div key={group.label}>
-          <p className="px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-[#6D85A4]">{group.label}</p>
-          <div className="mt-2 space-y-1.5">
+          <p className="mb-2 px-3 text-xs font-medium text-learning-muted">
+            {group.label}
+          </p>
+          <div className="space-y-1">
             {group.links.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`)
+              const active =
+                href === "/dashboard"
+                  ? pathname === href
+                  : pathname === href ||
+                    pathname.startsWith(`${href}/`) ||
+                    (href === "/dashboard/certificados" &&
+                      pathname.startsWith("/dashboard/certificado/"));
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
-                    active
-                      ? 'border border-[#2A4E7F] bg-[#10213A] text-white shadow-[0_10px_20px_rgba(30,136,229,0.18)]'
-                      : 'text-[#9FB2CB] hover:bg-white/5 hover:text-white'
-                  }`}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? "bg-learning-accent-soft text-learning-accent" : "text-learning-muted hover:bg-learning-panel hover:text-learning-text"}`}
                 >
-                  <Icon className={`h-4.5 w-4.5 ${active ? 'text-[#9FCBFB]' : 'text-[#7F97B4] group-hover:text-white'}`} />
+                  <Icon className="size-4 shrink-0" aria-hidden="true" />
                   {label}
                 </Link>
-              )
+              );
             })}
           </div>
         </div>
       ))}
     </nav>
-  )
+  );
 }

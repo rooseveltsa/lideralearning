@@ -1,547 +1,364 @@
-import Link from 'next/link'
-import SiteFooter from '@/components/site/Footer'
-import SiteHeader from '@/components/site/Header'
-import { DiagnosticoCTA } from '@/components/diagnostico/DiagnosticoCTA'
-import SmoothScroll from '@/components/motion/SmoothScroll'
-import HeroBackdrop from '@/components/motion/HeroBackdrop'
-import Reveal from '@/components/motion/Reveal'
-import SplitHeading from '@/components/motion/SplitHeading'
-import CountUp from '@/components/motion/CountUp'
-import Magnetic from '@/components/motion/Magnetic'
-import TiltCard from '@/components/motion/TiltCard'
-import Marquee from '@/components/motion/Marquee'
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  ClipboardList,
+  GraduationCap,
+  UsersRound,
+} from "lucide-react";
+import SiteFooter from "@/components/site/Footer";
+import SiteHeader from "@/components/site/Header";
+import { DiagnosticoCTA } from "@/components/diagnostico/DiagnosticoCTA";
+import { CONTACT } from "@/lib/config/contact";
+
+const learningSteps = [
+  {
+    number: "01",
+    title: "Entenda seu momento",
+    description:
+      "Um diagnóstico para reconhecer suas competências e os pontos que precisam de atenção.",
+  },
+  {
+    number: "02",
+    title: "Desenvolva sua liderança",
+    description:
+      "Treinamentos sobre comunicação, delegação, feedback e gestão de equipes.",
+  },
+  {
+    number: "03",
+    title: "Leve para a rotina",
+    description:
+      "Retome as aulas, acompanhe seu progresso e aplique o aprendizado no trabalho.",
+  },
+];
 
 export default function HomePage() {
   return (
-    <SmoothScroll>
-    <div className="ld-deep">
+    <div className="institutional-site">
       <SiteHeader />
-
-      {/* ═══ HERO ═══ */}
-      <section className="relative overflow-hidden px-0 py-16 md:py-20 lg:py-[120px]">
-        {/* Fundo: gradientes profundos + grade técnica sutil */}
-        <div className="pointer-events-none absolute inset-0">
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(ellipse 75% 60% at 75% 15%, rgba(24,85,189,0.16), transparent 60%), radial-gradient(ellipse 55% 45% at 10% 85%, rgba(236,100,17,0.10), transparent 55%)',
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(245,241,234,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(245,241,234,0.045) 1px, transparent 1px)',
-              backgroundSize: '56px 56px',
-              maskImage: 'radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, transparent 75%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 90% 80% at 50% 30%, #000 30%, transparent 75%)',
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 h-40"
-            style={{ background: 'linear-gradient(180deg, transparent, #070e1c)' }}
-          />
-        </div>
-        <HeroBackdrop />
-
-        <div className="ld-mw-xl relative">
-          {/* Badge */}
-          <Reveal y={20}>
-            <span className="ld-badge-deep-line ld-badge">
-              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 4v6M12 14v6M4 12h6M14 12h6" />
-                <path d="M18 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z" fill="currentColor" stroke="none" />
-              </svg>
-              Formação de líderes &middot; Presencial + Digital
-            </span>
-          </Reveal>
-
-          {/* Headline */}
-          <SplitHeading
-            as="h1"
-            delay={0.15}
-            className="ld-display mt-8"
-            style={{ fontSize: 'clamp(3rem, 8vw, 7.5rem)', maxWidth: 1200, color: '#f5f1ea' }}
-          >
-            Formamos os líderes que a sua <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>operação precisa.</em>
-          </SplitHeading>
-
-          {/* Subheadline */}
-          <Reveal delay={0.4}>
-          <p
-            className="mt-9"
-            style={{ color: 'rgba(245,241,234,0.78)', fontSize: 21, maxWidth: 640, lineHeight: 1.55 }}
-          >
-            Diagnóstico individualizado, imersão presencial de alto impacto e 60 dias de
-            acompanhamento. Supervisores que saem da operação e assumem a{' '}
-            <strong style={{ color: '#f5f1ea' }}>liderança de verdade.</strong>
-          </p>
-          </Reveal>
-
-          {/* CTAs */}
-          <Reveal delay={0.55} className="mt-10 flex flex-wrap gap-3">
-            <Magnetic>
-              <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
-                Fazer diagnóstico gratuito
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 5l7 7-7 7" />
-                </svg>
-              </DiagnosticoCTA>
-            </Magnetic>
-            <Magnetic>
-              <Link href="/empresas" className="ld-btn-outline-light ld-btn-primary-xl">
-                Soluções para empresas
-              </Link>
-            </Magnetic>
-          </Reveal>
-
-          {/* Prova social inline */}
-          <Reveal delay={0.7}>
-          <div className="mt-14 flex flex-wrap items-center gap-5">
-            <div className="flex -space-x-2.5">
-              {['#ec6411', '#0f8f3a', '#1855bd', '#122039', '#cc4f06'].map((c, i) => (
-                <div
-                  key={i}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white"
-                  style={{ background: c, border: '2px solid #070e1c' }}
+      <main id="main-content">
+        <section className="institutional-hero" aria-labelledby="home-title">
+          <div className="institutional-container grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:py-24">
+            <div>
+              <p className="institutional-eyebrow">Lidera Treinamentos</p>
+              <h1 id="home-title" className="institutional-headline mt-6">
+                Liderar bem
+                <br />
+                se aprende.
+                <br />
+                <span className="text-site-secondary">E se pratica.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-site-muted md:text-lg">
+                Formação para quem cuida de pessoas e precisa fazer a equipe
+                avançar. Treinamentos presenciais e digitais, com foco nas
+                decisões do dia a dia.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <DiagnosticoCTA className="institutional-button">
+                  Fazer diagnóstico gratuito
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </DiagnosticoCTA>
+                <Link href="/cursos" className="institutional-button-secondary">
+                  Conhecer os treinamentos
+                </Link>
+              </div>
+              <p className="mt-4 text-xs text-site-muted">
+                Já é aluno?{" "}
+                <Link
+                  href="/auth/login"
+                  className="font-semibold text-site-ink underline underline-offset-4"
                 >
-                  {['CM', 'FP', 'RA', 'JP', 'AC'][i]}
-                </div>
-              ))}
+                  Acesse seus treinamentos
+                </Link>
+              </p>
             </div>
-            <div>
-              <div className="flex gap-0.5" style={{ color: '#fb7d2e' }}>
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <svg key={i} width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
-                    <path d="m12 3 2.7 5.7 6.3.9-4.5 4.4 1 6.3L12 17.4 6.5 20.3l1-6.3L3 9.6l6.3-.9L12 3Z" />
-                  </svg>
+            <aside
+              className="institutional-path"
+              aria-labelledby="development-path"
+            >
+              <div className="border-b border-site-border pb-6">
+                <p className="institutional-eyebrow">
+                  Desenvolvimento na prática
+                </p>
+                <h2
+                  id="development-path"
+                  className="mt-3 text-2xl font-semibold leading-snug tracking-tight text-site-ink"
+                >
+                  Da primeira conversa
+                  <br />à rotina da sua equipe.
+                </h2>
+              </div>
+              <ol className="divide-y divide-site-border">
+                {learningSteps.map((step) => (
+                  <li key={step.number} className="flex gap-5 py-6">
+                    <span
+                      className="pt-1 font-mono text-xs text-site-secondary"
+                      aria-hidden="true"
+                    >
+                      {step.number}
+                    </span>
+                    <div>
+                      <h3 className="text-base font-semibold text-site-ink">
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-site-muted">
+                        {step.description}
+                      </p>
+                    </div>
+                  </li>
                 ))}
-              </div>
-              <div className="mt-1 text-[13px]" style={{ color: 'rgba(245,241,234,0.78)' }}>
-                <span style={{ color: '#f5f1ea', fontWeight: 600 }}>4.9</span> &middot; +500 supervisores formados &middot; NPS 72
-              </div>
-            </div>
-          </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ═══ BARRA DE LOGOS ═══ */}
-      <section
-        className="hidden sm:block"
-        style={{
-          borderTop: '1px solid rgba(245,241,234,0.10)',
-          borderBottom: '1px solid rgba(245,241,234,0.10)',
-          background: 'rgba(255,255,255,0.02)',
-        }}
-      >
-        <div className="ld-mw-xl py-8">
-          <span
-            className="mb-6 block text-center text-xs uppercase tracking-[0.14em]"
-            style={{ color: 'rgba(245,241,234,0.55)' }}
-          >
-            Empresas que formam líderes conosco
-          </span>
-          <Marquee>
-            {['GRUPO ALFA', 'MERIDIAN', 'VOLTARE', 'NORTHCAP', 'PRISMO', 'ORION'].map((n) => (
-              <span
-                key={n}
-                className="font-heading text-lg tracking-[0.08em] sm:text-2xl"
-                style={{ color: 'rgba(245,241,234,0.45)' }}
+              </ol>
+              <Link
+                href="/treinamento/modulo-1"
+                className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-site-secondary"
               >
-                {n}
-              </span>
-            ))}
-          </Marquee>
-        </div>
-      </section>
+                Conheça a formação de líderes
+                <ArrowRight className="size-4" />
+              </Link>
+            </aside>
+          </div>
+        </section>
 
-      {/* ═══ MÉTRICAS — impacto na formação ═══ */}
-      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
-        <div className="ld-mw-xl">
-          <Reveal stagger={0.15} className="mb-10 grid items-end gap-8 lg:mb-16 lg:grid-cols-2 lg:gap-16">
+        <section
+          aria-label="Formatos de aprendizagem"
+          className="border-y border-site-border bg-site-white"
+        >
+          <div className="institutional-container grid divide-y divide-site-border py-2 md:grid-cols-3 md:divide-x md:divide-y-0">
+            {[
+              {
+                icon: UsersRound,
+                title: "Presencial",
+                text: "Discussão, troca e prática em grupo.",
+              },
+              {
+                icon: BookOpen,
+                title: "Digital",
+                text: "Aulas para acompanhar no seu ritmo.",
+              },
+              {
+                icon: GraduationCap,
+                title: "Para empresas",
+                text: "Formação alinhada ao contexto da equipe.",
+              },
+            ].map(({ icon: Icon, title, text }) => (
+              <div
+                key={title}
+                className="flex items-start gap-4 px-0 py-6 md:px-7 md:first:pl-0 md:last:pr-0"
+              >
+                <Icon
+                  className="mt-1 size-5 shrink-0 text-site-secondary"
+                  aria-hidden="true"
+                />
+                <div>
+                  <h2 className="text-sm font-semibold text-site-ink">
+                    {title}
+                  </h2>
+                  <p className="mt-1 text-sm text-site-muted">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          id="treinamentos"
+          className="institutional-container py-16 md:py-24"
+          aria-labelledby="training-heading"
+        >
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Impacto mensurável</div>
-              <h2 className="ld-display mt-4" style={{ fontSize: 'clamp(2rem, 5.5vw, 5rem)', color: '#f5f1ea' }}>
-                Formação que vira <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>resultado</em>.
+              <p className="institutional-eyebrow">Escolha por onde começar</p>
+              <h2
+                id="training-heading"
+                className="institutional-section-heading mt-4"
+              >
+                Uma formação que cabe
+                <br />
+                no seu momento.
               </h2>
             </div>
-            <p className="ld-body-lg" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 480 }}>
-              Medimos o antes e o depois. Engajamento do time, retenção de talentos, execução gerencial — indicadores reais que mostram a transformação do líder.
+            <p className="max-w-sm text-sm leading-relaxed text-site-muted">
+              Para quem está assumindo a primeira equipe ou já lidera e quer
+              melhorar sua forma de gerir.
             </p>
-          </Reveal>
-
-          <Reveal
-            stagger={0.1}
-            className="grid grid-cols-2 lg:grid-cols-4"
-            style={{ borderTop: '1px solid rgba(245,241,234,0.10)', borderBottom: '1px solid rgba(245,241,234,0.10)' }}
-          >
-            {[
-              { v: '+79%', l: 'Engajamento da equipe após formação' },
-              { v: '−43%', l: 'Turnover nos primeiros 6 meses' },
-              { v: '98%', l: 'Recomendam o programa' },
-              { v: '91%', l: 'Aplicam na rotina após 60 dias' },
-            ].map((s, i, a) => (
-              <div
-                key={s.l}
-                className="p-8 lg:p-10"
-                style={{ borderRight: i < a.length - 1 ? '1px solid rgba(245,241,234,0.10)' : 'none' }}
-              >
-                <CountUp
-                  value={s.v}
-                  className="font-heading"
-                  style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea', lineHeight: 1, letterSpacing: '-0.025em' }}
-                />
-                <div className="mt-3 text-sm" style={{ color: 'rgba(245,241,234,0.65)', maxWidth: 220 }}>
-                  {s.l}
-                </div>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ═══ COMO FUNCIONA — 3 passos ═══ */}
-      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
-        <div className="ld-mw-xl">
-          <Reveal className="mb-10 lg:mb-16" style={{ maxWidth: 720 }}>
-            <div className="ld-eyebrow">Como funciona</div>
-            <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
-              Do <em style={{ fontStyle: 'normal', color: '#ec6411' }}>diagnóstico</em> à transformação real.
-            </SplitHeading>
-          </Reveal>
-
-          <Reveal stagger={0.12} className="grid gap-6 lg:grid-cols-3">
-            {[
-              { n: '01', t: 'Diagnóstico de liderança', d: 'Autoavaliação das 5 dimensões de liderança. Você recebe o mapa completo de competências do seu time — onde estão os gaps e o que desenvolver.', c: '#ec6411' },
-              { n: '02', t: 'Imersão presencial + Academy', d: 'Workshop intensivo de 2 dias com turmas de até 10 pessoas. Depois, acesso contínuo à plataforma digital com trilhas personalizadas por papel.', c: '#0f8f3a' },
-              { n: '03', t: 'Acompanhamento de 60 dias', d: 'Mentoria pós-treinamento para garantir que o aprendizado vire prática. Sem isso, é teoria. Com isso, é transformação.', c: '#1855bd' },
-            ].map((s) => (
-              <TiltCard
-                key={s.n}
-                className="ld-card relative overflow-hidden p-9"
-              >
-                <div className="mb-8 flex items-start justify-between">
-                  <div className="font-heading" style={{ fontSize: 'clamp(36px, 5vw, 56px)', color: s.c, lineHeight: 1, letterSpacing: '-0.025em' }}>
-                    {s.n}
-                  </div>
-                  <div
-                    className="flex h-11 w-11 items-center justify-center rounded-xl"
-                    style={{ background: '#f1f4f9', color: s.c }}
-                  >
-                    <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                      {s.n === '01' && <><circle cx="12" cy="12" r="9" /><path d="m15 9-2 6-6 2 2-6 6-2Z" /></>}
-                      {s.n === '02' && <><rect x="4" y="3" width="16" height="18" rx="1" /><path d="M8 7h2M8 11h2M8 15h2M14 7h2M14 11h2M14 15h2M10 21v-3h4v3" /></>}
-                      {s.n === '03' && <><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" /><path d="M8 6H5a3 3 0 0 0 3 3M16 6h3a3 3 0 0 1-3 3M9 18h6M10 14v4M14 14v4" /></>}
-                    </svg>
-                  </div>
-                </div>
-                <h4 className="ld-h5" style={{ margin: '0 0 10px', color: '#070e1c' }}>{s.t}</h4>
-                <p className="ld-body" style={{ margin: 0 }}>{s.d}</p>
-              </TiltCard>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ═══ O QUE ESTÁ INCLUSO ═══ */}
-      <section className="relative overflow-hidden py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
-        <div className="ld-mw-xl">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-            <div>
-              <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Programa completo</div>
-              <SplitHeading as="h2" className="ld-display mt-4" style={{ fontSize: 'clamp(2.5rem, 5vw, 4.75rem)', color: '#f5f1ea' }}>
-                Tudo que o seu líder precisa para <em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>crescer.</em>
-              </SplitHeading>
-              <p className="ld-body-lg mt-7" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 18, maxWidth: 480 }}>
-                Um programa completo que combina presencial e digital.
-                Não é só conteúdo — é formação estruturada com acompanhamento e resultado mensurável.
-              </p>
-
-              <Reveal stagger={0.07} className="mt-9 flex flex-col gap-3.5">
-                {[
-                  'Diagnóstico individualizado de liderança',
-                  'PDI — Plano de Desenvolvimento Individual',
-                  'Imersão presencial de 2 dias (turmas de até 10)',
-                  'Acesso à Academy digital com 120+ cursos',
-                  'Mentoria de acompanhamento 30 e 60 dias',
-                  'Certificado verificável ao final da trilha',
-                ].map((b) => (
-                  <div key={b} className="flex items-center gap-3" style={{ color: '#f5f1ea' }}>
-                    <div
-                      className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full"
-                      style={{ background: '#ec6411' }}
-                    >
-                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12.5l4.5 4.5L20 7" />
-                      </svg>
-                    </div>
-                    <span className="text-[15px]">{b}</span>
-                  </div>
-                ))}
-              </Reveal>
-
-              <div className="mt-10 flex gap-3">
-                <Magnetic>
-                  <DiagnosticoCTA className="ld-btn-primary">
-                    Começar pelo diagnóstico
-                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14M13 5l7 7-7 7" />
-                    </svg>
-                  </DiagnosticoCTA>
-                </Magnetic>
-              </div>
-            </div>
-
-            {/* Platform preview card — hidden on mobile */}
-            <div className="relative hidden lg:block">
-              <TiltCard
-                max={4}
-                className="rounded-2xl p-6"
-                style={{
-                  background: 'linear-gradient(180deg, #0c1729 0%, #070e1c 100%)',
-                  border: '1px solid rgba(245,241,234,0.10)',
-                  boxShadow: '0 40px 100px rgba(7, 14, 28, 0.28), 0 16px 40px rgba(7, 14, 28, 0.14)',
-                }}
-              >
-                {/* Mini nav dots */}
-                <div className="mb-6 flex items-center gap-2.5">
-                  <div className="flex gap-1.5">
-                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#fb7d2e' }} />
-                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#2eb555' }} />
-                    <div className="h-2.5 w-2.5 rounded-full" style={{ background: '#2f6fde' }} />
-                  </div>
-                  <div
-                    className="flex flex-1 items-center gap-1.5 rounded-md px-2.5"
-                    style={{ height: 28, background: 'rgba(245,241,234,0.06)' }}
-                  >
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="rgba(245,241,234,0.5)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.3-4.3" />
-                    </svg>
-                    <span className="text-[11px]" style={{ color: 'rgba(245,241,234,0.5)' }}>liderança situacional</span>
-                  </div>
-                </div>
-
-                {/* Row: Trilha em andamento */}
-                <div className="mb-3.5 flex items-baseline justify-between">
-                  <h5 className="text-base font-semibold" style={{ color: '#f5f1ea' }}>Sua trilha de liderança</h5>
-                  <span className="text-[11px]" style={{ color: '#fb7d2e' }}>Ver tudo →</span>
-                </div>
-                <div className="mb-6 grid grid-cols-3 gap-3">
-                  {[
-                    { t: 'Gestão de pessoas', a: 'Módulo 3', p: 72, c: 'linear-gradient(135deg,#1855bd,#070e1c)' },
-                    { t: 'Feedback eficaz', a: 'Módulo 1', p: 38, c: 'linear-gradient(135deg,#0f8f3a,#122039)' },
-                    { t: 'Tomada de decisão', a: 'Módulo 5', p: 88, c: 'linear-gradient(135deg,#ec6411,#070e1c)' },
-                  ].map((c, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col justify-end overflow-hidden rounded-[10px] p-3"
-                      style={{ background: c.c, height: 110 }}
-                    >
-                      <div className="text-xs font-semibold" style={{ color: '#f5f1ea' }}>{c.t}</div>
-                      <div className="mb-2 text-[10px]" style={{ color: 'rgba(245,241,234,0.7)' }}>{c.a}</div>
-                      <div className="h-[3px] w-full overflow-hidden rounded-full" style={{ background: 'rgba(245,241,234,0.18)' }}>
-                        <div className="h-full rounded-full" style={{ width: `${c.p}%`, background: '#fb7d2e' }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Row: Recomendado */}
-                <div className="mb-3.5">
-                  <h5 className="text-base font-semibold" style={{ color: '#f5f1ea' }}>Para supervisores em transição</h5>
-                </div>
-                <div className="grid grid-cols-4 gap-2.5">
-                  {[
-                    { c: 'linear-gradient(135deg,#0f8f3a,#070e1c)', t: 'Delegação' },
-                    { c: 'linear-gradient(135deg,#1855bd,#070e1c)', t: 'Comunicação' },
-                    { c: 'linear-gradient(135deg,#ec6411,#122039)', t: '1:1 eficaz' },
-                    { c: 'linear-gradient(135deg,#5d92f7,#070e1c)', t: 'Conflitos' },
-                  ].map((c, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col justify-end rounded-lg p-2.5"
-                      style={{ height: 92, background: c.c }}
-                    >
-                      <div className="text-[11px] font-medium" style={{ color: '#f5f1ea' }}>{c.t}</div>
-                    </div>
-                  ))}
-                </div>
-              </TiltCard>
-
-              {/* Floating chip */}
-              <div
-                className="ld-float absolute -right-2.5 -top-4 flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white"
-                style={{ background: '#0f8f3a', boxShadow: '0 12px 40px -12px rgba(15, 143, 58, 0.45)' }}
-              >
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12.5l4.5 4.5L20 7" />
-                </svg>
-                +500 líderes formados
-              </div>
-            </div>
           </div>
-        </div>
-      </section>
+          <div className="grid gap-5 md:grid-cols-2">
+            <article className="institutional-training-card">
+              <span className="text-xs font-medium uppercase tracking-widest text-site-secondary">
+                Para você
+              </span>
+              <h3 className="mt-5 text-2xl font-semibold text-site-ink">
+                Sua próxima etapa como líder.
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed text-site-muted">
+                Reconheça os desafios da sua liderança e encontre um treinamento
+                para desenvolver as competências que fazem falta na rotina.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-site-ink">
+                {[
+                  "Diagnóstico individual de liderança",
+                  "Conteúdo organizado em módulos e aulas",
+                  "Acompanhamento do progresso na plataforma",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <Check className="mt-0.5 size-4 shrink-0 text-site-secondary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/treinamento/modulo-1"
+                className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-site-secondary"
+              >
+                Ver formação de líderes
+                <ArrowRight className="size-4" />
+              </Link>
+            </article>
+            <article className="institutional-training-card">
+              <span className="text-xs font-medium uppercase tracking-widest text-site-secondary">
+                Para sua empresa
+              </span>
+              <h3 className="mt-5 text-2xl font-semibold text-site-ink">
+                Desenvolva quem conduz a equipe.
+              </h3>
+              <p className="mt-4 text-sm leading-relaxed text-site-muted">
+                Converse com a Lidera sobre os desafios da operação e os
+                comportamentos que sua empresa precisa desenvolver nas
+                lideranças.
+              </p>
+              <ul className="mt-6 space-y-3 text-sm text-site-ink">
+                {[
+                  "Diagnóstico do contexto da equipe",
+                  "Treinamentos presenciais e corporativos",
+                  "Definição do escopo em conversa com a empresa",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3">
+                    <Check className="mt-0.5 size-4 shrink-0 text-site-secondary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/empresas"
+                className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-site-secondary"
+              >
+                Conhecer soluções para empresas
+                <ArrowRight className="size-4" />
+              </Link>
+            </article>
+          </div>
+        </section>
 
-      {/* ═══ DEPOIMENTOS ═══ */}
-      <section className="py-16 md:py-20 lg:py-[120px]" style={{ background: '#f5f1ea' }}>
-        <div className="ld-mw-xl">
-          <Reveal className="mb-10 lg:mb-14" style={{ maxWidth: 720 }}>
-            <div className="ld-eyebrow">Resultados reais</div>
-            <SplitHeading as="h2" className="ld-h2 mt-4" style={{ color: '#070e1c' }}>
-              Quem já passou pelo programa.
-            </SplitHeading>
-          </Reveal>
+        <section
+          className="institutional-practice"
+          aria-labelledby="practice-heading"
+        >
+          <div className="institutional-container grid gap-10 py-16 md:grid-cols-2 md:gap-20 md:py-20">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-site-on-dark-muted">
+                O que desenvolver
+              </p>
+              <h2
+                id="practice-heading"
+                className="institutional-section-heading mt-4 text-site-on-dark"
+              >
+                Os desafios são reais.
+                <br />O aprendizado também precisa ser.
+              </h2>
+              <p className="mt-5 max-w-md text-sm leading-relaxed text-site-on-dark-muted">
+                A liderança acontece na conversa difícil, na distribuição de
+                tarefas e no acompanhamento das entregas. É nesse contexto que o
+                treinamento precisa fazer sentido.
+              </p>
+            </div>
+            <dl className="divide-y divide-site-dark-border">
+              {[
+                {
+                  title: "Conversas mais claras",
+                  text: "Comunicação, escuta e feedback para orientar sem deixar dúvidas.",
+                },
+                {
+                  title: "Responsabilidade compartilhada",
+                  text: "Delegação e acompanhamento para desenvolver autonomia na equipe.",
+                },
+                {
+                  title: "Uma rotina de gestão",
+                  text: "Prioridades, acordos e decisões para organizar o trabalho.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="py-5 first:pt-0">
+                  <dt className="text-base font-semibold text-site-on-dark">
+                    {item.title}
+                  </dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-site-on-dark-muted">
+                    {item.text}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
 
-          <Reveal stagger={0.12} className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
-            {/* Featured testimonial */}
-            <div
-              className="flex flex-col justify-between rounded-2xl p-8 md:col-span-2 md:p-10 lg:col-span-1"
-              style={{ background: '#070e1c', color: '#f5f1ea', minHeight: 320 }}
+        <section
+          className="institutional-container grid items-center gap-10 py-16 md:grid-cols-[1fr_auto] md:py-24"
+          aria-labelledby="contact-heading"
+        >
+          <div>
+            <p className="institutional-eyebrow">
+              Uma conversa antes da proposta
+            </p>
+            <h2
+              id="contact-heading"
+              className="institutional-section-heading mt-4"
             >
-              <svg width={36} height={36} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(245,241,234,0.3)' }}>
-                <path d="M6 9c0-2 2-4 4-4M6 9v5h5v-5H6ZM14 9c0-2 2-4 4-4M14 9v5h5v-5h-5Z" />
-              </svg>
-              <div className="font-heading mt-6" style={{ fontSize: 32, lineHeight: 1.15, letterSpacing: '-0.018em' }}>
-                Em 90 dias o treinamento virou sistema de execução gerencial. Os supervisores assumiram a liderança de verdade.
-              </div>
-              <div className="mt-8 flex items-center gap-3.5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold text-white" style={{ background: '#ec6411' }}>
-                  CM
-                </div>
-                <div>
-                  <div className="text-sm font-semibold">Carlos Mendes</div>
-                  <div className="text-xs" style={{ color: 'rgba(245,241,234,0.6)' }}>Diretor de RH &middot; Grupo Industrial Alfa</div>
-                </div>
+              Conte o que sua equipe precisa.
+            </h2>
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-site-muted">
+              Fale com {CONTACT.owner.name}, {CONTACT.owner.role.toLowerCase()}{" "}
+              da Lidera. Entenda os formatos de treinamento e o que faz sentido
+              para sua realidade.
+            </p>
+            <Link
+              href="/sobre"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-site-ink underline underline-offset-4"
+            >
+              Conheça a Lidera
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <a
+            href={CONTACT.whatsapp.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="institutional-button"
+          >
+            Conversar com Claudemir
+            <ArrowRight className="size-4" />
+          </a>
+        </section>
+
+        <section className="border-t border-site-border bg-site-white">
+          <div className="institutional-container flex flex-col items-start justify-between gap-6 py-10 sm:flex-row sm:items-center">
+            <div className="flex items-start gap-4">
+              <ClipboardList className="mt-1 size-6 shrink-0 text-site-secondary" />
+              <div>
+                <h2 className="text-lg font-semibold text-site-ink">
+                  Comece entendendo sua liderança.
+                </h2>
+                <p className="mt-2 text-sm text-site-muted">
+                  Escolha o diagnóstico individual ou a avaliação para empresas.
+                </p>
               </div>
             </div>
-
-            {/* Other testimonials */}
-            {[
-              { q: 'A operação ganhou clareza. Os times passaram a executar com consistência — sem depender do dono.', n: 'Fernanda Pacheco', r: 'CEO · TechBR Soluções', result: 'Meta de 62% para 91%' },
-              { q: 'Conseguimos ligar formação e performance com dados reais de aplicação no dia a dia.', n: 'Ricardo Albuquerque', r: 'COO · Rede Varejista Nacional', result: '43% menos turnover' },
-            ].map((t) => (
-              <div
-                key={t.n}
-                className="ld-card flex flex-col justify-between p-8"
-                style={{ minHeight: 380 }}
-              >
-                <svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(7,14,28,0.2)' }}>
-                  <path d="M6 9c0-2 2-4 4-4M6 9v5h5v-5H6ZM14 9c0-2 2-4 4-4M14 9v5h5v-5h-5Z" />
-                </svg>
-                <div>
-                  <div className="font-heading mt-5" style={{ fontSize: 22, lineHeight: 1.25, color: '#070e1c' }}>
-                    &ldquo;{t.q}&rdquo;
-                  </div>
-                  <div className="mt-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold" style={{ background: '#ecfaef', color: '#085824' }}>
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 17 9 11l4 4 8-9M14 4h7v7" />
-                    </svg>
-                    {t.result}
-                  </div>
-                </div>
-                <div className="mt-7">
-                  <div className="text-sm font-semibold" style={{ color: '#070e1c' }}>{t.n}</div>
-                  <div className="text-xs" style={{ color: '#4a5060' }}>{t.r}</div>
-                </div>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ═══ DOIS CAMINHOS — Individual + Corporativo ═══ */}
-      <section className="py-16 md:py-20 lg:py-[100px]" style={{ background: '#070e1c' }}>
-        <Reveal stagger={0.15} className="ld-mw-xl grid gap-6 md:grid-cols-2">
-          {/* Para você */}
-          <TiltCard
-            max={3}
-            className="rounded-2xl p-10 transition-all"
-            style={{ border: '1px solid rgba(236,100,17,0.2)', background: 'linear-gradient(135deg, rgba(236,100,17,0.06), transparent)' }}
-          >
-            <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Para você</div>
-            <h3 className="mt-5 font-sans text-2xl font-bold" style={{ color: '#f5f1ea' }}>
-              Treinamento Individual
-            </h3>
-            <p className="mt-3 text-[15px]" style={{ color: 'rgba(245,241,234,0.65)', lineHeight: 1.55 }}>
-              Workshop presencial, autoavaliação, PDI personalizado e acesso à Academy digital.
-              Para quem quer dar o próximo passo na carreira de liderança.
-            </p>
-            <Link href="/treinamento/modulo-1" className="ld-btn-primary mt-8">
-              Ver próxima turma
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </TiltCard>
-
-          {/* Para empresas */}
-          <TiltCard
-            max={3}
-            className="rounded-2xl p-10 transition-all"
-            style={{ border: '1px solid rgba(245,241,234,0.10)', background: 'linear-gradient(135deg, rgba(245,241,234,0.03), transparent)' }}
-          >
-            <div className="ld-eyebrow" style={{ color: 'rgba(245,241,234,0.55)' }}>Para empresas</div>
-            <h3 className="mt-5 font-sans text-2xl font-bold" style={{ color: '#f5f1ea' }}>
-              Programa Corporativo
-            </h3>
-            <p className="mt-3 text-[15px]" style={{ color: 'rgba(245,241,234,0.65)', lineHeight: 1.55 }}>
-              Diagnóstico organizacional, trilhas por papel, dashboard de acompanhamento e mentoria dedicada.
-              Para empresas que querem formar seus líderes em escala.
-            </p>
-            <Link href="/empresas" className="ld-btn-outline-light mt-8">
-              Solicitar proposta
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M13 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </TiltCard>
-        </Reveal>
-      </section>
-
-      {/* ═══ CTA FINAL ═══ */}
-      <section className="relative overflow-hidden py-16 md:py-20 lg:py-[120px]" style={{ background: '#070e1c' }}>
-        <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(circle at 80% 50%, rgba(236,100,17,0.18), transparent 50%)' }} />
-        <div className="ld-mw relative text-center">
-          <div className="ld-eyebrow" style={{ color: '#fb7d2e' }}>Comece sua jornada</div>
-          <SplitHeading as="h2" className="ld-display mx-auto mt-5" style={{ fontSize: 'clamp(2.5rem, 7vw, 6.875rem)', color: '#f5f1ea', maxWidth: 1100 }}>
-            Descubra seu perfil de<br /><em style={{ fontStyle: 'normal', color: '#fb7d2e' }}>liderança.</em>
-          </SplitHeading>
-          <Reveal delay={0.15}>
-            <p className="mx-auto mt-8" style={{ color: 'rgba(245,241,234,0.7)', fontSize: 19, maxWidth: 580 }}>
-              Autoavaliação gratuita em 5 minutos. Receba seu diagnóstico e Plano de Desenvolvimento Individual — sem compromisso.
-            </p>
-          </Reveal>
-          <Reveal delay={0.3} className="mt-11 flex flex-wrap justify-center gap-3">
-            <Magnetic>
-              <DiagnosticoCTA className="ld-btn-primary ld-btn-primary-xl">
-                Fazer diagnóstico gratuito
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M13 5l7 7-7 7" />
-                </svg>
-              </DiagnosticoCTA>
-            </Magnetic>
-            <Magnetic>
-              <a
-                href="https://wa.me/5564996099020"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ld-btn-outline-light ld-btn-primary-xl"
-              >
-                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
-                </svg>
-                Falar com Claudemir
-              </a>
-            </Magnetic>
-          </Reveal>
-        </div>
-      </section>
-
+            <DiagnosticoCTA className="institutional-button-secondary shrink-0">
+              Fazer diagnóstico
+              <ArrowRight className="size-4" />
+            </DiagnosticoCTA>
+          </div>
+        </section>
+      </main>
       <SiteFooter />
     </div>
-    </SmoothScroll>
-  )
+  );
 }

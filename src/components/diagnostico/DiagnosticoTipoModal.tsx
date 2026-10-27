@@ -1,114 +1,105 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Building2, User, X } from 'lucide-react'
+import { useRef } from "react";
+import Link from "next/link";
+import { Dialog } from "radix-ui";
+import { ArrowRight, Building2, UserRound, X } from "lucide-react";
 
-type Props = {
-  open: boolean
-  onClose: () => void
-}
+type Props = { open: boolean; onClose: () => void };
 
 export function DiagnosticoTipoModal({ open, onClose }: Props) {
-  const router = useRouter()
-  const [navigating, setNavigating] = useState<'empresa' | 'pessoal' | null>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
-    }
-  }, [open, onClose])
-
-  if (!open) return null
-
-  function go(path: '/diagnostico/empresa' | '/diagnostico/pessoal') {
-    setNavigating(path.includes('empresa') ? 'empresa' : 'pessoal')
-    router.push(path)
-  }
-
+  const returnFocus = useRef<HTMLElement | null>(null);
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="diagnostico-tipo-title"
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      style={{ backgroundColor: 'rgba(2, 6, 23, 0.65)', backdropFilter: 'blur(4px)' }}
-      onClick={onClose}
+    <Dialog.Root
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onClose();
+      }}
     >
-      <div
-        className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-[0_22px_45px_rgba(2,6,23,0.35)] sm:p-7"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fechar"
-          className="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-full text-[#64748B] transition-colors hover:bg-[#F1F5F9] hover:text-[#0F172A]"
+      <Dialog.Portal>
+        <Dialog.Overlay className="diagnostic-overlay" />
+        <Dialog.Content
+          className="diagnostic-dialog"
+          data-lenis-prevent
+          onOpenAutoFocus={() => {
+            returnFocus.current =
+              document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            returnFocus.current?.focus();
+          }}
         >
-          <X className="h-4 w-4" />
-        </button>
-
-        <h2
-          id="diagnostico-tipo-title"
-          className="font-heading text-xl font-extrabold leading-tight tracking-tight text-[#0F172A] sm:text-2xl"
-        >
-          Antes de começar, conta pra gente:
-        </h2>
-        <p className="mt-1.5 text-sm leading-relaxed text-[#64748B]">
-          Você está fazendo o diagnóstico como...
-        </p>
-
-        <div className="mt-5 space-y-3">
-          <button
-            type="button"
-            onClick={() => go('/diagnostico/empresa')}
-            disabled={!!navigating}
-            className="group flex w-full items-center gap-4 rounded-2xl border-2 border-[#E3EBF6] bg-white px-5 py-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#1565C0] hover:shadow-[0_8px_20px_rgba(21,101,192,0.15)] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#EFF6FE] text-[#1565C0]">
-              <Building2 className="h-5 w-5" />
-            </span>
-            <div className="flex-1">
-              <p className="text-sm font-extrabold text-[#0F172A]">Empresa avaliando supervisor</p>
-              <p className="text-xs text-[#64748B]">
-                Mapeie expectativas e gaps de cada supervisor
-              </p>
-            </div>
-            {navigating === 'empresa' && (
-              <span className="text-xs font-bold text-[#1565C0]">...</span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => go('/diagnostico/pessoal')}
-            disabled={!!navigating}
-            className="group flex w-full items-center gap-4 rounded-2xl border-2 border-[#E3EBF6] bg-white px-5 py-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#F57C00] hover:shadow-[0_8px_20px_rgba(245,124,0,0.15)] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FFF7ED] text-[#F57C00]">
-              <User className="h-5 w-5" />
-            </span>
-            <div className="flex-1">
-              <p className="text-sm font-extrabold text-[#0F172A]">Sou supervisor / líder</p>
-              <p className="text-xs text-[#64748B]">Autoavaliação + PDI personalizado</p>
-            </div>
-            {navigating === 'pessoal' && (
-              <span className="text-xs font-bold text-[#F57C00]">...</span>
-            )}
-          </button>
-        </div>
-
-        <p className="mt-4 text-center text-[11px] text-[#94A3B8]">
-          Você pode trocar de tipo a qualquer momento dentro do formulário.
-        </p>
-      </div>
-    </div>
-  )
+          <p className="institutional-eyebrow">Diagnóstico de liderança</p>
+          <Dialog.Title className="mt-4 pr-5 text-2xl font-semibold leading-tight tracking-tight text-site-ink">
+            Qual é o seu objetivo?
+          </Dialog.Title>
+          <Dialog.Description className="mt-3 text-sm leading-relaxed text-site-muted">
+            Escolha uma opção para abrir o formulário adequado ao seu momento.
+          </Dialog.Description>
+          <div className="mt-7 space-y-3">
+            <Link
+              href="/diagnostico/pessoal"
+              onClick={onClose}
+              className="diagnostic-option"
+            >
+              <UserRound
+                className="mt-0.5 size-5 shrink-0 text-site-secondary"
+                aria-hidden="true"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-site-ink">
+                  Quero avaliar minha liderança
+                </span>
+                <span className="mt-1.5 block text-sm leading-relaxed text-site-muted">
+                  Identifique suas competências e pontos de desenvolvimento.
+                </span>
+              </span>
+              <ArrowRight
+                className="mt-0.5 size-4 shrink-0 text-site-secondary"
+                aria-hidden="true"
+              />
+            </Link>
+            <Link
+              href="/diagnostico/empresa"
+              onClick={onClose}
+              className="diagnostic-option"
+            >
+              <Building2
+                className="mt-0.5 size-5 shrink-0 text-site-secondary"
+                aria-hidden="true"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold text-site-ink">
+                  Quero avaliar um líder da empresa
+                </span>
+                <span className="mt-1.5 block text-sm leading-relaxed text-site-muted">
+                  Avalie a liderança considerando as necessidades da equipe.
+                </span>
+              </span>
+              <ArrowRight
+                className="mt-0.5 size-4 shrink-0 text-site-secondary"
+                aria-hidden="true"
+              />
+            </Link>
+          </div>
+          <p className="mt-6 border-t border-site-border pt-4 text-xs leading-relaxed text-site-muted">
+            O diagnóstico começa com suas respostas. Nenhum pagamento é
+            solicitado nesta etapa.
+          </p>
+          <Dialog.Close asChild>
+            <button
+              type="button"
+              aria-label="Fechar diagnóstico"
+              className="absolute right-3 top-3 flex size-11 items-center justify-center rounded-md text-site-muted hover:bg-site-paper"
+            >
+              <X className="size-5" />
+            </button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
 }

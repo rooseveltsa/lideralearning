@@ -1,214 +1,207 @@
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { ArrowRight, Flame, PlayCircle, Sparkles, Trophy } from 'lucide-react'
-
-import { getUserLearningSnapshot } from '@/lib/actions/lms'
-import CourseShelfCard from '@/components/dashboard/CourseShelfCard'
-import { createClient } from '@/lib/supabase/server'
-
-function getContinueHref(courseId: string, nextLessonId: string | null) {
-  if (nextLessonId) return `/dashboard/cursos/${courseId}/aula/${nextLessonId}`
-  return `/dashboard/cursos/${courseId}`
-}
+import Link from "next/link";
+import { ArrowRight, Award, BookOpen, CheckCircle2, Play } from "lucide-react";
+import { getUserLearningSnapshot } from "@/lib/actions/lms";
+import CourseShelfCard from "@/components/dashboard/CourseShelfCard";
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/auth/login')
-
-  const snapshot = await getUserLearningSnapshot()
-
-  const rankedCourses = snapshot.courses
+  const snapshot = await getUserLearningSnapshot();
+  const courses = snapshot.courses
     .slice()
-    .sort((a, b) => {
-      if (a.lastAccessedAt && b.lastAccessedAt) return new Date(b.lastAccessedAt).getTime() - new Date(a.lastAccessedAt).getTime()
-      if (a.lastAccessedAt) return -1
-      if (b.lastAccessedAt) return 1
-      return new Date(b.enrolledAt).getTime() - new Date(a.enrolledAt).getTime()
-    })
-
-  const inProgressCourses = rankedCourses.filter((course) => course.progressPercent < 100)
-  const completedCourses = rankedCourses.filter((course) => course.progressPercent === 100)
-  const continueCourse = inProgressCourses[0] ?? rankedCourses[0] ?? null
-
-  const totalXp = snapshot.totals.completedLessons * 45 + snapshot.activityDaysLast30 * 20 + snapshot.totals.activeCourses * 30
-  const level = Math.max(1, Math.floor(totalXp / 500) + 1)
-  const xpInLevel = totalXp - (level - 1) * 500
-  const xpProgress = Math.max(0, Math.min(100, Math.round((xpInLevel / 500) * 100)))
-
-  const badges = [
-    {
-      title: 'Primeiro Marco',
-      hint: 'Concluir a primeira aula.',
-      unlocked: snapshot.totals.completedLessons >= 1,
-    },
-    {
-      title: 'Ritmo Constante',
-      hint: 'Estudar em pelo menos 7 dias no mês.',
-      unlocked: snapshot.activityDaysLast30 >= 7,
-    },
-    {
-      title: 'Execução Forte',
-      hint: 'Finalizar 20 aulas acumuladas.',
-      unlocked: snapshot.totals.completedLessons >= 20,
-    },
-  ]
-
+    .sort(
+      (a, b) =>
+        new Date(b.lastAccessedAt ?? b.enrolledAt).getTime() -
+        new Date(a.lastAccessedAt ?? a.enrolledAt).getTime(),
+    );
+  const pending = courses.filter(
+    (c) => c.totalLessons > 0 && c.completedLessons < c.totalLessons,
+  );
+  const completed = courses.filter(
+    (c) => c.totalLessons > 0 && c.completedLessons === c.totalLessons,
+  );
+  const next = pending[0];
   return (
-    <div className="mx-auto w-full max-w-[1260px] space-y-8 p-4 lg:p-8">
-      <section className="grid gap-5 xl:grid-cols-[1.25fr_0.75fr]">
-        <article className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#060D1A] p-8 text-white shadow-[0_22px_48px_rgba(2,6,23,0.55)]">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(30,136,229,0.22),transparent_40%)]" />
-          <div className="relative">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#90B6DD]">Controle da jornada</p>
-            <h1 className="mt-3 max-w-2xl font-heading text-3xl font-extrabold leading-tight md:text-4xl">
-              Plataforma de aprendizagem com dinâmica de stream e progresso real por trilha.
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#A9BDD8]">
-              Você tem {snapshot.totals.activeCourses} {snapshot.totals.activeCourses === 1 ? 'formação ativa' : 'formações ativas'} e{' '}
-              {snapshot.totals.completedLessons} aulas concluídas.
+    <div className="learning-container space-y-9">
+      <div>
+        <p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-learning-accent">
+          Seu espaço de aprendizagem
+        </p>
+        <h1 className="text-3xl font-semibold tracking-tight text-learning-text">
+          Vamos seguir aprendendo?
+        </h1>
+        <p className="mt-3 text-sm text-learning-muted">
+          Seus treinamentos, suas aulas e o próximo passo para colocar em
+          prática.
+        </p>
+      </div>
+      {next ? (
+        <section
+          aria-labelledby="continue-heading"
+          className="overflow-hidden rounded-2xl border border-learning-border bg-learning-panel md:grid md:grid-cols-[minmax(0,1fr)_240px]"
+        >
+          <div className="p-6 md:p-8">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-learning-accent">
+              <Play className="size-4" />
+              {next.trackedLessons > 0
+                ? "Continue de onde parou"
+                : "Seu primeiro passo"}
             </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href={continueCourse ? getContinueHref(continueCourse.courseId, continueCourse.nextLessonId) : '/dashboard/cursos'}
-                className="inline-flex items-center gap-2 rounded-xl bg-[#1E88E5] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
-              >
-                {continueCourse ? 'Retomar agora' : 'Abrir biblioteca'}
-                <PlayCircle className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/dashboard/cursos"
-                className="inline-flex items-center gap-2 rounded-xl border border-[#2E4467] px-5 py-3 text-sm font-bold text-[#D3E1F2] transition-colors hover:border-[#496A97] hover:text-white"
-              >
-                Ver todas as trilhas
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </article>
-
-        <article className="rounded-3xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Gamificação</p>
-          <h2 className="mt-2 text-2xl font-extrabold text-[#0F172A]">Nível {level}</h2>
-          <p className="mt-1 text-sm text-[#64748B]">{totalXp} XP acumulado</p>
-
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#E4ECF7]">
-            <div className="h-full rounded-full bg-[#1E88E5]" style={{ width: `${xpProgress}%` }} />
-          </div>
-          <p className="mt-2 text-xs text-[#64748B]">{500 - xpInLevel} XP para o próximo nível.</p>
-
-          <div className="mt-5 space-y-3">
-            <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F7FAFE] px-3 py-2.5 text-xs font-semibold text-[#334155]">
-              <Flame className="h-4 w-4 text-[#F57C00]" />
-              {snapshot.activityDaysLast30} dias com estudo nos últimos 30 dias
-            </div>
-            <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F7FAFE] px-3 py-2.5 text-xs font-semibold text-[#334155]">
-              <Sparkles className="h-4 w-4 text-[#0B4A8F]" />
-              Progresso geral: {snapshot.totals.overallPercent}%
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: 'Trilhas ativas', value: snapshot.totals.activeCourses.toString(), detail: 'programas em andamento' },
-          { label: 'Aulas concluídas', value: snapshot.totals.completedLessons.toString(), detail: 'conteúdo finalizado' },
-          { label: 'Carga da biblioteca', value: snapshot.totals.totalLessons.toString(), detail: 'aulas disponíveis' },
-          { label: 'Aulas em progresso', value: snapshot.totals.trackedLessons.toString(), detail: 'itens com registro' },
-        ].map((card) => (
-          <article key={card.label} className="rounded-2xl border border-[#D8E2EF] bg-white p-5 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">{card.label}</p>
-            <p className="mt-2 text-3xl font-extrabold text-[#0F172A]">{card.value}</p>
-            <p className="mt-1 text-xs text-[#64748B]">{card.detail}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="rounded-3xl border border-[#1E2E48] bg-[#060D1A] p-6 shadow-[0_18px_40px_rgba(2,6,23,0.5)] md:p-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#90B6DD]">Continue assistindo</p>
-            <h2 className="mt-2 text-2xl font-extrabold text-white">Trilhas em execução</h2>
-          </div>
-          <Link href="/dashboard/cursos" className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.13em] text-[#A8C5E7] hover:text-white">
-            Abrir biblioteca completa
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        {inProgressCourses.length === 0 ? (
-          <div className="rounded-2xl border border-[#293E5E] bg-[#0C1729] px-6 py-10 text-center">
-            <p className="text-lg font-bold text-white">Nenhuma trilha em andamento no momento.</p>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-[#9AB2CE]">Escolha um programa para iniciar o fluxo de aprendizagem e destravar novos níveis.</p>
-            <Link
-              href="/cursos"
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#1E88E5] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+            <h2
+              id="continue-heading"
+              className="mt-4 text-2xl font-semibold text-learning-text"
             >
-              Explorar catálogo
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {inProgressCourses.slice(0, 3).map((course) => (
-              <CourseShelfCard key={course.enrollmentId} course={course} tone="dark" />
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <article className="rounded-3xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
-          <div className="mb-6 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-[#0B4A8F]" />
-            <h2 className="text-xl font-extrabold text-[#0F172A]">Conquistas da jornada</h2>
-          </div>
-          <div className="space-y-3">
-            {badges.map((badge) => (
-              <div
-                key={badge.title}
-                className={`rounded-xl border px-4 py-3 ${
-                  badge.unlocked ? 'border-[#CFE6D2] bg-[#F1FAF2]' : 'border-[#E5ECF6] bg-[#F8FAFD]'
-                }`}
+              {next.title}
+            </h2>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-learning-muted">
+              {next.completedLessons} de {next.totalLessons} aulas concluídas.{" "}
+              {next.totalLessons - next.completedLessons === 1
+                ? "Falta uma aula para concluir este treinamento."
+                : `Faltam ${next.totalLessons - next.completedLessons} aulas para concluir este treinamento.`}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-5">
+              <Link
+                href={
+                  next.nextLessonId
+                    ? `/dashboard/cursos/${next.courseId}/aula/${next.nextLessonId}`
+                    : `/dashboard/cursos/${next.courseId}`
+                }
+                className="learning-button"
               >
-                <p className={`text-sm font-bold ${badge.unlocked ? 'text-[#2E7D32]' : 'text-[#475569]'}`}>{badge.title}</p>
-                <p className="mt-1 text-xs text-[#64748B]">{badge.hint}</p>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-3xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Concluídas</p>
-              <h2 className="mt-2 text-xl font-extrabold text-[#0F172A]">Trilhas finalizadas</h2>
+                <Play className="size-4" />
+                {next.trackedLessons > 0
+                  ? "Continuar treinamento"
+                  : "Começar treinamento"}
+              </Link>
+              <Link
+                href={`/dashboard/cursos/${next.courseId}`}
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-learning-muted hover:text-learning-text"
+              >
+                Ver todas as aulas
+                <ArrowRight className="size-4" />
+              </Link>
             </div>
-            <Link href="/dashboard/cursos" className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.13em] text-[#0B4A8F] hover:text-[#08376B]">
-              Ver todas
-              <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+          <div className="flex flex-col justify-center border-t border-learning-border bg-learning-bg/40 p-6 md:border-l md:border-t-0 md:p-8">
+            <BookOpen className="mb-5 size-7 text-learning-accent" />
+            <p className="text-4xl font-semibold tabular-nums text-learning-text">
+              {next.progressPercent}
+              <span className="text-lg text-learning-muted">%</span>
+            </p>
+            <p className="mt-2 text-xs text-learning-muted">
+              do treinamento concluído
+            </p>
+            <progress
+              aria-label="Progresso do treinamento"
+              value={next.progressPercent}
+              max={100}
+              className="mt-5 h-1.5 w-full accent-learning-accent"
+            />
+          </div>
+        </section>
+      ) : (
+        <section className="rounded-2xl border border-learning-border bg-learning-panel p-7">
+          <BookOpen className="size-8 text-learning-accent" />
+          <h2 className="mt-4 text-xl font-semibold text-learning-text">
+            {completed.length
+              ? "Treinamentos concluídos. Conhecimento para aplicar."
+              : courses.length
+                ? "Seu conteúdo está sendo preparado"
+                : "Seu aprendizado começa aqui"}
+          </h2>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-learning-muted">
+            {completed.length
+              ? "Revise as aulas quando precisar e acesse seus certificados."
+              : courses.length
+                ? "Você já tem acesso à biblioteca. As aulas aparecerão assim que forem disponibilizadas."
+                : "Ainda não há treinamentos na sua conta. Conheça o catálogo ou verifique se entrou com o e-mail usado na matrícula."}
+          </p>
+          <Link
+            href={
+              completed.length
+                ? "/dashboard/certificados"
+                : courses.length
+                  ? "/dashboard/cursos"
+                  : "/cursos"
+            }
+            className="learning-button mt-5"
+          >
+            {completed.length
+              ? "Acessar certificados"
+              : courses.length
+                ? "Meus treinamentos"
+                : "Conhecer treinamentos"}
+            <ArrowRight className="size-4" />
+          </Link>
+        </section>
+      )}
+      <dl className="grid gap-4 sm:grid-cols-3">
+        {[
+          {
+            label: "Treinamentos em andamento",
+            value: pending.filter((c) => c.trackedLessons > 0).length,
+            icon: BookOpen,
+          },
+          {
+            label: "Aulas concluídas",
+            value: snapshot.totals.completedLessons,
+            icon: CheckCircle2,
+          },
+          {
+            label: "Treinamentos concluídos",
+            value: completed.length,
+            icon: Award,
+          },
+        ].map(({ label, value, icon: Icon }) => (
+          <div
+            key={label}
+            className="flex items-center gap-4 rounded-xl border border-learning-border px-5 py-4"
+          >
+            <Icon className="size-5 text-learning-muted" />
+            <div>
+              <dd className="text-2xl font-semibold tabular-nums text-learning-text">
+                {value}
+              </dd>
+              <dt className="mt-1 text-xs text-learning-muted">{label}</dt>
+            </div>
+          </div>
+        ))}
+      </dl>
+      {courses.length ? (
+        <section>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-learning-text">
+              Meus treinamentos
+            </h2>
+            <Link
+              href="/dashboard/cursos"
+              className="inline-flex min-h-11 items-center gap-2 text-sm text-learning-accent"
+            >
+              Ver todos ({courses.length})<ArrowRight className="size-4" />
             </Link>
           </div>
-
-          {completedCourses.length === 0 ? (
-            <div className="rounded-xl border border-[#E5ECF6] bg-[#F8FAFD] px-4 py-5 text-sm text-[#64748B]">
-              Conclua uma trilha para liberar certificado e histórico de conclusão nesta área.
-            </div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {completedCourses.slice(0, 2).map((course) => (
-                <CourseShelfCard key={course.enrollmentId} course={course} tone="light" />
-              ))}
-            </div>
-          )}
-        </article>
-      </section>
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {courses.slice(0, 3).map((course) => (
+              <CourseShelfCard key={course.enrollmentId} course={course} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+      <aside className="flex flex-wrap items-center justify-between gap-4 border-t border-learning-border pt-6">
+        <div>
+          <p className="text-sm font-medium text-learning-text">
+            Aprender é também colocar em prática.
+          </p>
+          <p className="mt-1 text-sm text-learning-muted">
+            Ao concluir uma aula, escolha uma ação para experimentar no seu
+            trabalho.
+          </p>
+        </div>
+        <Link
+          href="/contato"
+          className="inline-flex min-h-11 items-center text-sm text-learning-accent"
+        >
+          Precisa de ajuda? →
+        </Link>
+      </aside>
     </div>
-  )
+  );
 }

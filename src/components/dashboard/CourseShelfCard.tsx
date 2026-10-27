@@ -1,80 +1,101 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, Target } from 'lucide-react'
-
-import type { UserCourseProgressSummary } from '@/lib/actions/lms'
-
-const shortDate = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
-
-function getContinueHref(course: UserCourseProgressSummary) {
-  if (course.nextLessonId) return `/dashboard/cursos/${course.courseId}/aula/${course.nextLessonId}`
-  return `/dashboard/cursos/${course.courseId}`
-}
-
-function getLastAccessLabel(lastAccessedAt: string | null) {
-  if (!lastAccessedAt) return 'Ainda não iniciado'
-  return `Último acesso em ${shortDate.format(new Date(lastAccessedAt))}`
-}
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2, Play } from "lucide-react";
+import type { UserCourseProgressSummary } from "@/lib/actions/lms";
 
 export default function CourseShelfCard({
   course,
-  tone = 'dark',
 }: {
-  course: UserCourseProgressSummary
-  tone?: 'dark' | 'light'
+  course: UserCourseProgressSummary;
+  tone?: "dark" | "light";
 }) {
-  const href = getContinueHref(course)
-  const completedLabel =
-    course.totalLessons > 0
-      ? `${course.completedLessons} de ${course.totalLessons} aulas`
-      : `${course.completedLessons} aulas concluídas`
-
+  const done =
+    course.totalLessons > 0 && course.completedLessons === course.totalLessons;
+  const started = course.trackedLessons > 0;
+  const href =
+    !done && course.nextLessonId
+      ? `/dashboard/cursos/${course.courseId}/aula/${course.nextLessonId}`
+      : `/dashboard/cursos/${course.courseId}`;
   return (
-    <Link
-      href={href}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 ${
-        tone === 'dark'
-          ? 'border-[#1E2E48] bg-[#0A1322] hover:border-[#2C486E] hover:shadow-[0_18px_34px_rgba(3,8,19,0.45)]'
-          : 'border-[#D9E3F0] bg-white hover:border-[#C0D3E8] hover:shadow-[0_14px_30px_rgba(15,23,42,0.12)]'
-      }`}
-    >
-      <div className="relative h-44 w-full overflow-hidden bg-[#101A2D]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-learning-border bg-learning-panel">
+      <Link
+        href={href}
+        className="relative block aspect-video overflow-hidden border-b border-learning-border bg-learning-bg"
+        aria-label={`Abrir ${course.title}`}
+      >
         {course.thumbnailUrl ? (
           <Image
             src={course.thumbnailUrl}
-            alt={course.title}
+            alt=""
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
             unoptimized
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 motion-safe:group-hover:scale-105"
           />
         ) : (
-          <div className={`flex h-full items-center justify-center ${tone === 'dark' ? 'text-[#6E89AB]' : 'text-[#40638A]'}`}>
-            <Target className="h-10 w-10" />
+          <div className="flex h-full flex-col justify-between p-6">
+            <Image src="/brand/lidera-mark.png" alt="" width={40} height={28} className="h-auto w-10" />
+            <span className="line-clamp-2 max-w-64 text-xl font-semibold text-learning-text">
+              {course.title}
+            </span>
+            <span className="text-[10px] font-semibold tracking-[0.2em] text-learning-muted">
+              LIDERA TREINAMENTOS
+            </span>
           </div>
         )}
-
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent px-4 pb-3 pt-8">
-          <div className="h-1.5 overflow-hidden rounded-full bg-white/20">
-            <div className="h-full rounded-full bg-[#1E88E5]" style={{ width: `${course.progressPercent}%` }} />
-          </div>
-          <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white">{course.progressPercent}% concluído</p>
+        <span className="absolute right-3 top-3 rounded-md border border-learning-border bg-learning-bg px-2.5 py-1 text-xs font-medium text-learning-text">
+          {done ? "Concluído" : started ? "Em andamento" : "Não iniciado"}
+        </span>
+      </Link>
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="text-base font-semibold leading-snug text-learning-text">
+          <Link href={href}>{course.title}</Link>
+        </h3>
+        <p className="mt-2 text-xs text-learning-muted">
+          {course.totalLessons > 0
+            ? `${course.completedLessons} de ${course.totalLessons} aulas concluídas`
+            : "Conteúdo em preparação"}
+        </p>
+        <div className="mt-4 flex items-center gap-3">
+          <progress
+            aria-label={`Progresso de ${course.title}`}
+            value={course.progressPercent}
+            max={100}
+            className="h-1.5 w-full overflow-hidden rounded-full bg-learning-border accent-learning-accent [&::-webkit-progress-bar]:bg-learning-border [&::-webkit-progress-value]:bg-learning-accent [&::-moz-progress-bar]:bg-learning-accent"
+          />
+          <span className="text-xs tabular-nums text-learning-muted">
+            {course.progressPercent}%
+          </span>
+        </div>
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+          <Link
+            href={href}
+            className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-learning-accent"
+          >
+            {done ? (
+              <CheckCircle2 className="size-4" />
+            ) : (
+              <Play className="size-4" />
+            )}
+            {done
+              ? "Revisar treinamento"
+              : started
+                ? "Continuar"
+                : course.totalLessons > 0
+                  ? "Começar treinamento"
+                  : "Ver treinamento"}
+          </Link>
+          {done ? (
+            <Link
+              href={`/dashboard/certificado/${course.courseId}`}
+              className="inline-flex min-h-11 items-center gap-1 text-xs text-learning-success"
+            >
+              Certificado
+              <ArrowUpRight className="size-3.5" />
+            </Link>
+          ) : null}
         </div>
       </div>
-
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className={`line-clamp-2 text-lg font-extrabold ${tone === 'dark' ? 'text-white' : 'text-[#0F172A]'}`}>{course.title}</h3>
-        <p className={`mt-2 text-xs ${tone === 'dark' ? 'text-[#95A9C5]' : 'text-[#64748B]'}`}>{completedLabel}</p>
-        <p className={`mt-1 text-xs ${tone === 'dark' ? 'text-[#95A9C5]' : 'text-[#64748B]'}`}>{getLastAccessLabel(course.lastAccessedAt)}</p>
-        <span
-          className={`mt-4 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.13em] ${
-            tone === 'dark' ? 'text-[#A8C5E7]' : 'text-[#0B4A8F]'
-          }`}
-        >
-          Retomar
-          <ArrowRight className="h-3.5 w-3.5" />
-        </span>
-      </div>
-    </Link>
-  )
+    </article>
+  );
 }

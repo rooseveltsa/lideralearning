@@ -813,3 +813,79 @@ html.lenis body {
     transform: none;
   }
 }
+
+/* Área do aluno: uma única escala de superfícies e estados. */
+@theme inline {
+  --color-learning-bg: var(--learning-bg);
+  --color-learning-panel: var(--learning-panel);
+  --color-learning-border: var(--learning-border);
+  --color-learning-text: var(--learning-text);
+  --color-learning-muted: var(--learning-muted);
+  --color-learning-accent: var(--learning-accent);
+  --color-learning-action: var(--learning-action);
+  --color-learning-accent-soft: var(--learning-accent-soft);
+  --color-learning-success: var(--learning-success);
+}
+:root {
+  --learning-bg: #070e1c;
+  --learning-panel: #0c1729;
+  --learning-border: #29384e;
+  --learning-text: #f5f1ea;
+  --learning-muted: #adb1bc;
+  --learning-accent: #ff9a5a;
+  --learning-action: #a13d05;
+  --learning-accent-soft: #2e201e;
+  --learning-success: #5fd07c;
+}
+.learning-shell :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--learning-accent);
+  outline-offset: 4px;
+}
+.learning-container { width: 100%; max-width: 1200px; margin-inline: auto; padding: 32px; }
+.learning-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; padding: 10px 18px; background: var(--learning-action); color: white; font-weight: 600; font-size: 14px; }
+.learning-button:hover { background: #6e2a04; }
+@media (max-width: 767px) { .learning-container { padding: 24px 16px; } }
+
+/* Home institucional: papel, navy e ações sem efeitos decorativos. */
+@theme inline {
+  --color-site-paper: var(--site-paper);
+  --color-site-white: var(--site-white);
+  --color-site-ink: var(--site-ink);
+  --color-site-muted: var(--site-muted);
+  --color-site-border: var(--site-border);
+  --color-site-secondary: var(--site-secondary);
+  --color-site-on-dark: var(--site-on-dark);
+  --color-site-on-dark-muted: var(--site-on-dark-muted);
+  --color-site-dark-border: var(--site-dark-border);
+}
+:root {
+  --site-paper: #f5f1ea;
+  --site-white: #ffffff;
+  --site-ink: #122039;
+  --site-muted: #4a5060;
+  --site-border: #dddcd5;
+  --site-secondary: #a13d05;
+  --site-on-dark: #f5f1ea;
+  --site-on-dark-muted: #bdc6d3;
+  --site-dark-border: #344258;
+}
+.institutional-site { background: var(--site-paper); color: var(--site-ink); }
+.institutional-container { width: min(100% - 48px, 1160px); margin-inline: auto; }
+.institutional-hero { background: var(--site-paper); }
+.institutional-headline { font-family: var(--font-heading), sans-serif; font-size: clamp(2.75rem, 4.8vw, 4.25rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.045em; color: var(--site-ink); }
+.institutional-section-heading { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.035em; }
+.institutional-eyebrow { color: var(--site-secondary); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+.institutional-path { border-left: 1px solid var(--site-border); padding-left: 36px; }
+.institutional-training-card { padding: 32px; border: 1px solid var(--site-border); background: var(--site-white); border-radius: 8px; }
+.institutional-practice { background: var(--site-ink); }
+.institutional-button, .institutional-button-secondary { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 12px; padding: 12px 20px; border: 1px solid transparent; border-radius: 6px; font-size: 14px; font-weight: 600; line-height: 1.5; transition: background-color 150ms, border-color 150ms; }
+.institutional-button { color: var(--site-white); background: var(--site-secondary); }
+.institutional-button:hover { background: #6e2a04; }
+.institutional-button-secondary { color: var(--site-ink); border-color: var(--site-border); background: transparent; }
+.institutional-button-secondary:hover { background: var(--site-white); border-color: var(--site-ink); }
+.institutional-site :is(a, button):focus-visible, .diagnostic-dialog :is(a, button):focus-visible { outline: 2px solid var(--site-secondary); outline-offset: 4px; }
+.diagnostic-overlay { position: fixed; inset: 0; z-index: 100; background: rgb(7 14 28 / 65%); }
+.diagnostic-dialog { position: fixed; top: 50%; left: 50%; z-index: 101; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--site-border); border-radius: 12px; padding: 32px; background: var(--site-white); color: var(--site-ink); box-shadow: 0 24px 80px rgb(7 14 28 / 20%); }
+.diagnostic-option { display: flex; align-items: flex-start; gap: 14px; padding: 20px 16px; border: 1px solid var(--site-border); border-radius: 6px; background: var(--site-white); text-decoration: none; }
+.diagnostic-option:hover { background: var(--site-paper); border-color: var(--site-secondary); }
+@media (max-width: 767px) { .institutional-container { width: calc(100% - 32px); } .institutional-path { padding-left: 0; border-left: 0; border-top: 1px solid var(--site-border); padding-top: 28px; } .institutional-training-card { padding: 24px; } .diagnostic-dialog { padding: 28px 20px 20px; } }

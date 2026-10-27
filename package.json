@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:learning": "node --test tests/training-library.test.mjs",
+    "test:diagnostico": "node --import tsx --test tests/diagnostico-modal.test.tsx"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
@@ -37,14 +39,17 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.185.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "jsdom": "^29.1.1",
     "shadcn": "^3.8.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5"
   },

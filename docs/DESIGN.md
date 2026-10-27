@@ -430,3 +430,35 @@ src/
 ---
 
 *Version 1.0 — Premium Edition. Built for Lidera Treinamentos.*
+## 8. Área de treinamentos — revisão de usabilidade (26/10/2026)
+
+Esta seção prevalece sobre os exemplos anteriores para `/dashboard`.
+A referência é a organização de conteúdo documentada publicamente pela Hotmart;
+não representa acesso à implementação proprietária ou integração com a Hotmart.
+
+- Objetivo: localizar o treinamento, retomar a próxima aula, concluir e acessar o certificado.
+- Navegação: Início, Meus treinamentos, Certificados; Perfil e Configurações separados.
+- Identidade: navy e laranja já definidos em `src/lib/design-tokens.ts`. Usar tokens
+  semânticos `learning-*` de `globals.css`, com texto secundário legível e foco visível.
+- Grid: menu de 240px no desktop; navegação expansível no celular; conteúdo até 1200px.
+- Hierarquia: título de 28–36px; corpo 14–16px; controles com pelo menos 44px de altura.
+- Início: próxima ação real e resumo de aulas, sem XP calculado fora da gamificação oficial.
+- Biblioteca: busca por título, filtros por situação, ordenação e paginação de 12 itens.
+- Sala de aula: vídeo com largura útil, módulos recolhíveis, aula atual identificada,
+  conclusão explícita e materiais em texto preservando parágrafos.
+- Estados: carregamento acessível, ausência de matrícula, busca sem resultados e erro com retry.
+- Certificados: separar treinamentos concluídos dos requisitos ainda pendentes;
+  a emissão continua usando a página existente e suas regras.
+- Não apresentar números simulados, avaliações fictícias ou urgência artificial.
+
+## 9. Home institucional e diagnóstico — revisão de confiança
+
+Para a home, substituir a estética de streaming por uma composição editorial:
+fundos sólidos em papel e branco, texto navy e laranja apenas nas ações. Hero em
+ duas colunas com título até 64px, apresentação objetiva da formação e um roteiro
+ de desenvolvimento. Sem grade, partículas, animação de texto, elementos flutuantes,
+ efeito magnético ou números e depoimentos não comprovados. Manter marca oficial,
+ navegação direta, formatos de treinamento e contato com o responsável.
+O diálogo do diagnóstico deve usar Portal e gerenciamento de foco do Radix,
+ mantendo-se fora de qualquer ancestral transformado. Altura limitada ao viewport,
+ rolagem interna e cores explícitas independentes do tema da página.

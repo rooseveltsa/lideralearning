@@ -275,6 +275,7 @@ export async function getUserLearningSnapshot(): Promise<UserLearningSnapshot> {
   if (enrollmentError || !Array.isArray(enrollmentData) || enrollmentData.length === 0) {
     if (enrollmentError) {
       console.error('Error fetching learning snapshot enrollments:', enrollmentError)
+      throw new Error('Não foi possível consultar suas matrículas.')
     }
     return EMPTY_SNAPSHOT
   }
@@ -304,6 +305,7 @@ export async function getUserLearningSnapshot(): Promise<UserLearningSnapshot> {
 
   if (progressError) {
     console.error('Error fetching learning snapshot progress:', progressError)
+    throw new Error('Não foi possível carregar o progresso dos treinamentos.')
   }
 
   const { data: moduleData, error: moduleError } = await supabase
@@ -313,6 +315,7 @@ export async function getUserLearningSnapshot(): Promise<UserLearningSnapshot> {
 
   if (moduleError) {
     console.error('Error fetching learning snapshot modules:', moduleError)
+    throw new Error('Não foi possível carregar o progresso dos treinamentos.')
   }
 
   const modules = (Array.isArray(moduleData) ? moduleData : []) as ModuleRow[]
@@ -327,6 +330,7 @@ export async function getUserLearningSnapshot(): Promise<UserLearningSnapshot> {
 
     if (lessonError) {
       console.error('Error fetching learning snapshot lessons:', lessonError)
+      throw new Error('Não foi possível carregar o progresso dos treinamentos.')
     } else {
       lessons = (Array.isArray(lessonData) ? lessonData : []) as LessonRow[]
     }

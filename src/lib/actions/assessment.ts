@@ -1,26 +1,9 @@
 'use server'
 
 /**
- * ─── MIGRATION NECESSÁRIA ────────────────────────────────────────────────────
- * Execute no Supabase SQL Editor antes de usar:
- *
- * CREATE TABLE initial_assessments (
- *   id            uuid DEFAULT gen_random_uuid() PRIMARY KEY,
- *   enrollment_id uuid NOT NULL REFERENCES enrollments(id) ON DELETE CASCADE,
- *   user_id       uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
- *   course_id     uuid NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
- *   responses     jsonb NOT NULL,
- *   completed_at  timestamptz DEFAULT now(),
- *   UNIQUE(enrollment_id)
- * );
- *
- * ALTER TABLE initial_assessments ENABLE ROW LEVEL SECURITY;
- *
- * CREATE POLICY "Users can manage own assessments"
- *   ON initial_assessments
- *   USING (auth.uid() = user_id)
- *   WITH CHECK (auth.uid() = user_id);
- * ─────────────────────────────────────────────────────────────────────────────
+ * Estrutura e políticas em:
+ * supabase/migrations/20261026182321_restore_training_prerequisites.sql
+ * Avaliações são restritas ao aluno e a uma matrícula ativa do mesmo curso.
  */
 
 import { createClient } from '@/lib/supabase/server'

@@ -1,91 +1,102 @@
-import { BookMarked, LogOut } from 'lucide-react'
-import Link from 'next/link'
-
-import SidebarNav from '@/components/dashboard/SidebarNav'
-import { logout } from '@/app/auth/actions'
-import { createClient } from '@/lib/supabase/server'
+import { LogOut, UserRound } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { redirect } from "next/navigation";
+import SidebarNav from "@/components/dashboard/SidebarNav";
+import MobileNavigation from "@/components/dashboard/MobileNavigation";
+import { logout } from "@/app/auth/actions";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const supabase = await createClient()
+  const supabase = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser()
-
-  let isAdmin = false
-  let userRole = ''
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    userRole = profile?.role ?? ''
-    isAdmin = userRole === 'admin'
-  }
-
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/auth/login");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name")
+    .eq("id", user.id)
+    .single();
+  const role = profile?.role ?? "";
+  const name =
+    profile?.full_name || user.user_metadata?.full_name || "Minha conta";
   return (
-    <div className="grid min-h-screen w-full bg-[#EAF1FA] md:grid-cols-[296px_1fr] lg:grid-cols-[316px_1fr]">
-      <aside className="hidden flex-col border-r border-[#1A263D] bg-[#060D1A] md:flex">
-        <div className="flex h-[84px] items-center border-b border-[#1A263D] px-6">
-          <Link href="/dashboard" className="inline-flex items-center gap-2">
-            <span className="font-heading text-3xl font-extrabold tracking-tight text-white">Lidera</span>
-            <span className="h-2.5 w-2.5 rounded-full bg-[#1E88E5]" />
-          </Link>
+    <div className="learning-shell min-h-screen bg-learning-bg text-learning-text md:grid md:grid-cols-[240px_minmax(0,1fr)]">
+      <a
+        href="#student-content"
+        className="sr-only z-50 bg-learning-panel p-4 focus:not-sr-only focus:fixed"
+      >
+        Pular para o conteúdo
+      </a>
+      <aside className="sticky top-0 hidden h-dvh flex-col border-r border-learning-border bg-learning-bg md:flex">
+        <Link
+          href="/dashboard"
+          className="flex h-20 items-center gap-3 border-b border-learning-border px-7"
+          aria-label="Lidera Treinamentos — início"
+        >
+          <Image src="/brand/lidera-mark.png" alt="" width={40} height={28} className="h-auto w-10 shrink-0" />
+          <span>
+            <span className="block text-2xl font-bold tracking-tight">
+              Lidera
+            </span>
+            <span className="block text-[10px] tracking-[0.18em] text-learning-muted">
+              TREINAMENTOS
+            </span>
+          </span>
+        </Link>
+        <div className="min-h-0 flex-1 overflow-y-auto py-5">
+          <SidebarNav isAdmin={role === "admin"} role={role} />
         </div>
-
-        <div className="border-b border-[#1A263D] px-6 py-5">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6E86A4]">Ambiente do aluno</p>
-          <p className="mt-2 text-sm leading-relaxed text-[#AFC1D8]">Stream de treinamentos com progresso por trilha e certificação.</p>
+        <div className="m-4 rounded-xl border border-learning-border p-4">
+          <p className="text-sm font-semibold">Seu próximo aprendizado</p>
+          <p className="mt-2 text-xs leading-relaxed text-learning-muted">
+            Conheça os treinamentos disponíveis para desenvolver sua liderança.
+          </p>
           <Link
             href="/cursos"
-            className="mt-4 inline-flex items-center gap-2 rounded-xl border border-[#2E4467] px-4 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#C7D8EB] transition-colors hover:border-[#4D6F9A] hover:text-white"
+            className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-learning-accent"
           >
-            <BookMarked className="h-4 w-4" />
-            Explorar catálogo
+            Explorar treinamentos →
           </Link>
         </div>
-
-        <div className="py-6">
-          <div className="mt-1">
-            <SidebarNav isAdmin={isAdmin} role={userRole} />
-          </div>
-        </div>
-
-        <div className="mt-auto border-t border-[#1A263D] p-4">
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-[#9FB2CB] transition-all hover:bg-red-500/10 hover:text-red-300"
-            >
-              <LogOut className="h-4.5 w-4.5" />
-              Sair da conta
-            </button>
-          </form>
-        </div>
+        <form action={logout} className="border-t border-learning-border p-4">
+          <button className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-learning-muted hover:bg-learning-panel hover:text-learning-text">
+            <LogOut className="size-4" />
+            Sair da conta
+          </button>
+        </form>
       </aside>
-
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-[#D8E2EF] bg-white/95 px-4 shadow-sm backdrop-blur md:hidden">
-          <Link href="/dashboard" className="inline-flex items-center gap-2">
-            <span className="font-heading text-2xl font-extrabold tracking-tight text-[#0F172A]">Lidera</span>
-            <span className="h-2 w-2 rounded-full bg-[#1E88E5]" />
+      <div className="min-w-0">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between gap-4 border-b border-learning-border bg-learning-bg px-4 md:px-8">
+          <div className="flex items-center gap-3">
+            <MobileNavigation isAdmin={role === "admin"} role={role} />
+            <Link href="/dashboard" className="font-semibold md:hidden">
+              Lidera
+            </Link>
+            <span className="hidden text-sm text-learning-muted md:block">
+              Área do aluno <span className="mx-3 text-learning-border">/</span>{" "}
+              Aprenda. Pratique. Lidere.
+            </span>
+          </div>
+          <Link
+            href="/dashboard/perfil"
+            className="flex min-h-11 min-w-0 items-center gap-3 rounded-lg px-2 text-sm"
+          >
+            <span className="max-w-40 truncate">{name}</span>
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-learning-panel">
+              <UserRound className="size-4 text-learning-muted" />
+            </span>
           </Link>
-          <form action={logout}>
-            <button type="submit" className="rounded-lg p-2 text-[#475569] transition-colors hover:bg-red-50 hover:text-red-500">
-              <LogOut className="h-5 w-5" />
-            </button>
-          </form>
         </header>
-
-        <main className="flex-1 overflow-y-auto">
-          <div className="min-h-full bg-[radial-gradient(circle_at_8%_0%,rgba(30,136,229,0.08),transparent_34%)]">{children}</div>
+        <main id="student-content" tabIndex={-1}>
+          {children}
         </main>
       </div>
     </div>
-  )
+  );
 }

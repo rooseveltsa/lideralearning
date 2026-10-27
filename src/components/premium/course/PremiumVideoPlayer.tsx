@@ -1,48 +1,29 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { CheckCircle2, List, X, ChevronRight, PlayCircle } from 'lucide-react'
+import Link from "next/link";
+import { CheckCircle2, Circle, PlayCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import VideoPlayer from "@/components/VideoPlayer";
 
 type Lesson = {
-  id: string
-  title: string
-  video_url: string | null
-  duration_seconds: number
-}
-
-type Module = {
-  id: string
-  title: string
-  lessons: Lesson[]
-}
-
-type Progress = {
-  lesson_id: string
-  is_completed: boolean
-}
-
+  id: string;
+  title: string;
+  video_url: string | null;
+  duration_seconds: number;
+};
+type Module = { id: string; title: string; lessons: Lesson[] };
 interface PremiumVideoPlayerProps {
-  videoUrl: string
-  thumbnail?: string | null
-  currentLessonId: string
-  courseId: string
-  modules: Module[]
-  progress: Progress[]
-}
-
-function formatDuration(seconds: number) {
-  return `${Math.max(1, Math.round(seconds / 60))} min`
-}
-
-function getYouTubeEmbed(url: string): string | null {
-  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
-  return match ? `https://www.youtube.com/embed/${match[1]}?rel=0&modestbranding=1&color=white&iv_load_policy=3&playsinline=1` : null
-}
-
-function getVimeoEmbed(url: string): string | null {
-  const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
-  return match ? `https://player.vimeo.com/video/${match[1]}?color=EAB308&portrait=0&title=0&byline=0` : null
+  videoUrl: string;
+  thumbnail?: string | null;
+  currentLessonId: string;
+  courseId: string;
+  modules: Module[];
+  progress: { lesson_id: string; is_completed: boolean }[];
 }
 
 export function PremiumVideoPlayer({
@@ -53,230 +34,108 @@ export function PremiumVideoPlayer({
   modules,
   progress,
 }: PremiumVideoPlayerProps) {
-  const [isPanelOpen, setIsPanelOpen] = useState(false)
-
-  const sortedModules = [...modules].sort((a, b) => {
-    const moduleOrder: Record<string, number> = {}
-    modules.forEach((m, i) => { moduleOrder[m.id] = i })
-    return (moduleOrder[a.id] || 0) - (moduleOrder[b.id] || 0)
-  })
-
-  const allLessons = sortedModules.flatMap((m) =>
-    m.lessons.map((l) => ({ ...l, moduleId: m.id, moduleTitle: m.title }))
-  )
-  const currentIndex = allLessons.findIndex((l) => l.id === currentLessonId)
-  const previousLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null
-  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null
-
-  const isLessonCompleted = (lessonId: string) =>
-    progress.some((p) => p.lesson_id === lessonId && p.is_completed)
-  const isLessonStarted = (lessonId: string) =>
-    progress.some((p) => p.lesson_id === lessonId)
-
-  const youtubeEmbed = getYouTubeEmbed(videoUrl)
-  const vimeoEmbed = getVimeoEmbed(videoUrl)
-
+  const currentModule = modules.find((m) =>
+    m.lessons.some((l) => l.id === currentLessonId),
+  );
+  const completed = new Set(
+    progress.filter((p) => p.is_completed).map((p) => p.lesson_id),
+  );
   return (
-    <div className="relative flex h-full flex-col lg:flex-row">
-      {/* Mobile panel toggle */}
-      <button
-        onClick={() => setIsPanelOpen(true)}
-        className="absolute right-3 top-3 z-20 inline-flex items-center gap-2 rounded-xl bg-black/60 px-3 py-2 text-sm font-semibold text-white backdrop-blur-sm lg:hidden"
-        aria-label="Abrir lista de aulas"
-      >
-        <List className="h-4 w-4" />
-        Aulas
-      </button>
-
-      {/* Mobile overlay backdrop */}
-      {isPanelOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
-          onClick={() => setIsPanelOpen(false)}
-        />
-      )}
-
-      {/* Mobile slide-in panel */}
-      <aside
-        className={`fixed bottom-0 right-0 top-0 z-40 w-full max-w-sm overflow-y-auto border-l border-white/10 bg-[#171717] transition-transform duration-300 lg:hidden ${
-          isPanelOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/5 bg-[#171717] p-4">
-          <p className="text-sm font-bold text-white">Conteúdo do curso</p>
-          <button
-            onClick={() => setIsPanelOpen(false)}
-            className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white"
-            aria-label="Fechar painel"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="space-y-3 p-4">
-          {sortedModules.map((module, moduleIndex) => (
-            <div key={module.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-yellow-400">
-                Módulo {moduleIndex + 1} • {module.title}
-              </p>
-              <div className="space-y-1">
-                {module.lessons.map((lesson) => {
-                  const done = isLessonCompleted(lesson.id)
-                  const started = isLessonStarted(lesson.id)
-                  const active = lesson.id === currentLessonId
-                  return (
-                    <Link
-                      key={lesson.id}
-                      href={`/dashboard/cursos/${courseId}/aula/${lesson.id}`}
-                      onClick={() => setIsPanelOpen(false)}
-                      className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-all ${
-                        active
-                          ? 'bg-yellow-500/15 text-yellow-200'
-                          : 'text-white/60 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      <CheckCircle2
-                        className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          done ? 'text-emerald-400' : started ? 'text-yellow-400' : 'text-white/20'
-                        }`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <span className="line-clamp-2">{lesson.title}</span>
-                        {lesson.duration_seconds > 0 && (
-                          <span className="mt-0.5 block text-[10px] text-white/30">
-                            {formatDuration(lesson.duration_seconds)}
-                          </span>
-                        )}
-                      </div>
-                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-yellow-400" />}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
-
-      {/* Video area */}
-      <div className="relative flex-1">
-        <div className="relative aspect-video overflow-hidden bg-black">
-          {youtubeEmbed ? (
-            <iframe
-              src={youtubeEmbed}
-              title="Aula em vídeo"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full border-0"
-            />
-          ) : vimeoEmbed ? (
-            <iframe
-              src={vimeoEmbed}
-              title="Aula em vídeo"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full border-0"
-            />
-          ) : (
-            <video
-              src={videoUrl}
-              controls
-              poster={thumbnail ?? undefined}
-              className="absolute inset-0 h-full w-full object-cover"
-              preload="metadata"
-            >
-              Seu navegador não suporta este formato de vídeo.
-            </video>
-          )}
-
-          {/* Fallback for no video */}
-          {!videoUrl && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/40">
-              <PlayCircle className="h-14 w-14" />
-              <p className="text-sm font-semibold">Vídeo não disponível</p>
-            </div>
-          )}
-        </div>
-
-        {/* Lesson navigation below video */}
-        <div className="flex items-center justify-between gap-3 border-t border-white/5 bg-[#1F1F1F] px-4 py-3">
-          {previousLesson ? (
-            <Link
-              href={`/dashboard/cursos/${courseId}/aula/${previousLesson.id}`}
-              className="flex items-center gap-1.5 rounded-lg text-xs font-semibold text-white/50 hover:text-white transition-colors"
-            >
-              <ChevronRight className="h-3.5 w-3.5 rotate-180" />
-              <span className="hidden sm:inline">Anterior</span>
-            </Link>
-          ) : (
-            <div />
-          )}
-          <span className="text-[10px] text-white/30">
-            {currentIndex + 1} / {allLessons.length}
-          </span>
-          {nextLesson ? (
-            <Link
-              href={`/dashboard/cursos/${courseId}/aula/${nextLesson.id}`}
-              className="flex items-center gap-1.5 rounded-lg text-xs font-semibold text-white/50 hover:text-white transition-colors"
-            >
-              <span className="hidden sm:inline">Próxima</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          ) : (
-            <div />
-          )}
-        </div>
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="min-w-0 overflow-hidden rounded-xl border border-learning-border bg-black">
+        {videoUrl ? (
+          <VideoPlayer
+            key={currentLessonId}
+            url={videoUrl}
+            thumbnail={thumbnail}
+          />
+        ) : (
+          <div className="flex aspect-video flex-col items-center justify-center gap-3 px-6 text-center text-learning-muted">
+            <PlayCircle className="size-12" />
+            <p className="text-sm">Esta aula não possui vídeo disponível.</p>
+            <p className="text-xs">Consulte o conteúdo complementar abaixo.</p>
+          </div>
+        )}
       </div>
-
-      {/* Desktop persistent side panel */}
-      <aside className="hidden w-80 shrink-0 overflow-y-auto border-l border-white/5 bg-[#171717] lg:block">
-        <div className="sticky top-0 z-10 border-b border-white/5 bg-[#171717] p-4">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-yellow-400">Episódios da trilha</p>
+      <aside
+        aria-label="Módulos e aulas do treinamento"
+        className="overflow-hidden rounded-xl border border-learning-border bg-learning-panel"
+      >
+        <div className="border-b border-learning-border p-4">
+          <h2 className="text-sm font-semibold text-learning-text">
+            Conteúdo do treinamento
+          </h2>
+          <p className="mt-1 text-xs text-learning-muted">
+            Selecione um módulo para ver as aulas.
+          </p>
         </div>
-        <div className="space-y-3 p-4">
-          {sortedModules.map((module, moduleIndex) => (
-            <div key={module.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
-              <p className="mb-2 px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white/40">
-                Módulo {moduleIndex + 1} • {module.title}
-              </p>
-              <div className="space-y-1">
-                {module.lessons.map((lesson) => {
-                  const done = isLessonCompleted(lesson.id)
-                  const started = isLessonStarted(lesson.id)
-                  const active = lesson.id === currentLessonId
-                  return (
-                    <Link
-                      key={lesson.id}
-                      href={`/dashboard/cursos/${courseId}/aula/${lesson.id}`}
-                      className={`flex items-start gap-2.5 rounded-lg px-3 py-2.5 text-sm transition-all ${
-                        active
-                          ? 'bg-yellow-500/15 text-yellow-200'
-                          : 'text-white/60 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      <CheckCircle2
-                        className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          done ? 'text-emerald-400' : started ? 'text-yellow-400' : 'text-white/20'
-                        }`}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <span className="line-clamp-2">{lesson.title}</span>
-                        {lesson.duration_seconds > 0 && (
-                          <span className="mt-0.5 block text-[10px] text-white/30">
-                            {formatDuration(lesson.duration_seconds)}
+        <Accordion
+          key={currentModule?.id}
+          type="multiple"
+          defaultValue={currentModule ? [currentModule.id] : []}
+          className="max-h-[65dvh] overflow-y-auto"
+        >
+          {modules.map((module, moduleIndex) => (
+            <AccordionItem
+              key={module.id}
+              value={module.id}
+              className="border-learning-border"
+            >
+              <AccordionTrigger className="min-h-14 px-4 text-learning-text">
+                <span>
+                  <span className="block text-[11px] text-learning-muted">
+                    Módulo {moduleIndex + 1} ·{" "}
+                    {module.lessons.filter((l) => completed.has(l.id)).length}/
+                    {module.lessons.length} concluídas
+                  </span>
+                  <span className="mt-1 block text-sm">{module.title}</span>
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="px-2 pb-2">
+                <div className="space-y-1">
+                  {module.lessons.map((lesson) => {
+                    const done = completed.has(lesson.id);
+                    const active = lesson.id === currentLessonId;
+                    const Icon = done
+                      ? CheckCircle2
+                      : active
+                        ? PlayCircle
+                        : Circle;
+                    return (
+                      <Link
+                        key={lesson.id}
+                        href={`/dashboard/cursos/${courseId}/aula/${lesson.id}`}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex min-h-12 items-start gap-3 rounded-lg p-3 ${active ? "bg-learning-accent-soft text-learning-accent" : "text-learning-muted hover:bg-learning-bg hover:text-learning-text"}`}
+                      >
+                        <Icon
+                          className={`mt-0.5 size-4 shrink-0 ${done ? "text-learning-success" : ""}`}
+                        />
+                        <span className="min-w-0">
+                          <span className="block text-sm leading-snug">
+                            {lesson.title}
                           </span>
-                        )}
-                      </div>
-                      {active && <ChevronRight className="h-4 w-4 shrink-0 text-yellow-400" />}
-                    </Link>
-                  )
-                })}
-              </div>
-            </div>
+                          <span className="mt-1 block text-[11px] text-learning-muted">
+                            {done
+                              ? "Concluída"
+                              : active
+                                ? "Aula atual"
+                                : "Não concluída"}
+                            {lesson.duration_seconds > 0
+                              ? ` · ${Math.max(1, Math.round(lesson.duration_seconds / 60))} min`
+                              : ""}
+                          </span>
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </aside>
     </div>
-  )
+  );
 }
-
-export default PremiumVideoPlayer
+export default PremiumVideoPlayer;
