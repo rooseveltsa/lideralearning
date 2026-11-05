@@ -1,5 +1,9 @@
 -- LDERA TREINAMENTOS
 -- Sprint 2: Core Educational Module (LMS)
+-- NÃO REEXECUTE este arquivo em produção: ele faz DROP TABLE CASCADE.
+-- O catálogo vigente está em supabase/migrations/20261105150000_enable_rls_and_align_catalog.sql
+-- e em docs/database/13_seed_modules_content.sql (Supervisor, R$ 3.330).
+-- O insert abaixo (Liderança Exponencial, R$ 997, Big Buck Bunny) é só histórico de desenvolvimento.
 -- Execute this script in your Supabase SQL Editor.
 
 -- Enable required extensions

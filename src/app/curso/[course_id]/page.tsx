@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
+import { isDemoCatalogCourse } from "@/lib/content/catalog"
+import { loadPublishedOutline } from "@/lib/content/public-course"
 import CourseShowcaseClient from "./ShowcaseClient"
 
 type PublicLesson = {
@@ -29,18 +31,11 @@ export default async function PublicCoursePage({ params }: { params: Promise<{ c
     const { course_id } = await params
     const supabase = await createClient()
 
-    // Fetch course data explicitly for unauthenticated users, ensuring it is published
+    // Curso publicado via chave anônima. A ementa vem sem video_url:
+    // a policy de lessons esconde a linha inteira de quem não está matriculado.
     const { data: course, error } = await supabase
         .from('courses')
-        .select(`
-      *,
-      modules (
-        id,
-        title,
-        order_index,
-        lessons (id, title, duration_seconds, order_index)
-      )
-    `)
+        .select('id, title, description, price, thumbnail_url')
         .eq('id', course_id)
         .eq('is_published', true)
         .single()
@@ -49,10 +44,18 @@ export default async function PublicCoursePage({ params }: { params: Promise<{ c
         return notFound()
     }
 
-    // Pre-calculate stats
+    const modules = await loadPublishedOutline(supabase, course_id)
+    const typedCourse: PublicCourse = {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        price: Number(course.price ?? 0),
+        thumbnail_url: course.thumbnail_url,
+        modules,
+    }
+
     let totalLessons = 0
     let totalDuration = 0
-    const typedCourse = course as PublicCourse
 
     typedCourse.modules.forEach((mod) => {
         totalLessons += mod.lessons.length
@@ -67,6 +70,7 @@ export default async function PublicCoursePage({ params }: { params: Promise<{ c
             course={typedCourse}
             totalLessons={totalLessons}
             totalDuration={totalDuration}
+            demo={isDemoCatalogCourse(typedCourse)}
         />
     )
 }

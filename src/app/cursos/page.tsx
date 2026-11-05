@@ -1,5 +1,6 @@
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
+import { isDemoCatalogCourse } from '@/lib/content/catalog'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -255,6 +256,11 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/10" />
 
           <div className="absolute left-3 top-3 flex items-center gap-2">
+            {isDemoCatalogCourse(course) ? (
+              <span className="rounded-md bg-amber-500 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#1a1206]">
+                Demonstração
+              </span>
+            ) : null}
             {showNewTag && isNewRelease(course.created_at) ? (
               <span className="rounded-md bg-[#2eb555] px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
                 Novo
@@ -480,6 +486,11 @@ export default async function CursosPage() {
                 <p className="mt-5 text-sm font-semibold text-[#e8e2d6]">
                   {user ? `${continueWatching.length} em andamento` : `A partir de ${currencyBRL.format(Number(featuredCourse.price ?? 0))}`}
                 </p>
+                {isDemoCatalogCourse(featuredCourse) ? (
+                  <p className="mt-3 text-xs leading-relaxed text-amber-200">
+                    Este destaque ainda é o curso de demonstração do seed. O programa oficial documentado é Supervisor: Da Operação à Liderança, a R$ 3.330 — o preço deste card não foi alterado.
+                  </p>
+                ) : null}
               </aside>
             </div>
           </section>

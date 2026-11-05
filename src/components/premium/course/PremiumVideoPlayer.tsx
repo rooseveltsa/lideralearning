@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import VideoPlayer from "@/components/VideoPlayer";
+import { isPlaceholderVideoUrl } from "@/lib/content/catalog";
 
 type Lesson = {
   id: string;
@@ -43,7 +44,21 @@ export function PremiumVideoPlayer({
   return (
     <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="min-w-0 overflow-hidden rounded-xl border border-learning-border bg-black">
-        {videoUrl ? (
+        {isPlaceholderVideoUrl(videoUrl) ? (
+          <div
+            data-placeholder-video="true"
+            className="flex aspect-video flex-col items-center justify-center gap-3 bg-[#1a1208] px-6 text-center"
+          >
+            <PlayCircle className="size-12 text-amber-300" />
+            <p className="text-sm font-semibold text-amber-100">
+              Vídeo de demonstração (Big Buck Bunny)
+            </p>
+            <p className="max-w-md text-xs leading-relaxed text-amber-100/80">
+              Esta URL é um placeholder de desenvolvimento e não é a aula oficial.
+              No admin, abra Cursos, edite a aula e cole o link real do YouTube, Vimeo ou do arquivo .mp4.
+            </p>
+          </div>
+        ) : videoUrl ? (
           <VideoPlayer
             key={currentLessonId}
             url={videoUrl}
@@ -52,8 +67,10 @@ export function PremiumVideoPlayer({
         ) : (
           <div className="flex aspect-video flex-col items-center justify-center gap-3 px-6 text-center text-learning-muted">
             <PlayCircle className="size-12" />
-            <p className="text-sm">Esta aula não possui vídeo disponível.</p>
-            <p className="text-xs">Consulte o conteúdo complementar abaixo.</p>
+            <p className="text-sm">Esta aula ainda não tem vídeo oficial.</p>
+            <p className="max-w-md text-xs">
+              O admin publica a URL em Cursos → editar aula → Vídeo da aula. Enquanto isso, use o material complementar.
+            </p>
           </div>
         )}
       </div>

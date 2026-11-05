@@ -13,6 +13,7 @@ import {
     PlayCircle, FileText, TriangleAlert, Clock, Layers
 } from 'lucide-react'
 import LessonEditor from './LessonEditor'
+import { isPlaceholderVideoUrl } from '@/lib/content/catalog'
 import { detectVideo, formatDuration } from './lesson-utils'
 
 type Lesson = {
@@ -57,7 +58,8 @@ export default function CourseEditorClient({ course }: { course: CourseEditorCou
         (acc, m) => acc + m.lessons.reduce((a, l) => a + (l.duration_seconds || 0), 0), 0
     )
     const lessonsWithoutVideo = course.modules.reduce(
-        (acc, m) => acc + m.lessons.filter(l => !l.video_url).length, 0
+        (acc, m) => acc + m.lessons.filter((l) => !l.video_url || isPlaceholderVideoUrl(l.video_url)).length,
+        0,
     )
 
     const withFeedback = (fn: () => Promise<{ error?: string; success?: boolean } | undefined>, message = 'Salvo com sucesso!') => {
@@ -150,7 +152,7 @@ export default function CourseEditorClient({ course }: { course: CourseEditorCou
                             {lessonsWithoutVideo > 0 && (
                                 <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/15 px-2.5 py-1 text-amber-300 ring-1 ring-amber-500/30">
                                     <TriangleAlert className="h-3.5 w-3.5" />
-                                    {lessonsWithoutVideo} {lessonsWithoutVideo === 1 ? 'aula sem vídeo' : 'aulas sem vídeo'}
+                                    {lessonsWithoutVideo} {lessonsWithoutVideo === 1 ? 'aula sem vídeo oficial' : 'aulas sem vídeo oficial'}
                                 </span>
                             )}
                         </div>
@@ -335,7 +337,8 @@ export default function CourseEditorClient({ course }: { course: CourseEditorCou
                                     )}
 
                                     {module.lessons.map((lesson, lessonIndex) => {
-                                        const video = detectVideo(lesson.video_url)
+                                        const placeholder = isPlaceholderVideoUrl(lesson.video_url)
+                                        const video = placeholder ? null : detectVideo(lesson.video_url)
                                         return (
                                         <div key={lesson.id}>
                                             {editingLesson === lesson.id ? (
@@ -352,7 +355,11 @@ export default function CourseEditorClient({ course }: { course: CourseEditorCou
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-bold text-[#111827] truncate">{lesson.title}</p>
                                                         <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] font-bold">
-                                                            {video && video.kind !== 'unknown' ? (
+                                                            {placeholder ? (
+                                                                <span className="inline-flex items-center gap-1 text-amber-700">
+                                                                    <TriangleAlert className="h-3 w-3" /> Placeholder — cole a URL real
+                                                                </span>
+                                                            ) : video && video.kind !== 'unknown' ? (
                                                                 <span className="inline-flex items-center gap-1 text-emerald-700">
                                                                     <PlayCircle className="h-3 w-3" /> {video.label}
                                                                 </span>

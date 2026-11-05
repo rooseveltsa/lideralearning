@@ -184,18 +184,18 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
     <div className="mx-auto w-full max-w-[1320px] space-y-7 p-4 lg:p-8">
       <Link
         href={`/dashboard/cursos/${course_id}`}
-        className="inline-flex items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-4 py-2.5 text-sm font-semibold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+        className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-learning-border bg-learning-panel px-4 py-2.5 text-sm font-semibold text-learning-text transition-colors hover:border-learning-accent"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar para trilha
       </Link>
 
-      <section className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#060D1A] p-8 text-white shadow-[0_22px_45px_rgba(2,6,23,0.55)] md:p-10">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_10%,rgba(30,136,229,0.22),transparent_40%)]" />
+      <section className="relative overflow-hidden rounded-3xl border border-learning-border bg-learning-panel p-6 text-learning-text md:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(255,154,90,0.16),transparent_42%)]" />
         <div className="relative">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#8CB8E7]">Certificação Lidera</p>
-          <h1 className="mt-3 max-w-4xl font-heading text-3xl font-extrabold leading-tight md:text-4xl">{typedCourse.title}</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[#A9BDD8]">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-learning-accent">Certificação Lidera</p>
+          <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight md:text-4xl">{typedCourse.title}</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-learning-muted">
             {isCertified
               ? 'Parabéns, todos os requisitos da trilha foram concluídos. Seu certificado está pronto para validação pública.'
               : 'Finalize 100% das aulas da trilha para liberar automaticamente seu certificado oficial.'}
@@ -208,9 +208,9 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
               { label: 'Status', value: isCertified ? 'Certificado liberado' : 'Em progresso' },
               { label: 'Validação', value: certId ? certId : 'Pendente' },
             ].map((item) => (
-              <article key={item.label} className="rounded-xl border border-[#2C3E5B] bg-[#0E1A2E]/88 p-3.5">
-                <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-[#93AECF]">{item.label}</p>
-                <p className="mt-1 text-base font-extrabold text-white">{item.value}</p>
+              <article key={item.label} className="rounded-xl border border-learning-border bg-learning-bg/80 p-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-learning-muted">{item.label}</p>
+                <p className="mt-1 break-all text-base font-semibold text-learning-text">{item.value}</p>
               </article>
             ))}
           </div>
@@ -219,50 +219,48 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
 
       {!isCertified ? (
         <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-          <article className="rounded-3xl border border-[#D8E2EF] bg-white p-7 shadow-sm">
+          <article className="rounded-3xl border border-learning-border bg-learning-panel p-6 md:p-7">
             <div className="mb-5 flex items-center gap-3">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-[#E3EBF6] bg-[#F8FAFD]">
-                <Lock className="h-6 w-6 text-[#64748B]" />
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-learning-border bg-learning-bg">
+                <Lock className="h-6 w-6 text-learning-muted" />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#64748B]">Certificado bloqueado</p>
-                <h2 className="mt-1 text-2xl font-extrabold text-[#0F172A]">Continue sua execução</h2>
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-learning-muted">Certificado bloqueado</p>
+                <h2 className="mt-1 text-2xl font-semibold text-learning-text">Continue de onde parou</h2>
               </div>
             </div>
 
-            <p className="text-sm leading-relaxed text-[#64748B]">
-              Faltam <strong className="text-[#0F172A]">{pendingCount}</strong> {pendingCount === 1 ? 'aula' : 'aulas'} para liberar o certificado.
+            <p className="text-sm leading-relaxed text-learning-muted">
+              Faltam <strong className="text-learning-text">{pendingCount}</strong> {pendingCount === 1 ? 'aula' : 'aulas'} para liberar o certificado.
             </p>
 
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#E8EEF7]">
-              <div className="h-full rounded-full bg-[#1E88E5] transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-learning-bg">
+              <div className="h-full rounded-full bg-learning-accent transition-all duration-700" style={{ width: `${progressPercent}%` }} />
             </div>
-            <p className="mt-2 text-xs font-semibold text-[#64748B]">{progressPercent}% da trilha concluído</p>
+            <p className="mt-2 text-xs font-semibold text-learning-muted">{progressPercent}% da trilha concluído</p>
 
             <Link
               href={`/dashboard/cursos/${course_id}`}
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-[#1E88E5] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+              className="learning-button mt-6"
             >
               Continuar aprendizado
               <ArrowRight className="h-4 w-4" />
             </Link>
           </article>
 
-          <article className="rounded-3xl border border-[#D8E2EF] bg-white p-7 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Requisitos de emissão</p>
+          <article className="rounded-3xl border border-learning-border bg-learning-panel p-6 md:p-7">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-learning-accent">Requisitos de emissão</p>
             <div className="mt-4 space-y-3">
-              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
-                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
-                Concluir 100% das aulas da trilha
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
-                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
-                Manter matrícula ativa no programa
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
-                <CheckCircle2 className="h-4 w-4 text-[#4CAF35]" />
-                Certificado com código único de validação
-              </div>
+              {[
+                'Concluir 100% das aulas da trilha',
+                'Manter matrícula ativa no programa',
+                'Certificado com código único de validação',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2 rounded-xl border border-learning-border bg-learning-bg px-4 py-3 text-sm text-learning-text">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-learning-success" />
+                  {item}
+                </div>
+              ))}
             </div>
           </article>
         </section>
@@ -273,42 +271,42 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
           ) : null}
 
           <section className="grid gap-6 xl:grid-cols-[1.18fr_0.82fr]">
-            <article className="relative overflow-hidden rounded-3xl border border-[#1E2E48] bg-[#070E1B] p-8 shadow-[0_24px_48px_rgba(2,6,23,0.55)] md:p-10">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_8%,rgba(30,136,229,0.22),transparent_35%),radial-gradient(circle_at_88%_90%,rgba(245,124,0,0.15),transparent_35%)]" />
+            <article className="relative overflow-hidden rounded-3xl border border-learning-border bg-learning-bg p-6 md:p-10">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_8%,rgba(255,154,90,0.18),transparent_36%)]" />
               <div className="relative text-center">
-                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-[#2C4566] bg-[#10213A] text-[#9EC6F1]">
+                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-learning-border bg-learning-panel text-learning-accent">
                   <Award className="h-8 w-8" />
                 </div>
-                <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.22em] text-[#8EAED1]">Certificado de conclusão</p>
-                <h2 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+                <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.22em] text-learning-accent">Certificado de conclusão</p>
+                <h2 className="mt-2 text-3xl font-semibold tracking-tight text-learning-text md:text-4xl">
                   {profile?.full_name ?? 'Aluno Lidera'}
                 </h2>
-                <p className="mt-3 text-sm text-[#A9BDD8]">concluiu com êxito o programa</p>
-                <p className="mt-2 text-xl font-bold text-[#9EC6F1]">{typedCourse.title}</p>
+                <p className="mt-3 text-sm text-learning-muted">concluiu com êxito o programa</p>
+                <p className="mt-2 text-xl font-semibold text-learning-accent">{typedCourse.title}</p>
 
-                <div className="mx-auto mt-7 flex w-full max-w-lg items-center justify-center gap-2 rounded-xl border border-[#294567] bg-[#0E1A2E] px-4 py-3 text-xs font-semibold text-[#BFD3EA]">
-                  <ShieldCheck className="h-4 w-4 text-[#4CAF35]" />
+                <div className="mx-auto mt-7 flex w-full max-w-lg items-center justify-center gap-2 rounded-xl border border-learning-border bg-learning-panel px-4 py-3 text-xs font-semibold text-learning-text">
+                  <ShieldCheck className="h-4 w-4 text-learning-success" />
                   Certificado autenticável por código único
                 </div>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-[#2A4163] bg-[#0E1A2E] p-4 text-left">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8EAED1]">Data de emissão</p>
-                    <p className="mt-1 text-sm font-semibold text-white">{completionDate}</p>
+                  <div className="rounded-xl border border-learning-border bg-learning-panel p-4 text-left">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-learning-muted">Data de emissão</p>
+                    <p className="mt-1 text-sm font-semibold text-learning-text">{completionDate}</p>
                   </div>
-                  <div className="rounded-xl border border-[#2A4163] bg-[#0E1A2E] p-4 text-left">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#8EAED1]">Código de validação</p>
-                    <p className="mt-1 text-sm font-semibold text-white">{certId ?? 'Pendente'}</p>
+                  <div className="rounded-xl border border-learning-border bg-learning-panel p-4 text-left">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-learning-muted">Código de validação</p>
+                    <p className="mt-1 break-all text-sm font-semibold text-learning-text">{certId ?? 'Pendente'}</p>
                   </div>
                 </div>
               </div>
             </article>
 
-            <article className="space-y-4 rounded-3xl border border-[#D8E2EF] bg-white p-6 shadow-sm">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#0B4A8F]">Ações do certificado</p>
+            <article className="space-y-4 rounded-3xl border border-learning-border bg-learning-panel p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-learning-accent">Ações do certificado</p>
 
-              <div className="flex items-center gap-2 rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3 text-sm text-[#334155]">
-                <QrCode className="h-4 w-4 text-[#0B4A8F]" />
+              <div className="flex items-center gap-2 rounded-xl border border-learning-border bg-learning-bg px-4 py-3 text-sm text-learning-text">
+                <QrCode className="h-4 w-4 shrink-0 text-learning-accent" />
                 O link de validação é público e pode ser enviado para RH ou recrutadores.
               </div>
 
@@ -319,7 +317,7 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
                     href={`/certificado/${certId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-[#1E88E5] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1565C0]"
+                    className="learning-button"
                   >
                     <Printer className="h-4 w-4" />
                     Imprimir certificado
@@ -329,7 +327,7 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
                   <a
                     href={`/api/certificado/pdf/${certId}`}
                     download
-                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-5 text-sm font-bold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-learning-border px-5 text-sm font-semibold text-learning-text transition-colors hover:border-learning-accent"
                   >
                     <Download className="h-4 w-4" />
                     Baixar PDF
@@ -340,7 +338,7 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
                     href={verifyUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#D8E2EF] bg-white px-5 text-sm font-bold text-[#334155] transition-colors hover:bg-[#F5F9FE]"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-learning-border px-5 text-sm font-semibold text-learning-text transition-colors hover:border-learning-accent"
                   >
                     Abrir validação
                     <ArrowRight className="h-4 w-4" />
@@ -349,9 +347,9 @@ export default async function CertificadoPage({ params }: { params: Promise<{ co
               </div>
 
               {verifyUrl ? (
-                <div className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] px-4 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#64748B]">URL de validação</p>
-                  <p className="mt-1 break-all text-xs text-[#334155]">{verifyUrl}</p>
+                <div className="rounded-xl border border-learning-border bg-learning-bg px-4 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-learning-muted">URL de validação</p>
+                  <p className="mt-1 break-all text-xs text-learning-text">{verifyUrl}</p>
                 </div>
               ) : null}
 

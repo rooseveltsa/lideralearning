@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { getDefaultRedirectForUser } from '@/lib/auth/roles'
+import { safeInternalPath } from '@/lib/auth/safe-redirect'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -61,8 +62,14 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    // Logged-in user on /auth/login or /auth/register → redirect to role default
+    // Logged-in user on /auth/login or /auth/register → destino interno da query, senão o papel
     if (user && (request.nextUrl.pathname === '/auth/login' || request.nextUrl.pathname === '/auth/register')) {
+        const requested = safeInternalPath(
+            request.nextUrl.searchParams.get('redirect') || request.nextUrl.searchParams.get('next'),
+        )
+        if (requested) {
+            return NextResponse.redirect(new URL(requested, request.nextUrl.origin))
+        }
         const url = request.nextUrl.clone()
         url.pathname = await getDefaultRedirectForUser(supabase, user)
         return NextResponse.redirect(url)

@@ -79,9 +79,12 @@ export default function NovoCursoPage() {
                 min="0"
                 step="0.01"
                 defaultValue="0"
-                placeholder="997.00"
+                placeholder="3330.00"
                 className="h-12 w-full rounded-xl border border-[#D8E2EF] bg-[#F7FAFE] px-4 text-sm font-semibold text-[#0F172A] placeholder:text-[#94A3B8] outline-none transition-all focus:border-[#1E88E5] focus:bg-white focus:ring-4 focus:ring-[#1E88E5]/10"
               />
+              <p className="text-[11px] leading-relaxed text-[#64748B]">
+                Informe o preço real de venda. O programa documentado Supervisor: Da Operação à Liderança está a R$ 3.330 no seed. R$ 997 era só o curso de demonstração.
+              </p>
             </div>
 
             <div className="space-y-2">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle2, Eye, EyeOff, Loader2, TriangleAlert } from 'lucide-react'
+import { isPlaceholderVideoUrl } from '@/lib/content/catalog'
 import { detectVideo, formatDuration, parseDurationToSeconds } from './lesson-utils'
 
 export type LessonFormValues = {
@@ -52,14 +53,23 @@ export default function LessonEditor({ defaultValues, submitLabel, isPending, on
 
       <div className="space-y-1.5">
         <label className="block text-xs font-bold uppercase tracking-wide text-[#475569]">Vídeo da aula</label>
+        <p className="text-[11px] font-medium leading-relaxed text-[#64748B]">
+          Cole a URL real: YouTube, Vimeo ou arquivo .mp4/.webm. É este campo que o aluno assiste. Links de teste (Big Buck Bunny) ficam marcados como placeholder e não tocam na área do aluno.
+        </p>
         <input
           name="video_url"
           type="url"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
-          placeholder="Cole o link do YouTube, Vimeo ou arquivo .mp4"
+          placeholder="https://www.youtube.com/watch?v=… ou https://vimeo.com/…"
           className={inputClass}
         />
+        {isPlaceholderVideoUrl(videoUrl) ? (
+          <p className="inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 ring-1 ring-amber-200">
+            <TriangleAlert className="h-3.5 w-3.5" />
+            Placeholder de desenvolvimento. Substitua pela aula real antes de vender o curso.
+          </p>
+        ) : null}
 
         {video && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
