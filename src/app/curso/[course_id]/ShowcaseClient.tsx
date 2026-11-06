@@ -33,6 +33,7 @@ interface CourseProps {
   course: ShowcaseCourse
   totalLessons: number
   totalDuration: number
+  demo?: boolean
 }
 
 function formatDuration(seconds: number) {
@@ -43,7 +44,7 @@ function formatDuration(seconds: number) {
   return `${hours}h ${minutes}min`
 }
 
-export default function CourseShowcaseClient({ course, totalLessons, totalDuration }: CourseProps) {
+export default function CourseShowcaseClient({ course, totalLessons, totalDuration, demo = false }: CourseProps) {
   const sortedModules = [...course.modules]
     .sort((a, b) => a.order_index - b.order_index)
     .map((moduleItem) => ({
@@ -70,6 +71,12 @@ export default function CourseShowcaseClient({ course, totalLessons, totalDurati
                 Formação executiva Lidera
               </p>
 
+              {demo ? (
+                <p className="max-w-2xl rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100">
+                  Conteúdo de demonstração. Este anúncio não é o programa oficial Supervisor: Da Operação à Liderança. O preço abaixo é o que está gravado no curso — não foi recalculado.
+                </p>
+              ) : null}
+
               <h1 className="max-w-3xl font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
                 {course.title}
               </h1>
@@ -81,11 +88,11 @@ export default function CourseShowcaseClient({ course, totalLessons, totalDurati
               <div className="flex flex-wrap gap-3">
                 <span className="inline-flex items-center gap-2 rounded-xl border border-[#274364] bg-[#0A1426] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#A9C7E8]">
                   <CheckCircle2 className="h-3.5 w-3.5 text-[#4CAF35]" />
-                  {totalLessons} aulas práticas
+                  {totalLessons > 0 ? `${totalLessons} aulas práticas` : 'Aulas em preparação'}
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-xl border border-[#274364] bg-[#0A1426] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#A9C7E8]">
                   <Clock3 className="h-3.5 w-3.5 text-[#8CC1F7]" />
-                  {formatDuration(totalDuration)} de conteúdo
+                  {totalDuration > 0 ? `${formatDuration(totalDuration)} de conteúdo` : 'Duração a definir'}
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-xl border border-[#274364] bg-[#0A1426] px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#A9C7E8]">
                   <Navigation className="h-3.5 w-3.5 text-[#8CC1F7]" />
@@ -135,18 +142,24 @@ export default function CourseShowcaseClient({ course, totalLessons, totalDurati
                   </div>
 
                   <div className="space-y-2">
-                    {moduleItem.lessons.map((lessonItem) => (
-                      <div
-                        key={lessonItem.id}
-                        className="flex items-center justify-between rounded-xl border border-[#E6EDF7] bg-[#FAFCFF] px-4 py-3"
-                      >
-                        <p className="text-sm font-semibold text-[#0F172A]">{lessonItem.title}</p>
-                        <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#64748B]">
-                          <Clock3 className="h-3.5 w-3.5" />
-                          {formatDuration(lessonItem.duration_seconds)}
-                        </span>
-                      </div>
-                    ))}
+                    {moduleItem.lessons.length === 0 ? (
+                      <p className="rounded-xl border border-dashed border-[#D8E2EF] bg-[#FAFCFF] px-4 py-3 text-sm text-[#64748B]">
+                        As aulas deste módulo ainda não foram publicadas. O admin cola a URL do vídeo em Cursos → editar aula.
+                      </p>
+                    ) : (
+                      moduleItem.lessons.map((lessonItem) => (
+                        <div
+                          key={lessonItem.id}
+                          className="flex items-center justify-between rounded-xl border border-[#E6EDF7] bg-[#FAFCFF] px-4 py-3"
+                        >
+                          <p className="text-sm font-semibold text-[#0F172A]">{lessonItem.title}</p>
+                          <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-[0.12em] text-[#64748B]">
+                            <Clock3 className="h-3.5 w-3.5" />
+                            {formatDuration(lessonItem.duration_seconds)}
+                          </span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </article>
               ))}

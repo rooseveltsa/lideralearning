@@ -9,7 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:learning": "node --test tests/training-library.test.mjs",
-    "test:diagnostico": "node --import tsx --test tests/diagnostico-modal.test.tsx"
+    "test:diagnostico": "node --import tsx --test tests/diagnostico-modal.test.tsx",
+    "test:journey": "node --import tsx --test tests/student-journey.test.ts tests/stripe-webhook.test.ts tests/admin-guards.test.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
@@ -38,6 +40,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^20",

@@ -355,10 +355,9 @@ export default function AulaPage({
         </section>
       ) : null}
 
-      {/* Main content: video player (with sidebar) + supplementary */}
-      <div className="grid gap-6 grid-cols-1">
-        {/* Left column */}
-        <section className="space-y-5">
+      {/* Player e progresso: no celular o painel vem primeiro; no desktop fica ao lado */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+        <section className="order-2 space-y-5 lg:order-1">
           {/* Video Player with integrated sidebar */}
           <PremiumVideoPlayer
             videoUrl={currentLesson.video_url || ""}
@@ -470,8 +469,7 @@ export default function AulaPage({
           </div>
         </section>
 
-        {/* Right column: sticky progress card only */}
-        <aside className="space-y-5">
+        <aside className="order-1 space-y-5 lg:sticky lg:top-24 lg:order-2">
           <article className="rounded-2xl border border-learning-border bg-learning-panel p-6">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-learning-accent">
               Painel de progresso

@@ -20,7 +20,7 @@ export default function RegisterPage() {
 
 function RegisterForm() {
     const searchParams = useSearchParams()
-    const redirectTo = searchParams.get('redirect') || ''
+    const redirectTo = searchParams.get('redirect') || searchParams.get('next') || ''
     const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
 

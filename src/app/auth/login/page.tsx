@@ -20,7 +20,7 @@ export default function LoginPage() {
 
 function LoginForm() {
     const searchParams = useSearchParams()
-    const redirectTo = searchParams.get('redirect') || ''
+    const redirectTo = searchParams.get('redirect') || searchParams.get('next') || ''
     const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
 

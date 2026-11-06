@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto'
 
 import { redirect, unstable_rethrow } from 'next/navigation'
 
+import { safeInternalPath } from '@/lib/auth/safe-redirect'
 import { stripe } from '@/lib/stripe'
 import { createAdminClient } from '@/lib/supabase/service'
 import { createClient } from '@/lib/supabase/server'
@@ -134,7 +135,8 @@ export async function createCheckoutSession(courseId: string) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect(`/auth/login?next=/curso/${courseId}`)
+    const nextPath = safeInternalPath(`/curso/${courseId}`) ?? '/cursos'
+    redirect(`/auth/login?redirect=${encodeURIComponent(nextPath)}`)
   }
 
   const { data: course, error: courseError } = await supabase

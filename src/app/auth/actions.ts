@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/service'
 import { sendEmail } from '@/lib/email/send'
 import { getDefaultRedirectForUser } from '@/lib/auth/roles'
+import { safeInternalPath } from '@/lib/auth/safe-redirect'
 
 // Returns an error string on failure, or redirects on success
 export async function login(formData: FormData) {
@@ -26,7 +27,7 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    const redirectTo = formData.get('redirectTo') as string
+    const redirectTo = safeInternalPath(formData.get('redirectTo'))
     if (redirectTo) {
         redirect(redirectTo)
     }
@@ -44,7 +45,7 @@ export async function signup(formData: FormData) {
     const fullName = formData.get('fullName') as string
     const whatsapp = (formData.get('whatsapp') as string)?.replace(/\D/g, '') || ''
     const company = (formData.get('company') as string)?.trim() || ''
-    const redirectTo = formData.get('redirectTo') as string
+    const redirectTo = safeInternalPath(formData.get('redirectTo'))
 
     if (password !== confirmPassword) {
         return { error: 'As senhas não coincidem.' }

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { getInitialAssessment } from "@/lib/actions/assessment";
 import { getCourseDetails } from "@/lib/actions/lms";
+import { isPlaceholderVideoUrl } from "@/lib/content/catalog";
 
 export default async function CoursePage({
   params,
@@ -38,6 +39,7 @@ export default async function CoursePage({
     : 0;
   const next = lessons.find((l) => !completed.has(l.id)) ?? lessons[0];
   const duration = lessons.reduce((sum, l) => sum + l.duration_seconds, 0);
+  const placeholderCount = lessons.filter((l) => isPlaceholderVideoUrl(l.video_url)).length;
   return (
     <div className="learning-container space-y-7">
       <Link
@@ -74,6 +76,14 @@ export default async function CoursePage({
             {doneCount}/{lessons.length} concluídas
           </span>
         </div>
+        {placeholderCount > 0 ? (
+          <p className="mt-5 max-w-3xl rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+            {placeholderCount === 1
+              ? "1 aula ainda usa vídeo de demonstração."
+              : `${placeholderCount} aulas ainda usam vídeo de demonstração.`}{" "}
+            Elas não contam como conteúdo oficial até o admin colar a URL real.
+          </p>
+        ) : null}
         <div className="mt-6 flex flex-wrap gap-4">
           {next ? (
             <Link
@@ -139,6 +149,11 @@ export default async function CoursePage({
                         {l.duration_seconds > 0
                           ? ` · ${Math.ceil(l.duration_seconds / 60)} min`
                           : ""}
+                        {isPlaceholderVideoUrl(l.video_url)
+                          ? " · vídeo de demonstração"
+                          : !l.video_url
+                            ? " · sem vídeo"
+                            : ""}
                       </span>
                     </span>
                     <PlayCircle className="size-4 shrink-0 text-learning-accent" />

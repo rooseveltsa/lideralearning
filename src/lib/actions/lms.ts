@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { allLessonsCompleted } from '@/lib/content/progress'
 import { Course, Lesson, Module, Progress } from '@/types/database'
 
 type CourseWithModules = Course & {
@@ -482,7 +483,10 @@ export async function checkAndIssueCertificate(
     .eq('is_completed', true)
 
   const completedIds = new Set((completedProgress ?? []).map((p) => p.lesson_id))
-  const allComplete = lessons.every((lesson) => completedIds.has(lesson.id))
+  const allComplete = allLessonsCompleted(
+    lessons.map((lesson) => lesson.id),
+    completedIds,
+  )
 
   if (!allComplete) return { issued: false, verificationCode: null }
 
