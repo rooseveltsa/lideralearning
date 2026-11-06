@@ -196,8 +196,8 @@ export default function SobrePage() {
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Magnetic>
-                  <Link href="/cursos" className="ld-btn-outline w-full justify-center">
-                    Explorar programas
+                  <Link href="/treinamento/modulos" className="ld-btn-outline w-full justify-center">
+                    Ver a turma presencial
                   </Link>
                 </div>
               </aside>

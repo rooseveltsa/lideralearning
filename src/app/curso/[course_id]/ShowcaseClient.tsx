@@ -1,8 +1,8 @@
 'use client'
 
-import { ArrowRight, CheckCircle2, Clock3, Navigation, ShieldCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Clock3, Navigation } from 'lucide-react'
+import Link from 'next/link'
 
-import { createCheckoutSession } from '@/app/curso/[course_id]/actions'
 import SiteHeader from '@/components/site/Header'
 import SiteFooter from '@/components/site/Footer'
 import { Button } from '@/components/ui/button'
@@ -34,11 +34,6 @@ interface CourseProps {
   totalLessons: number
   totalDuration: number
 }
-
-const currencyFormatter = new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL',
-})
 
 function formatDuration(seconds: number) {
   const hours = Math.floor(seconds / 3600)
@@ -100,28 +95,21 @@ export default function CourseShowcaseClient({ course, totalLessons, totalDurati
             </div>
 
             <aside className="rounded-3xl border border-[#263A59] bg-[#0A1324] p-7 shadow-[0_28px_58px_rgba(2,6,23,0.6)]">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Acesso à formação</p>
-              <h2 className="mt-3 text-3xl font-extrabold text-white">{currencyFormatter.format(Number(course.price || 0))}</h2>
-              <p className="mt-2 text-sm text-[#9AB2CE]">Pagamento único com liberação imediata da trilha.</p>
+              {/* shortcut: sem checkout enquanto as aulas não estiverem gravadas; voltar o botão quando o vídeo real entrar */}
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7FA0C2]">Aulas gravadas em breve</p>
+              <h2 className="mt-3 text-3xl font-extrabold text-white">A venda agora é a turma presencial</h2>
+              <p className="mt-2 text-sm text-[#9AB2CE]">O diagnóstico gera o PDI. O PDI é a pauta da imersão, para você ou para a empresa.</p>
 
-              <form action={() => createCheckoutSession(course.id)} className="mt-6">
-                <Button className="h-12 w-full rounded-xl bg-[#1E88E5] text-sm font-bold text-white hover:bg-[#1565C0]">
-                  Desbloquear formação
-                  <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="mt-6 space-y-3">
+                <Button asChild className="h-12 w-full rounded-xl bg-[#1E88E5] text-sm font-bold text-white hover:bg-[#1565C0]">
+                  <Link href="/diagnostico">
+                    Começar pelo diagnóstico
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
-              </form>
-
-              <div className="mt-6 space-y-2.5 rounded-2xl border border-[#273B5A] bg-[#0E1B31] p-4">
-                {[
-                  'Pagamento seguro via Stripe',
-                  'Garantia incondicional de 7 dias',
-                  'Acesso por 12 meses',
-                ].map((item) => (
-                  <p key={item} className="flex items-center gap-2 text-xs font-semibold text-[#D5E5F7]">
-                    <ShieldCheck className="h-4 w-4 text-[#4CAF35]" />
-                    {item}
-                  </p>
-                ))}
+                <Button asChild variant="outline" className="h-12 w-full rounded-xl border-[#274364] bg-transparent text-sm font-bold text-[#E7EDF8] hover:bg-[#0E1B31]">
+                  <Link href="/treinamento/modulos">Ver a turma presencial</Link>
+                </Button>
               </div>
             </aside>
           </div>

@@ -120,8 +120,8 @@ export default function ContatoPage() {
               <div className="ld-card p-7">
                 <p className="ld-eyebrow">Também disponível</p>
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <Link href="/cursos" className="ld-btn-outline justify-center">
-                    Ver programas digitais
+                  <Link href="/diagnostico" className="ld-btn-outline justify-center">
+                    Começar pelo diagnóstico
                   </Link>
                   <Magnetic>
                     <Link href="/empresas" className="ld-btn-primary justify-center">

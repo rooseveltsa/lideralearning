@@ -3,9 +3,9 @@ import Image from 'next/image'
 import { Instagram, Linkedin, Youtube } from 'lucide-react'
 
 const footerColumns = [
-  { title: 'Formação', links: [{ href: '/treinamento/autoavaliacao', label: 'Diagnóstico gratuito' }, { href: '/treinamento/modulo-1', label: 'Próxima turma' }, { href: '/cursos', label: 'Academy digital' }, { href: '/dashboard/certificados', label: 'Certificados' }] },
-  { title: 'Empresas', links: [{ href: '/empresas', label: 'Programa corporativo' }, { href: '/treinamento/autoavaliacao', label: 'Diagnóstico organizacional' }, { href: '/empresas', label: 'Formatos de treinamento' }, { href: '/contato', label: 'Falar com comercial' }] },
-  { title: 'Lidera', links: [{ href: '/sobre', label: 'Quem somos' }, { href: '/sobre#claudemir', label: 'Claudemir Domingos' }, { href: '/cursos', label: 'Treinamentos digitais' }, { href: '/contato', label: 'Contato' }] },
+  { title: 'Formação', links: [{ href: '/diagnostico/pessoal', label: 'Diagnóstico pessoal' }, { href: '/treinamento/modulos', label: 'Turma presencial' }, { href: '/diagnostico/empresa', label: 'Diagnóstico da empresa' }, { href: '/contato', label: 'Falar com o Claudemir' }] },
+  { title: 'Empresas', links: [{ href: '/empresas', label: 'Programa corporativo' }, { href: '/diagnostico/empresa', label: 'Diagnóstico organizacional' }, { href: '/treinamento/modulos', label: 'Turma presencial' }, { href: '/contato', label: 'Falar com comercial' }] },
+  { title: 'Lidera', links: [{ href: '/sobre', label: 'Quem somos' }, { href: '/sobre#claudemir', label: 'Claudemir Domingos' }, { href: '/diagnostico', label: 'Começar pelo PDI' }, { href: '/contato', label: 'Contato' }] },
 ]
 
 const socialLinks = [

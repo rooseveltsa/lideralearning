@@ -26,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Lidera Treinamentos",
-  description: "A escola dos líderes que constroem times. Treinamentos, mentorias e palestras para times comerciais.",
+  description: "Claudemir Domingos forma supervisores. Diagnóstico, PDI e a turma presencial Supervisor: Da Operação à Liderança.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

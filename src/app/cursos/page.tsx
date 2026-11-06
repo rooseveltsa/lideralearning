@@ -54,10 +54,6 @@ type ContinueWatchingItem = {
   lastAccessedAt: string
 }
 
-const currencyBRL = new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL',
-})
 const shortDateBR = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' })
 
 const NEW_RELEASE_DAYS = 21
@@ -273,8 +269,8 @@ function CourseCard({ course, showNewTag = false }: { course: Course; showNewTag
           </p>
 
           <div className="flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#a8a296]">Compra Avulsa</span>
-            <strong className="text-sm font-bold text-[#f5f1ea]">{currencyBRL.format(Number(course.price ?? 0))}</strong>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#a8a296]">Aulas gravadas</span>
+            <strong className="text-sm font-bold text-[#f5f1ea]">Depois da turma</strong>
           </div>
         </div>
       </article>
@@ -415,11 +411,11 @@ export default async function CursosPage() {
 
   const recommendedCourses = user ? courses.filter((course) => !enrolledCourseIds.has(course.id)) : []
   const primaryContinue = continueWatching[0]
-  const heroPrimaryHref = primaryContinue ? getContinueHref(primaryContinue) : featuredCourse ? `/curso/${featuredCourse.id}` : '/dashboard/cursos'
-  const heroPrimaryLabel = primaryContinue ? 'Retomar última aula' : 'Assistir agora'
+  const heroPrimaryHref = primaryContinue ? getContinueHref(primaryContinue) : '/diagnostico'
+  const heroPrimaryLabel = primaryContinue ? 'Retomar última aula' : 'Começar pelo diagnóstico'
   const personalizedSummary = user
     ? `Você tem ${continueWatching.length} ${pluralize(continueWatching.length, 'programa', 'programas')} em andamento e ${recommendedCourses.length} ${pluralize(recommendedCourses.length, 'recomendação', 'recomendações')} para avançar.`
-    : 'Assista no seu ritmo, avance por trilhas certificadas e leve o aprendizado digital para imersões presenciais e programas corporativos.'
+    : 'O caminho de venda agora é o PDI e a turma presencial, para pessoa ou empresa. As aulas gravadas entram aqui depois.'
 
   return (
     <div className="min-h-screen bg-[#070e1c] text-[#f5f1ea]">
@@ -442,11 +438,15 @@ export default async function CursosPage() {
               <div className="max-w-3xl space-y-6">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#26324a] bg-[#0c1729]/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#fb7d2e]">
                   <CalendarClock className="h-3.5 w-3.5" />
-                  {user ? 'Seu Stream Personalizado' : 'Stream Lidera Academy'}
+                  {user ? 'Seu Stream Personalizado' : 'Turma presencial'}
                 </div>
 
                 <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white md:text-6xl">
-                  Evolução contínua em formato de <span className="text-[#fb7d2e]">stream de treinamentos</span>
+                  {user ? (
+                    <>Evolução contínua em formato de <span className="text-[#fb7d2e]">stream de treinamentos</span></>
+                  ) : (
+                    <>Primeiro o PDI. Depois a <span className="text-[#fb7d2e]">turma presencial</span>.</>
+                  )}
                 </h1>
 
                 <p className="max-w-2xl text-lg leading-relaxed text-[#d5cfc2]">
@@ -463,22 +463,24 @@ export default async function CursosPage() {
                   </Link>
 
                   <Link
-                    href={user ? '/dashboard/cursos' : '/empresas'}
+                    href={user ? '/dashboard/cursos' : '/treinamento/modulos'}
                     className="inline-flex items-center gap-2 rounded-lg border border-[#3a4763] bg-[#0c1729]/80 px-6 py-3 text-sm font-bold text-[#e8e2d6] transition hover:border-[#fb7d2e] hover:text-white"
                   >
-                    {user ? 'Ver meus programas' : 'Soluções para empresas'}
+                    {user ? 'Ver meus programas' : 'Ver a turma presencial'}
                   </Link>
                 </div>
               </div>
 
               <aside className="rounded-2xl border border-[#26324a] bg-[#0c1729]/90 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.45)] backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#a8a296]">Destaque da semana</p>
-                <h2 className="mt-3 text-xl font-bold text-white">{featuredCourse.title}</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#a8a296]">{user ? 'Destaque da semana' : 'Ainda não está à venda'}</p>
+                <h2 className="mt-3 text-xl font-bold text-white">{user ? featuredCourse.title : 'Aulas gravadas'}</h2>
                 <p className="mt-3 text-sm leading-relaxed text-[#b3ada1]">
-                  {featuredCourse.description || 'Programa recomendado para acelerar desenvolvimento profissional e resultados aplicáveis.'}
+                  {user
+                    ? featuredCourse.description || 'Programa recomendado para acelerar desenvolvimento profissional e resultados aplicáveis.'
+                    : 'As gravações entram nesta página depois da turma. Até lá, o diagnóstico abre o PDI e a inscrição é no presencial.'}
                 </p>
                 <p className="mt-5 text-sm font-semibold text-[#e8e2d6]">
-                  {user ? `${continueWatching.length} em andamento` : `A partir de ${currencyBRL.format(Number(featuredCourse.price ?? 0))}`}
+                  {user ? `${continueWatching.length} em andamento` : 'Pessoa ou empresa'}
                 </p>
               </aside>
             </div>
@@ -569,7 +571,7 @@ export default async function CursosPage() {
                 </section>
               ) : null}
 
-              {rails.map((rail, index) => {
+              {user ? rails.map((rail, index) => {
                 const Icon = rail.icon
 
                 return (
@@ -596,7 +598,24 @@ export default async function CursosPage() {
                     </div>
                   </section>
                 )
-              })}
+              }) : (
+                <section className="grid gap-4 md:grid-cols-2">
+                  <Link href="/diagnostico/pessoal" className="rounded-2xl border border-[#26324a] bg-[#0c1729] p-8">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#fb7d2e]">Para você</p>
+                    <h2 className="mt-3 text-2xl font-bold text-white">Diagnóstico e PDI individual</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-[#b3ada1]">
+                      O plano mostra o gap. A turma presencial usa esse PDI como pauta.
+                    </p>
+                  </Link>
+                  <Link href="/diagnostico/empresa" className="rounded-2xl border border-[#26324a] bg-[#0c1729] p-8">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#fb7d2e]">Para a empresa</p>
+                    <h2 className="mt-3 text-2xl font-bold text-white">PDI dos supervisores</h2>
+                    <p className="mt-3 text-sm leading-relaxed text-[#b3ada1]">
+                      O diagnóstico do time define quem entra na turma fechada e o que ela precisa treinar.
+                    </p>
+                  </Link>
+                </section>
+              )}
             </>
           )}
         </section>

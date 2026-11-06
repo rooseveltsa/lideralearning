@@ -7,14 +7,14 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { href: "/treinamento/modulo-1", label: "Treinamento" },
-  { href: "/cursos", label: "Academy" },
+  { href: "/diagnostico", label: "Diagnóstico" },
+  { href: "/treinamento/modulos", label: "Treinamento" },
   { href: "/empresas", label: "Para empresas" },
   { href: "/sobre", label: "Sobre" },
   { href: "/contato", label: "Contato" },
 ];
 
-const darkHeroRoutes = ["/empresas", "/cursos", "/treinamento", "/pricing"];
+const darkHeroRoutes = ["/", "/empresas", "/cursos", "/treinamento", "/pricing"];
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -93,8 +93,8 @@ export default function SiteHeader() {
           >
             Área do aluno
           </Link>
-          <Link href="/cursos" className="institutional-button">
-            Ver treinamentos
+          <Link href="/diagnostico" className="institutional-button">
+            Fazer diagnóstico
             <svg
               width={14}
               height={14}
@@ -166,12 +166,12 @@ export default function SiteHeader() {
               Área do aluno
             </Link>
             <Link
-              href="/cursos"
+              href="/diagnostico"
               onClick={() => setIsMobileOpen(false)}
               className="institutional-button w-full text-center"
               style={{ borderRadius: "0.5rem" }}
             >
-              Ver treinamentos
+              Fazer diagnóstico
             </Link>
           </div>
         </div>

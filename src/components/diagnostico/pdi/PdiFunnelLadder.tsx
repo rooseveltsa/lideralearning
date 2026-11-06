@@ -14,7 +14,7 @@ export function PdiFunnelLadder() {
         Cada etapa aprofunda a anterior — do plano individual à transformação da operação inteira.
       </p>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
         {FUNNEL_LADDER.map((step) => (
           <div
             key={step.degrau}

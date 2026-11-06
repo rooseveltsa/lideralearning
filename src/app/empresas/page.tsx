@@ -47,8 +47,8 @@ const deliveryModel = [
   {
     step: '02',
     color: '#0f8f3a',
-    title: 'Desenho da trilha',
-    description: 'Configuramos plano de formação por público interno, combinando módulos digitais, workshops e checkpoints.',
+    title: 'Desenho da turma',
+    description: 'O PDI de cada supervisor define a pauta da turma presencial. As aulas gravadas entram depois.',
   },
   {
     step: '03',
@@ -66,24 +66,24 @@ const deliveryModel = [
 
 const plans = [
   {
-    name: 'Starter',
-    audience: 'Times menores e operação em estruturação',
-    price: 'A partir de R$ 997/mês',
-    items: ['Até 25 acessos corporativos', 'Trilhas essenciais de liderança', 'Relatórios de engajamento'],
+    name: 'Diagnóstico',
+    audience: 'Antes de fechar a turma',
+    price: 'PDI da liderança',
+    items: ['Diagnóstico de cada supervisor', 'Leitura do gap da operação', 'Pauta da turma sai daqui'],
     highlight: false,
   },
   {
-    name: 'Growth',
-    audience: 'Empresas em escala e múltiplas lideranças',
-    price: 'A partir de R$ 2.497/mês',
-    items: ['Até 100 acessos corporativos', 'Academy completa + encontros ao vivo', 'Acompanhamento estratégico dedicado'],
+    name: 'Turma presencial',
+    audience: 'O que a empresa contrata agora',
+    price: 'Programa Supervisor',
+    items: ['Imersão presencial do time', 'PDI como pauta de cada líder', 'Proposta depois do diagnóstico'],
     highlight: true,
   },
   {
-    name: 'Enterprise',
-    audience: 'Operações de grande porte e alta complexidade',
-    price: 'Proposta sob demanda',
-    items: ['Acessos ilimitados', 'Programa híbrido customizado', 'Integrações e governança avançada'],
+    name: 'Aulas gravadas',
+    audience: 'Quando a gravação estiver pronta',
+    price: 'Depois da turma',
+    items: ['Não está à venda agora', 'Entra na plataforma depois', 'Quem fez a turma recebe a trilha'],
     highlight: false,
   },
 ]
@@ -122,7 +122,7 @@ export default function EmpresasPage() {
 
               <Reveal delay={0.35}>
                 <p className="max-w-2xl text-lg leading-relaxed" style={{ color: 'rgba(245,241,234,0.75)' }}>
-                  Estruturamos jornadas híbridas para desenvolver liderança em escala. Da entrada do lead ao relatório de impacto, toda a experiência fica centralizada na plataforma.
+                  O diagnóstico dos supervisores abre o PDI. A venda é a turma presencial fechada para o time. As aulas gravadas entram depois.
                 </p>
               </Reveal>
 
@@ -134,8 +134,8 @@ export default function EmpresasPage() {
                   </a>
                 </Magnetic>
                 <Magnetic>
-                  <Link href="/cursos" className="ld-btn-outline-light ld-btn-primary-xl">
-                    Ver programas digitais
+                  <Link href="/treinamento/modulos" className="ld-btn-outline-light ld-btn-primary-xl">
+                    Ver a turma presencial
                   </Link>
                 </Magnetic>
               </Reveal>
@@ -146,7 +146,7 @@ export default function EmpresasPage() {
                 { label: 'Empresas atendidas', value: '200+' },
                 { label: 'Gestores em formação', value: '5.000+' },
                 { label: 'Tempo médio de resposta', value: '4h úteis' },
-                { label: 'Modelo de entrega', value: 'Digital + Presencial' },
+                { label: 'Modelo de entrega', value: 'Presencial' },
               ].map((item) => (
                 <TiltCard
                   key={item.label}

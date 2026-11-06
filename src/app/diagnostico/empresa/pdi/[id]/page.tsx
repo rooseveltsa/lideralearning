@@ -18,6 +18,7 @@ import { PdiConvergencia } from '@/components/diagnostico/pdi/PdiConvergencia'
 import { PdiFase } from '@/components/diagnostico/pdi/PdiFase'
 import { PdiReferencias } from '@/components/diagnostico/pdi/PdiReferencias'
 import { PdiPrintButton } from '@/components/diagnostico/pdi/PdiPrintButton'
+import { PdiFunnelLadder } from '@/components/diagnostico/pdi/PdiFunnelLadder'
 import { NIVEIS_LIDER } from '@/lib/diagnostico/pdi-knowledge'
 import type { PdiReport } from '@/lib/diagnostico/pdi-types'
 
@@ -250,6 +251,8 @@ export default async function PdiEmpresaPage({ params }: Params) {
               </Link>
             </div>
           </div>
+
+          <PdiFunnelLadder />
 
           <div className="rounded-xl border border-[#E3EBF6] bg-[#F8FAFD] p-4 text-center text-xs text-[#94A3B8]">
             PDI gerado em{' '}
